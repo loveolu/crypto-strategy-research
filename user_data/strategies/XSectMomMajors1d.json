@@ -1,0 +1,32 @@
+{
+  "strategy_name": "XSectMomMajors1d",
+  "params": {
+    "roi": {
+      "0": 100.0
+    },
+    "stoploss": {
+      "stoploss": -0.25
+    },
+    "trailing": {
+      "trailing_stop": false,
+      "trailing_stop_positive": null,
+      "trailing_stop_positive_offset": 0.0,
+      "trailing_only_offset_is_reached": false
+    },
+    "max_open_trades": {
+      "max_open_trades": 2
+    },
+    "buy": {
+      "momentum_lookback": 43,
+      "risk_per_trade_pct": 0.007,
+      "top_k_entry": 1,
+      "use_trend_filter": 1
+    },
+    "sell": {
+      "atr_stop_mult": 4.9,
+      "top_k_exit": 5
+    }
+  },
+  "ft_stratparam_v": 1,
+  "export_time": "2026-05-28 20:24:59.969342+00:00"
+}

@@ -1,0 +1,2 @@
+2026-05-27 16:06:52,630 - freqtrade - INFO - freqtrade 2026.5-dev-125e0f5f7
+2026-05-27 16:06:52,633 - freqtrade - ERROR - No module named 'filelock'. Please ensure that the hyperopt dependencies are installed.
