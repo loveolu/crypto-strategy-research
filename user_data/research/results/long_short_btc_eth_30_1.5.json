@@ -1,0 +1,133 @@
+{
+  "name": "long_short_btc_eth_30_1.5",
+  "passed": false,
+  "reasons": [
+    "positive in 2/8 years (<60%)",
+    "max DD -58.9% (worse than -25%)",
+    "sharpe -0.56 (<1.5)",
+    "PF 0.58 (<1.5)",
+    "only 74 trades (<200)",
+    "WF profitable in 1/4 windows",
+    "MC p5 sharpe -0.57 < 0"
+  ],
+  "full": {
+    "final_equity": 0.4258,
+    "total_return": -0.5742,
+    "cagr": -0.1227,
+    "sharpe": -0.564,
+    "sortino": -0.6338,
+    "max_dd": -0.5885,
+    "profit_factor": 0.5832,
+    "win_rate": 0.5676,
+    "n_trades": 74,
+    "years": 6.52,
+    "max_year_share": NaN
+  },
+  "train": {
+    "final_equity": 0.6251,
+    "total_return": -0.3749,
+    "cagr": -0.0978,
+    "sharpe": -0.3963,
+    "sortino": -0.4418,
+    "max_dd": -0.5687,
+    "profit_factor": 0.6219,
+    "win_rate": 0.5769,
+    "n_trades": 52,
+    "years": 4.56
+  },
+  "val": {
+    "final_equity": 0.5342,
+    "total_return": -0.4658,
+    "cagr": -0.4732,
+    "sharpe": -0.7565,
+    "sortino": -0.9915,
+    "max_dd": -0.2588,
+    "profit_factor": 0.6258,
+    "win_rate": 0.5,
+    "n_trades": 10,
+    "years": 0.98
+  },
+  "test": {
+    "final_equity": 0.4258,
+    "total_return": -0.5742,
+    "cagr": -0.5823,
+    "sharpe": -1.3491,
+    "sortino": -1.311,
+    "max_dd": -0.2469,
+    "profit_factor": 0.4261,
+    "win_rate": 0.5833,
+    "n_trades": 12,
+    "years": 0.98
+  },
+  "yearly": {
+    "2019": 0.0,
+    "2020": -0.16066485521709384,
+    "2021": -0.29445683428936664,
+    "2022": -0.21365584078741673,
+    "2023": 0.09388556902235323,
+    "2024": 0.28500126666915593,
+    "2025": -0.30575154443956754,
+    "2026": -0.06305137914449954
+  },
+  "wf": [
+    {
+      "final_equity": 0.9634,
+      "total_return": -0.0366,
+      "cagr": -0.0556,
+      "sharpe": -0.6809,
+      "sortino": -0.7946,
+      "max_dd": -0.0802,
+      "profit_factor": 0.4396,
+      "win_rate": 0.6667,
+      "n_trades": 6,
+      "years": 0.65,
+      "window": 1
+    },
+    {
+      "final_equity": 1.2923,
+      "total_return": 0.2923,
+      "cagr": 0.4818,
+      "sharpe": 2.6474,
+      "sortino": 4.0798,
+      "max_dd": -0.0452,
+      "profit_factor": 20.4311,
+      "win_rate": 0.875,
+      "n_trades": 8,
+      "years": 0.65,
+      "window": 2
+    },
+    {
+      "final_equity": 0.9649,
+      "total_return": -0.0351,
+      "cagr": -0.0534,
+      "sharpe": -0.2201,
+      "sortino": -0.3218,
+      "max_dd": -0.1491,
+      "profit_factor": 0.9097,
+      "win_rate": 0.5714,
+      "n_trades": 7,
+      "years": 0.65,
+      "window": 3
+    },
+    {
+      "final_equity": 0.7424,
+      "total_return": -0.2576,
+      "cagr": -0.3667,
+      "sharpe": -2.182,
+      "sortino": -2.0681,
+      "max_dd": -0.2829,
+      "profit_factor": 0.1619,
+      "win_rate": 0.3333,
+      "n_trades": 6,
+      "years": 0.65,
+      "window": 4
+    }
+  ],
+  "mc": {
+    "mc_p5_sharpe": -0.5705691735487533,
+    "mc_p50_sharpe": -0.5705691735487533,
+    "mc_p95_sharpe": -0.570569173548753,
+    "mc_p5_return": -0.5899063508166436,
+    "mc_p50_return": -0.5899063508166433
+  }
+}
