@@ -15,6 +15,12 @@
   // rapidjson with parse_mode=PM_COMMENTS|PM_TRAILING_COMMAS.
   // ---------------------------------------------------------------------------
 
+  // 9 = the size of the pair_whitelist below, chosen so this key does NOT bind.
+  // config.json uses 2, which against a 9-pair whitelist would silently cap every
+  // portfolio test at 2 concurrent positions - a constraint that would shape
+  // results without appearing anywhere in a report. Any real position limit is a
+  // portfolio-construction decision and must be stated in the hypothesis, not
+  // inherited by accident from an untouched config default.
   "max_open_trades": 9,
   "stake_currency": "USDT",
   "stake_amount": "unlimited",
@@ -78,21 +84,31 @@
       "ohlcv_candle_limit": 100
     },
 
-    // Explicit fee override. 0.0005 = 5.0 bps = OKX regular-tier (non-VIP) TAKER
-    // fee for USDT-margined perpetual swaps, matching
-    // validator.COST_MODEL["taker"], rates as of 2026-07-28.
+    // ALL-IN PER-SIDE COST PROXY - NOT A LITERAL EXCHANGE FEE.
+    //
+    // 0.0009 = 9.0 bps/side = validator.per_side_cost("taker"), decomposed as:
+    //     5.0 bps  OKX regular-tier (non-VIP) taker fee for USDT perps
+    //   + 3.0 bps  slippage      (COST_MODEL["slippage_bps"], estimate)
+    //   + 1.0 bps  half-spread   (COST_MODEL["spread_bps"] 2.0 / 2, estimate)
+    //
+    // The literal exchange taker fee is 0.0005. This key is deliberately set
+    // HIGHER because freqtrade's "fee" is the only per-side cost lever it has:
+    // the engine models no slippage and no bid-ask spread. Overloading it with
+    // the all-in figure is what makes a freqtrade backtest on this config
+    // comparable to a pandas-harness run, which charges all three components.
+    //
+    // Consequences, both of which must be respected:
+    //   - Do NOT read fee_open / fee_close in a backtest result as exchange fees.
+    //     They are all-in execution costs. Actual exchange fees are 5/9 of them.
+    //   - If COST_MODEL's slippage_bps or spread_bps change, or fill_assumption
+    //     switches to "maker_optimistic", this number MUST be recomputed from
+    //     validator.per_side_cost(). It is not independent of that function.
     //
     // Without this key freqtrade falls back to its own default/exchange-fetched
     // value, which is what produced the 0.0015 fee_open/fee_close seen in every
     // archived backtest artifact (audit 2026-07-28 section 2F). No backtest may
     // run without this key set.
-    //
-    // freqtrade applies "fee" per side. It does NOT model slippage or bid-ask
-    // spread; COST_MODEL carries those separately (3.0 bps/side slippage,
-    // 2.0 bps spread) for the pandas harness. A freqtrade result on this config
-    // is therefore FEE-ONLY and is 4.0 bps/side cheaper than the harness. Do not
-    // compare the two without adjusting.
-    "fee": 0.0005,
+    "fee": 0.0009,
 
     // The 9 USDT perpetual instruments with complete cached data in
     // user_data/data/okx/futures/ (1d futures OHLCV, 1h futures OHLCV, 1h mark
