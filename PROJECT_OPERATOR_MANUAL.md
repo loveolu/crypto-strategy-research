@@ -512,6 +512,30 @@ Stress test using shuffled trade order, removed random trades, increased slippag
 
 ⸻
 
+## Data acquisition is not research
+
+**A research cycle may not create, modify, delete or rebuild any file under `user_data/data/`, and
+may not rebuild `user_data/data/MANIFEST.json`.** A cycle runs against a frozen dataset. Full stop.
+
+**A cycle whose git diff touches `user_data/data/` is INVALID** — the Reviewer rejects it on that
+basis alone, without assessing the hypothesis. This is not a formality: T-023 and T-025 both wrote
+fabricated candles into the feathers *during* a cycle, and both produced results and write-ups
+before anyone noticed. A cycle that can change its own inputs cannot be audited, because the data
+the Reviewer re-runs against is not the data the Engineer ran against.
+
+Data acquisition, extension, repair and re-fetch are **`A-XXX` ops tasks only**. They are assigned
+separately, they change no `n_trials`, and they land in their own commit — data plus rebuilt
+manifest together, with the authenticity evidence stated in the commit message.
+
+Consequences an Engineer must plan around:
+
+- If a cycle needs data that does not exist yet, the cycle is **blocked**, not improvised. Report it
+  as blocked and stop; do not download.
+- `scripts/data_manifest.py verify` failing mid-cycle is a **stop condition**, not an obstacle to
+  route around. Never run `build` to clear it.
+- `FREQTRADE_SKIP_DATA_VERIFY=1` invalidates the cycle. A run with the check bypassed is not
+  evidence and may not appear in a report, a verdict, or a promotion argument.
+
 ## Independent Reviewer output standard
 
 **A review brief must not exceed 4 KB (4,096 bytes).** The latest brief is MANDATORY Director

@@ -66,6 +66,19 @@ class DataIntegrityError(RuntimeError):
     """Raised when the data tree does not match the committed manifest."""
 
 
+def _rel(p: Path) -> str:
+    """Repo-relative POSIX path, falling back to the absolute path.
+
+    build()/load_manifest() accept arbitrary data_dir and manifest_path (the test
+    suite passes temp directories), so a bare relative_to(REPO_ROOT) would raise
+    ValueError for anything outside the repo.
+    """
+    try:
+        return p.resolve().relative_to(REPO_ROOT).as_posix()
+    except ValueError:
+        return p.as_posix()
+
+
 def _included(p: Path) -> bool:
     if not p.is_file():
         return False
@@ -98,7 +111,7 @@ def build(data_dir: Path = DATA_DIR, manifest_path: Path = MANIFEST_PATH,
     manifest = {
         "version": MANIFEST_VERSION,
         "algorithm": "sha256",
-        "root": data_dir.relative_to(REPO_ROOT).as_posix(),
+        "root": _rel(data_dir),
         "built_utc": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
         "file_count": len(files),
         "total_bytes": sum(v["bytes"] for v in files.values()),
@@ -116,7 +129,7 @@ def load_manifest(manifest_path: Path = MANIFEST_PATH) -> dict:
         raise DataIntegrityError(
             f"no data manifest at {manifest_path}. Run "
             f"`python scripts/data_manifest.py build` and commit the result "
-            f"(git add -f {manifest_path.relative_to(REPO_ROOT).as_posix()}).")
+            f"(git add -f {_rel(manifest_path)}).")
     try:
         return json.loads(manifest_path.read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError) as exc:
@@ -204,13 +217,13 @@ def format_failure(r: dict) -> str:
 
 def _cmd_build(args) -> int:
     m = build(note=args.note or "")
-    print(f"manifest written: {MANIFEST_PATH.relative_to(REPO_ROOT).as_posix()}")
+    print(f"manifest written: {_rel(MANIFEST_PATH)}")
     print(f"  files hashed : {m['file_count']}")
     print(f"  total bytes  : {m['total_bytes']:,}")
     print(f"  built (UTC)  : {m['built_utc']}")
     print()
     print("COMMIT IT — user_data/* is gitignored:")
-    print(f"  git add -f {MANIFEST_PATH.relative_to(REPO_ROOT).as_posix()}")
+    print(f"  git add -f {_rel(MANIFEST_PATH)}")
     return 0
 
 

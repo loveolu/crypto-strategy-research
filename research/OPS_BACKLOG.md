@@ -62,3 +62,54 @@ For each of T-017, T-018, T-019, T-036:
 - Do not re-run any analysis from these cycles.
 - Do not re-open T-036 (terminated by operator decision, repair item 7).
 - Do not adjust `n_trials` or the meta-review counter.
+
+---
+
+## A-002 — Decide the binary data distribution strategy
+
+**Status:** LOGGED, NOT ASSIGNED. Do not execute without explicit assignment.
+**Logged:** 2026-07-29 (repair item 4 amendment).
+**Class:** OPS / infrastructure. Zero trials. Does not advance the meta-review counter.
+**Blocking:** this must be decided **before any sub-hourly data is downloaded.**
+
+### Problem
+
+`user_data/data/` is currently **29.6 MB across 52 files**, all daily/hourly feathers plus one CSV.
+As of repair item 4 these binaries are committed to git and covered by
+`user_data/data/MANIFEST.json`, so every data change writes a new blob into history.
+
+That is tolerable at 29.6 MB. It stops being tolerable at 5m resolution. A 5m series carries roughly
+12x the bars of 1h and ~288x the bars of 1d; across the 9 perp instruments in
+`user_data/config_perp.json`, with futures OHLCV plus mark price, **5m data will be substantially
+larger than the entire current data tree** — plausibly by more than an order of magnitude, and it
+grows every time it is refreshed. Git stores each revision of a binary in full, so the repository
+would grow by the full size of the dataset on every top-up, permanently and unprunably.
+
+The decision cannot be deferred until after the download: once large binaries are committed, removing
+them requires history rewriting, which invalidates every commit hash this project's records cite.
+
+### Options to evaluate
+
+1. **git-lfs** — binaries tracked as pointers. Keeps `git add`/`clone` workflows and the manifest
+   unchanged. Costs: an LFS dependency for every clone, storage/bandwidth quotas, and LFS pointer
+   files interact with the existing `user_data/*` gitignore and `git add -f` practice.
+2. **Manifest-only, data not committed** — `MANIFEST.json` stays in git as the integrity record;
+   the data itself is re-fetched from the exchange on a fresh clone. Costs: a documented, tested,
+   reproducible re-fetch path becomes mandatory infrastructure, and exchange history limits become a
+   hard constraint (OKX funding history was ~97 days in T-031; sub-hourly OHLCV retention must be
+   checked before relying on this).
+3. **Hybrid** — commit daily/hourly (small, stable, already committed), keep sub-hourly
+   manifest-only.
+
+### Required before a decision
+
+- Measured size of one instrument-month of 5m futures OHLCV, extrapolated to 9 instruments over the
+  intended window.
+- OKX's actual retention limit for 5m OHLCV — determines whether option 2 is even available.
+- Whether the reserved holdout (all bars after 2026-05-27) can be reconstructed by re-fetch; if not,
+  that data must be committed regardless of the option chosen.
+
+### Explicit non-goals
+
+- Do not download any sub-hourly data as part of evaluating this.
+- Do not rewrite git history.
