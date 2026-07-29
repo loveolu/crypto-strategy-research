@@ -749,3 +749,41 @@ Generalized rules this yields, applicable well beyond networking:
   battery) and a 72-hour auto-kill timeout ("Stop Task If Runs X Hours and X Mins: 72:00:00").
   Either of these could independently terminate the bot even after the power-plan fix is applied.
   Future task-creation should explicitly set these to "disabled" / "infinite".
+
+## Data provenance and reserved holdout (2026-07-28)
+
+Both entries arose from the repair session of 2026-07-28 (item 2 feather provenance check).
+
+- **OKX's `1D` candle uses a UTC+8 day boundary; freqtrade uses `1Dutc`.** A direct pull from
+  `GET /api/v5/market/history-candles?bar=1D` returns bars stamped at 16:00 UTC and will NOT align
+  with the cached feathers — the naive comparison produces a *zero-overlap* result that looks like
+  a date-range problem rather than a bar-type problem. Requesting `bar=1Dutc` aligns exactly.
+  Discovered while verifying `BTC_USDT-1d.feather` / `ETH_USDT-1d.feather` against the live exchange:
+  the first comparison reported no overlapping bars at all, which was a false alarm caused entirely
+  by this. With the correct bar type, all 89 recent bars in each file matched OKX exactly, including
+  volume to 4 decimal places. Any future data-authenticity check that pulls OKX directly must
+  request `1Dutc`, and must treat an unexpected zero-overlap result as a suspected bar-type mismatch
+  before concluding anything about the data. (Related: raw HTTP to OKX works where ccxt-async has
+  historically failed in this environment.)
+
+- **BTC/ETH 1d feathers now extend to 2026-07-18, past the 2026-05-27 TEST split end. Everything
+  after 2026-05-27 is RESERVED HOLDOUT.** The two feathers were topped up (BTC +54 bars from
+  2026-05-26, ETH +42 bars from 2026-06-07; both now end 2026-07-18) with zero modification to any
+  pre-existing bar — verified against both git HEAD and the live OKX API. That leaves **52 bars per
+  file dated after the recorded TEST split end of 2026-05-27** (`research_index.md` rows 22 and the
+  T-022 narrative both cite the TEST window as 2025-08-17 → 2026-05-27).
+
+  These 52 bars are **not to be used for training, validation, parameter selection, pre-gate
+  screening, or any other in-sample work in the perps program.** They are the only genuinely unseen
+  data the project has. Every prior split boundary in the repository was drawn on a dataset ending
+  on or before 2026-05-27, so any construct fitted on data through 2026-07-18 would be scored on
+  bars that helped choose it — the exact failure the 70/15/15 and walk-forward machinery exists to
+  prevent, reintroduced silently through a routine data refresh.
+
+  Practical consequence: a data top-up is not a neutral maintenance action. Extending a feather
+  moves the end of the dataset without moving any recorded split boundary, so split fractions
+  computed as percentages (`split_70_15_15`, `walk_forward`) will silently slide into holdout the
+  next time they are run on the full file. Splits must be pinned by DATE, not by fraction, for as
+  long as this holdout is reserved.
+
+  This becomes a standing manual rule in `PROJECT_OPERATOR_MANUAL.md` (repair item 6).
