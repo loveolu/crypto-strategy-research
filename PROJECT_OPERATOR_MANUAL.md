@@ -46,12 +46,41 @@ The following files are the authoritative record of all previous research and mu
 Each agent should load only the files
 required by its role.
 
-Research Director:
-- research_index.md
-- review_briefs/
-- meta_reviews/
-- current_champion.md
-- hypothesis_bank.md
+### Research Director — context loading (budget: 40 KB mandatory)
+
+This list is authoritative and is machine-enforced by `scripts/check_context_budget.py`, which
+fails nonzero if the MANDATORY set exceeds 40 KB. Run it after editing any mandatory file.
+
+**MANDATORY (load every cycle, before selecting a hypothesis):**
+
+| File | Region |
+|---|---|
+| `PROJECT_OPERATOR_MANUAL.md` | whole file |
+| `research/research_index.md` | whole file (compact by design — one line per cycle) |
+| `knowledge_base/hypothesis_bank.md` | **only** between `DIRECTOR-MANDATORY-BEGIN/END` markers (the FAMILY STATUS LEDGER) |
+
+**ON-DEMAND (open only when the cycle being planned actually needs it):**
+
+- `knowledge_base/master_index.md` — alphabetical lookup with no content of its own. Demoted from
+  mandatory 2026-07-28: at 85 KB it was the single largest item in the load and is a lookup table,
+  not reading material. Open it to find where a concept is documented, not to decide what to test.
+- `knowledge_base/hypothesis_bank.md` individual cards — open a card when it is a live candidate.
+- `knowledge_base/archive/closed_families.md` — full cards for CLOSED families. The ledger row is
+  sufficient to *exclude* a family; open the archive only when arguing a family should reopen.
+- `research/archive/index_narrative_pre_2026-07-28.md` — pre-compaction narrative.
+- `research/current_champion.md` — champion detail. The index carries the summary; open this when
+  orthogonality to the champion is genuinely at issue.
+- `research/review_briefs/` (latest) — the index row carries the verdict and reason; open the brief
+  when the *reasoning* behind the last verdict matters to the next choice.
+- `research/meta_reviews/` (latest) — open when a meta-review is due or its directives are in play.
+- `research/best_strategy_so_far.py` — only if orthogonality requires the mechanics.
+- `research/parked/` — check if it exists.
+- Topic files (`knowledge_base/01_*.md` … `18_*.md`) — these are large (up to 180 KB each). Open at
+  most one, only when a specific candidate needs its reasoning.
+
+**Rule:** never open a topic file or `master_index.md` "for background". If the mandatory set does
+not contain enough to choose a hypothesis, that is a defect in the mandatory set — fix the file,
+do not widen the load.
 
 Research Engineer:
 - NEXT_TASK.md
