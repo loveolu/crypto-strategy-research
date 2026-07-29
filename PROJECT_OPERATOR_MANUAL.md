@@ -55,9 +55,15 @@ fails nonzero if the MANDATORY set exceeds 40 KB. Run it after editing any manda
 
 | File | Region |
 |---|---|
-| `PROJECT_OPERATOR_MANUAL.md` | whole file |
+| `PROJECT_OPERATOR_MANUAL.md` | **only** between `DIRECTOR-MANDATORY-BEGIN/END` markers (Validation Requirements + Champion Classification & Progression Pipeline — the standards, validation and promotion sections) |
 | `research/research_index.md` | whole file (compact by design — one line per cycle) |
 | `knowledge_base/hypothesis_bank.md` | **only** between `DIRECTOR-MANDATORY-BEGIN/END` markers (the FAMILY STATUS LEDGER) |
+| `research/STANDING_DIRECTIVES.md` | whole file — the accumulated binding directives from every meta-review |
+| `research/review_briefs/` (latest only) | whole file — capped at 4 KB by the Reviewer standard below |
+
+**Where new content goes.** A new *standard* (a rule that constrains what may be tested, validated
+or promoted) belongs inside this manual's marked region. A new *directive* from a meta-review
+belongs in `research/STANDING_DIRECTIVES.md`. Narrative, rationale and history belong outside both.
 
 **ON-DEMAND (open only when the cycle being planned actually needs it):**
 
@@ -70,11 +76,15 @@ fails nonzero if the MANDATORY set exceeds 40 KB. Run it after editing any manda
 - `research/archive/index_narrative_pre_2026-07-28.md` — pre-compaction narrative.
 - `research/current_champion.md` — champion detail. The index carries the summary; open this when
   orthogonality to the champion is genuinely at issue.
-- `research/review_briefs/` (latest) — the index row carries the verdict and reason; open the brief
-  when the *reasoning* behind the last verdict matters to the next choice.
-- `research/meta_reviews/` (latest) — open when a meta-review is due or its directives are in play.
+- `research/review_briefs/` (older than the latest) — the index row carries the verdict and reason;
+  open an older brief only when its specific reasoning bears on the next choice.
+- `research/meta_reviews/` (full text, any) — **on-demand**. Their binding directives are already
+  mandatory via `research/STANDING_DIRECTIVES.md`; open a full meta-review only when a meta-review
+  is due, or when the evidence behind a directive is being challenged.
 - `research/best_strategy_so_far.py` — only if orthogonality requires the mechanics.
 - `research/parked/` — check if it exists.
+- `research/OPS_BACKLOG.md` — logged-but-unassigned `A-XXX` ops items. Open when choosing ops work;
+  never required to choose a research hypothesis.
 - Topic files (`knowledge_base/01_*.md` … `18_*.md`) — these are large (up to 180 KB each). Open at
   most one, only when a specific candidate needs its reasoning.
 
@@ -404,6 +414,15 @@ Avoid unnecessary complexity.
 
 ⸻
 
+<!-- DIRECTOR-MANDATORY-BEGIN -->
+<!--
+  Everything between these markers is the Research Director's MANDATORY read of this manual:
+  the standards, validation, and promotion sections. The rest of the manual (role definitions,
+  session-persistence rules, knowledge sources, process narrative) is reference material — read
+  once, not reloaded every cycle. New STANDARDS belong inside this region; new narrative does not.
+  Measured by scripts/check_context_budget.py.
+-->
+
 ## Validation Requirements
 A statistically robust rejection is considered a successful research outcome.
 
@@ -485,6 +504,24 @@ Stress test using shuffled trade order, removed random trades, increased slippag
 
 ⸻
 
+## Independent Reviewer output standard
+
+**A review brief must not exceed 4 KB (4,096 bytes).** The latest brief is MANDATORY Director
+context every cycle, so its size is a direct tax on every future hypothesis selection. `T-035_brief.md`
+was 10,219 bytes — two and a half times the cap.
+
+A brief at or under the cap contains: the verdict; the falsification condition and whether it fired;
+what the Reviewer independently reproduced and what they could not; any defect found, with its
+outcome-changing status stated explicitly; and the resulting `n_trials`. Nothing else.
+
+Everything longer belongs in the cycle's own report (`research/results/T-*_report.md`), which is
+unbounded and on-demand. The brief is a verdict record, not a narrative. If a brief cannot be
+written in 4 KB, the excess is analysis and belongs in the report — say so in the report and cite it
+from the brief.
+
+Enforced by `scripts/check_context_budget.py`, which counts the newest file in
+`research/review_briefs/` against the mandatory budget.
+
 ## Champion Classification & Progression Pipeline
 
 **Classification Hierarchy**
@@ -553,6 +590,8 @@ Production Champion
 live deployment
 
 ⸻
+
+<!-- DIRECTOR-MANDATORY-END -->
 
 ## Performance Objective
 

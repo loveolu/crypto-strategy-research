@@ -36,12 +36,21 @@ BYTES_PER_TOKEN_APPROX = 4  # rough English/markdown approximation, not a tokeni
 MARKER_BEGIN = "<!-- DIRECTOR-MANDATORY-BEGIN -->"
 MARKER_END = "<!-- DIRECTOR-MANDATORY-END -->"
 
-#: (path, region) where region is None for the whole file, or "markers" to count
-#: only the bytes between MARKER_BEGIN and MARKER_END.
+#: Per-file cap for review briefs (PROJECT_OPERATOR_MANUAL.md, "Independent
+#: Reviewer output standard"). The latest brief is mandatory Director context, so
+#: an oversized brief taxes every future hypothesis selection.
+REVIEW_BRIEF_CAP = 4 * 1024
+REVIEW_BRIEFS_DIR = "research/review_briefs"
+
+#: (path, region) where region is None for the whole file, "markers" to count only
+#: the bytes between MARKER_BEGIN and MARKER_END, or "latest-brief" to resolve the
+#: newest file in REVIEW_BRIEFS_DIR at check time.
 MANDATORY: list[tuple[str, str | None]] = [
-    ("PROJECT_OPERATOR_MANUAL.md", None),
+    ("PROJECT_OPERATOR_MANUAL.md", "markers"),
     ("research/research_index.md", None),
     ("knowledge_base/hypothesis_bank.md", "markers"),
+    ("research/STANDING_DIRECTIVES.md", None),
+    (REVIEW_BRIEFS_DIR, "latest-brief"),
 ]
 
 #: Files the Director may open per-cycle but which must NOT be in the mandatory set.
@@ -54,8 +63,22 @@ ON_DEMAND = [
 ]
 
 
+def latest_brief() -> Path | None:
+    """Newest file in the review-briefs directory, by mtime."""
+    d = REPO_ROOT / REVIEW_BRIEFS_DIR
+    if not d.is_dir():
+        return None
+    briefs = [p for p in d.glob("*.md") if p.is_file()]
+    return max(briefs, key=lambda p: p.stat().st_mtime) if briefs else None
+
+
 def measure(rel: str, region: str | None) -> tuple[int, str | None]:
     """Return (bytes, error). Bytes are UTF-8 encoded length of the counted region."""
+    if region == "latest-brief":
+        fp = latest_brief()
+        if fp is None:
+            return 0, f"no review brief found in {rel}"
+        return len(fp.read_text(encoding="utf-8").encode("utf-8")), None
     fp = REPO_ROOT / rel
     if not fp.exists():
         return 0, f"missing file: {rel}"
@@ -86,14 +109,25 @@ def main() -> int:
     budget = int(args.budget_kb * 1024)
     rows, errors, total = [], [], 0
 
+    warnings: list[str] = []
     for rel, region in MANDATORY:
         n, err = measure(rel, region)
         if err:
             errors.append(err)
         total += n
-        rows.append({"file": rel,
-                     "region": "ledger markers" if region == "markers" else "whole file",
-                     "bytes": n})
+        if region == "latest-brief":
+            lb = latest_brief()
+            label = f"{REVIEW_BRIEFS_DIR}/{lb.name}" if lb else rel
+            desc = f"latest brief (cap {REVIEW_BRIEF_CAP:,} B)"
+            if n > REVIEW_BRIEF_CAP:
+                warnings.append(
+                    f"{label} is {n:,} B, {n - REVIEW_BRIEF_CAP:,} B over the "
+                    f"{REVIEW_BRIEF_CAP:,} B review-brief cap "
+                    f"(PROJECT_OPERATOR_MANUAL.md, 'Independent Reviewer output standard')")
+        else:
+            label = rel
+            desc = "marked region" if region == "markers" else "whole file"
+        rows.append({"file": label, "region": desc, "bytes": n})
 
     on_demand_rows = []
     for rel in ON_DEMAND:
@@ -112,6 +146,7 @@ def main() -> int:
         "mandatory": rows,
         "on_demand": on_demand_rows,
         "errors": errors,
+        "warnings": warnings,
     }
 
     if args.json:
@@ -132,6 +167,11 @@ def main() -> int:
         for r in on_demand_rows:
             flag = "" if r["exists"] else "   (missing)"
             print(f"  {r['bytes']:8,d} B  {r['file']}{flag}")
+        if warnings:
+            print()
+            print("WARNINGS:")
+            for w in warnings:
+                print(f"  ! {w}")
         if errors:
             print()
             print("ERRORS:")
