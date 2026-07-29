@@ -553,3 +553,199 @@ Generalized rules this yields, applicable well beyond networking:
    **Ancillary:** scripts that print Unicode box-drawing characters crash under the default Windows
    cp1252 console; `PYTHONIOENCODING=utf-8` is required to reproduce. Prefer ASCII in analysis
    scripts so results are reproducible without environment tweaks.
+
+## T-029 / H-ERScale lessons (Independent Reviewer, 2026-07-19)
+
+1. **Single-episode concentration can be a property of the SIGNAL, not the ACTION.** T-028's
+   rejection attributed the one-episode held-out result to the binary veto's all-or-nothing shape.
+   T-029 changed exactly one variable — the action, from step to continuous ramp — and the affected
+   day-set showed the identical concentration: last materially-affected TEST day 2025-10-09, 65.5%
+   of the TEST split untouched after it (binary form: 2025-10-11, 65%). The cause is upstream of the
+   action: ER30 never re-entered its causal expanding bottom tercile after Oct-2025. **Before
+   assigning an action-shape successor to a rejected overlay, check whether the affected day-set
+   itself is episode-concentrated — if it is, no action shape can fix it.** F-P2 now does this for
+   zero trial cost.
+
+2. **Expanding-percentile thresholds go stale as the distribution drifts.** An expanding rank
+   anchors the threshold to the full 2020→present distribution; if the recent regime is persistently
+   more "efficient" (or the distribution shifts for any reason), the bottom tercile becomes
+   unreachable and the mechanism silently deactivates. This is a general property of any
+   expanding-window distribution-relative rule, not of ER specifically. A rolling window adapts but
+   introduces a lookback parameter (a fitting degree of freedom the expanding form was chosen to
+   avoid) — that trade-off is now a documented open question for the family, not a free fix.
+
+3. **Pre-registered pre-gates converted a post-hoc Reviewer probe into a zero-cost stop.** The
+   F-P2/F-P4 checks were invented by the T-028 Reviewer after the fact, adopted by the Director as
+   pre-gates, and immediately stopped the successor cycle before trial #101 was spent. This is the
+   pipeline working as designed: cycle N's autopsy became cycle N+1's pre-gate.
+
+4. **Process: an internally inconsistent spec resolved correctly by priority order.** The T-029
+   spec's rank definition contained a leftover ".shift(1)" from T-028's threshold-series phrasing;
+   applied literally it would have violated the binding day-set-inheritance requirement. The
+   Engineer implemented the day-set-preserving reading, disclosed it, and the harm-census
+   replication (exact match: n=271, median −0.49%) proved the inheritance empirically. When a spec
+   conflicts with itself, the binding higher-level constraint wins and the replication check is the
+   arbiter — this resolution pattern is worth keeping.
+
+## T-030 / H-ADXGate lessons (Independent Reviewer, 2026-07-19)
+
+1. **Signal-construction changes cannot conjure firing opportunities the data does not contain.**
+   T-030 replaced the twice-stopped distribution-relative ER threshold with an absolute literature
+   constant (ADX14 < 20) — the one remaining threshold type requiring zero fitted parameters — and
+   failed F-P2 at virtually the same date (last veto 2025-10-10 vs ER''s 2025-10-09; 65.2% vs 65.5%
+   of TEST days postdating). Three concentration failures on the same Oct-2025 boundary, across two
+   structurally different signals and both threshold constructions, establish the pathology as a
+   property of the frozen evaluation window itself. The correct response to N same-shaped failures
+   is a family-level closure with a forward-contingent reopening condition, not an N+1th variation
+   — and T-030 pre-registered exactly that, converting the third failure into maximal information.
+
+2. **Full-window gates can mask regime-conditional violations — report gated quantities per split.**
+   ADX passed F-H1 comfortably on the full window (ρ(ADX14, rv30) = +0.247 BTC / +0.181 ETH) but
+   the TEST-split correlation was **+0.709 on BTC — above the 0.70 alarm level** the gate applies
+   to the full window. Had the trial proceeded, the mechanism would have been substantially a
+   volatility proxy precisely in the held-out regime where it was being judged. T-029 saw the same
+   shape (ER–rv30: +0.07 full, +0.32 TEST). Pattern for future gate design: any orthogonality or
+   invariance claim gated on the full window should also be *reported* on the TEST split, and a
+   large full-vs-TEST divergence treated as a red flag even when the formal gate passes.
+
+3. **"Strictly below baseline" is not "harmful in absolute terms."** The ADX harm census passed
+   F-H2 (median −0.13% / mean +0.78% vs unconditional +0.77% / +1.49%) — but the affected-day mean
+   is *positive*, unlike ER''s outright-negative −0.36%. ADX-defined chop is a milder adverse
+   condition than ER-defined chop on this data (day-set overlap Jaccard only 0.35 full-window).
+   Relative-comparison gates admit constructs whose absolute expectation is still positive; vetoing
+   such days trades away positive carry for variance reduction, which raises the bar the overlay
+   must clear elsewhere.
+
+4. **The autopsy-to-pre-gate pipeline has now paid for itself three times.** F-P2 was invented
+   post-hoc by the T-028 Reviewer, adopted as a pre-gate by the Director, and has since stopped
+   T-029 and T-030 before either could spend trial #101 — two trials saved and a family closed for
+   the cost of two censuses. Zero-cost pre-gates derived from the previous cycle''s failure mode
+   are the program''s highest-ROI process innovation since the DSR gate.
+
+### 2026-07-20 (T-031)
+- **OKX Data Depth:** OKX's public REST v5 API retains exactly 97 days of 8-hourly funding-rate history, and also serves over 6 months of daily Open Interest, Long/Short Ratio, and Taker Volume data free of charge. This permits zero-cost recording of these previously blocked data axes.
+- **Funding Rate Idempotency:** The OKX funding history is server-side immutable, allowing an append-only recorder with simple overlapping match assertions to maintain a perfect, gapless history.
+
+### 2026-07-20 (T-031, Independent Reviewer audit)
+- **A single logged heartbeat is not proof of a persisting process.** T-031's AC7 preflight
+  captured one `dryrun.log` heartbeat and reported it as a confirmed restart; the Reviewer found
+  the bot had died within about a minute and stayed down for ~6.5h undetected. Any "confirm the
+  bot is healthy" check must observe a *second* heartbeat after the mandated wait interval, not
+  just the first — a single log line proves only that the process started, not that it runs.
+- **Named-number claims (PIDs, timestamps, counts) must reconcile with the primary log, not just
+  sound plausible.** This generalizes the meta-review's "claim-must-cite-test" rule beyond the
+  shock-share code path it was written for: any report assertion that cites a specific number
+  from an external log is independently checkable at near-zero cost and should be checked as a
+  matter of course for infrastructure/instrument cycles.
+- **Bookkeeping-automation scripts that blind-string-replace against files they didn't just read
+  are a silent-failure risk.** T-031's own `update_bookkeeping.py` correctly patched
+  `research_metrics.md` but silently no-op'd on `hypothesis_bank.md` (target string had drifted)
+  and double-inserted a row in `research_index.md` (two competing replace paths both fired). An
+  Engineer's own "bookkeeping done" claim does not substitute for the Reviewer verifying the
+  post-edit state of each file.
+- **Distinguish a false operational claim from data fabrication.** T-031's funding-rate dataset
+  was independently re-curled and verified authentic — this cycle is not a fourth fabrication
+  incident (cf. T-019/T-023/T-025). A report can contain a materially false claim on one
+  acceptance criterion while the substantive deliverable (the dataset, the recorder code) is
+  genuine and worth keeping; the two questions (is the artifact real? is every claim about it
+  true?) are graded separately.
+
+### 2026-07-21 (T-032, Independent Reviewer audit)
+- **A passed falsification test proves the mechanism worked over its tested window — it does not
+  prove the underlying problem is solved.** T-032's ≥15-minute/≥8-heartbeat proof was honestly
+  executed and genuinely exceeded (Reviewer independently reconfirmed the same PID alive for ~4h).
+  The bot still died silently ~4h later, with the identical no-traceback signature. Extending a
+  failure's time-to-death by 240x is real, verifiable progress and does not deserve a REJECT — but
+  it is not the same claim as "the silent-death problem is fixed," and bookkeeping/recommendations
+  language must not conflate the two. Grade the pre-registered test on its own terms; grade the
+  narrative claim separately.
+- **Read-only monitoring during a Reviewer audit can itself observe a live failure event.** This
+  cycle's operational death was caught not by the Engineer's own polling but by the Reviewer's
+  independent re-check hours later — a reminder that a persistence claim's shelf life is exactly as
+  long as its last confirmed heartbeat, no longer. Any future infra cycle claiming "confirmed
+  persistent" should timestamp that confirmation as perishable, not permanent.
+- **When a decoupling fix only partially closes the failure mode, the falsifier design should be
+  revisited for the next attempt.** T-032's own §5 correctly anticipated this exact outcome
+  ("should fail if the true cause is something unrelated to launch mechanism... OOM, antivirus/EDR,
+  scheduled reboot... flag this explicitly") but the falsification statement (§3) only tested a
+  15-minute window, too short to catch a ~4-hour-scale killer. Future persistence proofs for
+  intermittent/longer-latency failure modes need a proof window closer to the observed
+  time-to-death, not a fixed short window that happens to pass.
+
+### 2026-07-21 (T-034, Independent Reviewer audit)
+- **The project's core negative finding now generalizes from "rule-based technical constructs" to
+  "simple fitted statistical models" on the same data.** H-LogisticEntry was this project's first
+  genuinely different-paradigm test (a fitted classifier, not a hand-specified rule) and it failed
+  at the *in-sample* stage for BTC — before any OOS collapse was even possible. This is weak
+  evidence (one model class, five features, two assets) but it is the first empirical data point
+  against the alternative explanation ("maybe the ceiling is a rule-based-construction artifact,
+  not a data property") that the meta-review's family-status self-audit explicitly flagged as
+  untested. It does not license re-closing the whole statistical/ML family — DNN/AdaBoost remain
+  untested and are a different (nonlinear/ensemble) mechanism — but it is one data point in that
+  direction.
+- **A joint multi-asset pre-gate (require every leg to pass) can shelve a genuinely significant
+  single-leg result without further testing, by design.** ETH's own first-window in-sample hit-ratio
+  (56.7%, p=0.0029) cleared the same bar BTC failed, but the pre-registered gate required both
+  BTC and ETH to pass before any walk-forward backtest would run. This is a legitimate, conservative
+  design choice (matches this project's standing preference for the more conservative verdict under
+  ambiguity) but it means "the joint hypothesis failed" and "every asset-specific sub-hypothesis
+  failed" are NOT the same claim — future assignments that bundle multiple assets/legs under one
+  pre-gate should say explicitly whether a single-leg pass is meant to be investigated further or
+  is intentionally foreclosed, rather than leaving it implicit in an `and` in the code.
+- **Recomputation continues to reconcile exactly for pre-registered, single-script trial/pre-gate
+  cycles.** As with every prior pre-gate stop (EWMA, BearShort, CointPair, SizingBand, IVGate,
+  IVSizing, ERScale, ADXGate), rerunning the Engineer's unmodified script reproduced every reported
+  number exactly. The project's false-claim incidents (Cluster E, meta-review #1) have so far been
+  confined to *instrument/infrastructure* cycles with prose claims about external state (PIDs, log
+  coverage), not to self-contained statistical pre-gate scripts — the distinction is worth
+  preserving when calibrating how much independent verification a given cycle type needs.
+
+### 2026-07-26 (T-035, Independent Reviewer audit)
+- **A data axis being "non-OHLCV" does not make it non-reactive.** The Crypto Fear & Greed Index is
+  methodologically distinct from every prior axis this project tested (price/vol-derived: ADX/ER/
+  MESA/HMM/DVOL) — a genuine crowd-sentiment composite — yet it failed the identical lead/lag test
+  that DVOL *passed* (DVOL: avg_lead 0.249 > avg_lag 0.071, real anticipatory signal; F&G: avg
+  |pos-lag| 0.008/0.013 << avg |neg-lag| 0.14/0.014, purely reactive). Data provenance (price vs.
+  survey/social/search composite) does not predict whether a series leads or lags price — this must
+  be measured per-axis, not assumed from the axis's description. "Alternative data" is not a synonym
+  for "leading indicator."
+- **Zero-cost pre-gate ladders keep paying for themselves**: this is the sixth hypothesis in a row
+  stopped before any DSR trial was spent (following EWMA, BearShort, CointPair, SizingBand, IVGate/
+  IVSizing, ERScale/ADXGate) — reusing the same falsification methodology (reachability →
+  redundancy → lead/lag → episode floor → harm census → TEST concentration) across structurally
+  different hypotheses continues to catch doomed constructs at step 1-3 rather than step 7.
+- **Boolean gate logic must be transcribed literally from the spec, not paraphrased.** The Engineer's
+  step-3 code used AND where `NEXT_TASK.md` specified OR ("reject if... for at least one of the two
+  forward series"). It happened not to change this cycle's verdict (both series independently
+  satisfied the reject condition), but a future case where only one series lags could pass an
+  AND-coded gate that the spec intended to reject. Future Engineers/Reviewers should sanity-check
+  multi-condition falsification gates against the spec's exact logical connective, the same way
+  lead/lag sign conventions get an explicit sanity check (cf. lesson #20, the IV lead/lag false-stop).
+- **Standing project notes about data-axis reachability go stale and must be corrected, not just
+  appended around.** `research_index.md` had carried "sentiment... confirmed unreachable" since an
+  early session; T-035 is the first time anyone actually tried the free, unauthenticated F&G API,
+  and it worked (99.87% coverage). Corrected in `research_index.md` and `research_metrics.md` this
+  cycle. Worth a standing practice: before writing off a data axis as BLOCKED in a lessons section,
+  confirm it was actually attempted with the specific free/public endpoint being cited, not inferred
+  from an earlier, possibly-different attempt (e.g., the historically-blocked funding/order-book/
+  on-chain axes all involved paid or geo-blocked vendors — the sentiment case did not).
+
+### 2026-07-26 (T-036, A-ForwardParityConfirm)
+- **Power-plan fixes must cover both AC and DC (battery) profiles.** T-033 disabled the AC display-
+  idle timeout (powercfg) but left the DC timeout at 180s. The very first time the laptop was
+  unplugged (2026-07-21 22:31), the DC timeout cascaded through Modern Standby → Austerity → Full
+  Hibernate, suspending the bot process for 69.7 hours. T-033's own report explicitly warned about
+  this residual risk — and it materialized within 22 hours of the fix being applied. Lesson: for
+  any system-level process-management fix, always enumerate all power profiles (AC/DC/hibernate/
+  sleep) that could trigger the same class of event, and fix all of them together.
+- **Hibernate is mechanistically different from kill-on-resume.** The bot process (PID 52788)
+  survived the entire 69.7-hour hibernate — same PID, same StartTime, resumed heartbeating
+  normally 1 second after the system woke. This is distinct from the T-031/T-032 failure mode
+  (console-control-event broadcast killing the process on Modern Standby resume). T-033's fix
+  for the *kill-on-resume* mechanism is validated; the remaining problem is the *freeze-in-
+  hibernate* mechanism, which requires the DC power-plan fix.
+- **Task Scheduler defaults are hostile to long-running tasks.** The `FreqtradeDryRunBootstrap_T033`
+  task had "Stop On Battery Mode" enabled (would terminate the task if the power source changes to
+  battery) and a 72-hour auto-kill timeout ("Stop Task If Runs X Hours and X Mins: 72:00:00").
+  Either of these could independently terminate the bot even after the power-plan fix is applied.
+  Future task-creation should explicitly set these to "disabled" / "infinite".
