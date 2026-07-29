@@ -43,17 +43,26 @@ The conversation itself is not the long-term memory.
 
 The following files are the authoritative record of all previous research and must always be read before any new work begins.
 
-At the beginning of every session, first load and analyze:
+Each agent should load only the files
+required by its role.
 
-* `research/research_index.md`
-* `research/strategy_iteration_log.md`
-* `research/strategy_research_notes.md`
-* `research/best_strategy_so_far.py`
-* `research/strategy_portfolio.md` (if it exists)
-* `research/current_champion.md`
-* `research/research_metrics.md`
-* `research/NEXT_TASK.md`
+Research Director:
+- research_index.md
+- review_briefs/
+- meta_reviews/
+- current_champion.md
+- hypothesis_bank.md
 
+Research Engineer:
+- NEXT_TASK.md
+- required validation standards
+- current champion
+
+Independent Reviewer:
+- NEXT_TASK.md
+- experiment report
+- candidate strategy
+- champion files
 Treat these files as the permanent memory of the project.
 
 Never assume previous chat context still exists.
@@ -82,18 +91,18 @@ Maintain the following files throughout the project.
 
 A concise dashboard containing:
 
-* every hypothesis tested
-* success/failure status
-* primary reason for failure
-* current best strategy
-* current best portfolio
-* open hypotheses not yet tested
-* lessons learned from books
-* lessons learned from empirical testing
-* known weaknesses
-* known regime sensitivities
-* highest priority future research
+research_index.md is a compressed memory file.
 
+One line per completed cycle:
+
+Task ID | Hypothesis | Verdict | Primary Reason
+
+It should never contain detailed analysis.
+
+Detailed analysis belongs in:
+- strategy_iteration_log.md
+- review_briefs/
+- strategy_research_notes.md
 This document should remain concise and easy to scan.
 
 ### strategy_iteration_log.md
@@ -564,22 +573,19 @@ Measure correlation between strategy returns. Prefer independent sources of edge
 ⸻
 
 ## Continuous Research Mode
+Research cycles are executed through:
 
-Each research cycle should include:
-1. Read persistent research files.
-2. Generate a genuinely new hypothesis.
-3. Verify it is meaningfully different from previous hypotheses.
-4. Implement.
-5. Validate.
-6. Compare against the current best.
-7. Record all findings.
-8. Update every research file before ending the session.
+Research Director
+→ selects hypothesis
 
-Append every experiment to `strategy_iteration_log.md`.
-Update `research_index.md` after every cycle.
-Replace `best_strategy_so_far.py` ONLY if robustness improves.
+Research Engineer
+→ implements and validates
 
-If several consecutive hypotheses fail, acknowledge diminishing returns and identify unexplored research directions rather than endlessly tuning parameters.
+Independent Reviewer
+→ audits and renders verdict
+
+Meta Review
+→ every 25-50 cycles
 
 The default action after promotion of a Champion strategy is to continue research. Promotion does not imply readiness for paper trading or live deployment.
 
@@ -626,7 +632,15 @@ Before writing any strategy code:
 5. Identify the highest-priority unexplored hypothesis.
 6. Proceed to Phase 1 of the research process.
 
-Do not begin implementation until the analysis is complete and I approve the selected hypothesis.
+Under the autonomous research framework,
+research proceeds through:
+
+Research Director
+→ Research Engineer
+→ Independent Reviewer
+
+NEXT_TASK.md serves as the formal authorization
+for a research cycle.
 
 ⸻
 
@@ -646,3 +660,16 @@ The project should assume:
 A strategy surviving hundreds of research cycles without deployment is preferable to a fragile strategy deployed prematurely.
 
 Live trading is a possible consequence of successful research—not the goal of the research itself.
+
+Research effort should be divided between:
+
+- Novel hypothesis generation
+- Champion improvement
+- Champion challenge
+- Portfolio diversification
+
+The Director should not exclusively
+assign novel hypotheses if evidence suggests
+the current Champion can be materially improved.
+
+

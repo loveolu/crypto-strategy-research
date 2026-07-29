@@ -43,12 +43,53 @@ evidence named in the closure record, never a re-parameterization — see
 | BTC-ETH pairs / relative value / rotation / dominance / ratio | **CLOSED** | #18 (no cointegration any window; post-2024 ETF-era break formal, ADF p 0.405) |
 | Sleeve sizing refinement (estimator quality AND rebalance granularity) | **CLOSED** | #15 + #19 (efficient frontier from both directions; 25% quantizer is protective) |
 | DVOL daily-bar champion modifications | **CLOSED** | #21 (veto, B3a) + #22 (sizing, P2 — VRP positive-carry) |
-| New OHLCV signal-prediction constructs generally | **CLOSED** | #8 (0/61) + entire history; structural map closed; DSR debt at n_trials=98 |
+| Regime-classifier overlay (ER, ADX, MESA, HMM) | **CLOSED** | #30 (post-hoc), #31, #32 (three firing-set concentration failures on the same Oct-2025 boundary across two signals and both threshold types; dataset lacks recent classifier-detectable chop). Reopen ONLY per T-030 §3: window extended ≥6 months past 2026-05-27 with fresh held-out split, OR forward-lane documented in-market chop episode |
 
-Still OPEN: H-ForwardParity (forward dry-run evidence — the highest-EV lane); portfolio/allocation
-layer above the sleeve (one interior point validated, H-TailAlloc #20; dynamic-w parked as a new
-mechanism); the "Frontier Hypotheses" section at the end of this file (new-data-axis and
-forward-contingent entries added by Meta-Review #1).
+### CORRECTION (2026-07-21, Director cycle #16 — self-audit, prompted by operator challenge)
+
+The row previously here — **"New OHLCV signal-prediction constructs generally | CLOSED | #8 (0/61)
++ entire history"** — overclaimed. It has been **removed as a blanket closure**. An audit run this
+cycle counted the named hypothesis cards in sections 1-9 below: **83 distinct named entries, of
+which only 20 (24%) carry an explicit "Already tested by this project" line.** The "0/61" evidence
+(row #8, a *generic* autonomous search across broad buckets — "indicators, multi-asset, 4h,
+ensembles, oscillators") was generalized to declare the **entire remaining 76%** closed by
+inference, without individually implementing and backtesting them. That inference is too strong for
+several categories that are mechanistically distinct from anything the generic search or the ~20
+individually-tested entries actually tried:
+
+- **Statistical/ML direction classifiers** (DNN, AdaBoost, Linear/Logistic Regression — Section 8):
+  a fundamentally different paradigm (fitted models vs. fixed technical rules). No book-derived ML
+  classifier has ever been coded and backtested by this project. The "~1.2-1.3 Sharpe ceiling"
+  finding is evidence only about the rule-based technical-indicator constructs actually tried, not
+  a proof that statistical learning on the same OHLCV data hits the same ceiling — that is itself
+  an untested empirical claim.
+- **Idiosyncratic named systems never coded** (Kase DevStop, DeMark's Sequential, Taylor Trading
+  Technique, Gustafson's Price Persistency, Nofri's Congestion-Phase, Fischer's Golden Section/Hurst
+  Phasing, Point-and-Figure/Renko, GASP, CSI-Ranked Selection, Low-Volatility Anomaly, and others) —
+  each has a specific, documented rule structure a generic indicator sweep would not reproduce by
+  accident.
+- **Portfolio-construction-layer hypotheses** (Kelly F\*=C⁻¹M, Vince's Geometric-Optimal/CPA,
+  Equal-Risk parity weighting) were never claimed closed by this row in the first place (see "Still
+  OPEN" below) — flagged here only to note the correction does not newly open them; they were
+  already correctly open.
+
+**What remains genuinely, narrowly CLOSED** (the ~20 tested entries plus the other rows in this
+ledger above): the specific rule-based technical-indicator constructs actually coded and run —
+moving-average/EMA/ROC trend variants, Donchian/N-day breakout, oscillator/RSI mean-reversion,
+ADX/ER/MESA/HMM regime classifiers, DVOL-based vetoes/sizing, BTC-ETH pairs, sizing-layer
+refinements, and the ~61 variants in the generic autonomous search (row #8). Future Directors:
+before treating any specific named hypothesis in this file as closed, check for its own explicit
+"Already tested by this project" line — do not rely on a family-level inference from row #8 alone.
+The 20 explicitly-tested entries and their outcomes are unaffected by this correction; this only
+retracts the *blanket extension* to the other 63.
+
+Still OPEN (revised): H-ForwardParity (forward dry-run evidence — the highest-EV lane);
+portfolio/allocation layer above the sleeve (one interior point validated, H-TailAlloc #20;
+dynamic-w parked as a new mechanism); the "Frontier Hypotheses" section at the end of this file
+(new-data-axis and forward-contingent entries added by Meta-Review #1); **and, per the correction
+above, the ~63 named hypotheses in sections 1-9 below with no explicit "Already tested" line** —
+these require individual evaluation on their own falsification/orthogonality merits, not blanket
+dismissal.
 
 Individual cards below retain their original text; where a card belongs to a CLOSED family, this
 ledger overrides any "open/untested" wording in the card.
@@ -1112,7 +1153,9 @@ Reproducibility, data integrity and lookahead all audited clean.
 
 **Status: TESTED — REJECTED (2026-07-19, T-029 / H-ERScale, zero trials).** Stopped at pre-gate F-P2 (Episode dispersion). A continuous multiplier variant (`min(1.0, r_t / b)`) successfully tracked the materially-affected days (19.1%), passing F-P1, but failed F-P2 precisely where the binary veto failed: 65.5% of TEST days (230 days) postdated the last materially-affected day. The continuous ramp suffers the exact same single-episode concentration pathology.
 
-**⚠ FAMILY NOT CLOSED.** The declared closure conditions for the regime-classifier overlay family (F-B failing in T-028, or F-P3/F-P4 failing in T-029) did not trigger. The ADX Trend/No-Trend, MESA/Hilbert Cycle-Presence, and Hidden Markov Regime-Switching cards therefore **remain OPEN and untested**. The chop signal is real, but ER30 on this dataset is too concentrated around a single 2025 event to harvest it cleanly either as a binary veto or a continuous scale.
+**Status: TESTED — REJECTED (2026-07-19, T-030 / H-ADXGate, zero trials).** Stopped at pre-gate F-P2. The absolute-threshold ADX construction suffered the exact same single-episode concentration pathology as the distribution-relative ER constructs: 65.2% of TEST days postdate the last veto day (2025-10-10). The problem is not threshold staleness; the market simply has no recent classifier-detectable chop on this dataset.
+
+**FAMILY CLOSED.** As pre-registered in T-030, the third F-P2 failure spanning two structurally different signals (ER and ADX) and both threshold constructions formally establishes the single-episode concentration as a property of the frozen dataset itself. This CLOSES the regime-classifier-overlay family: this card plus ADX Trend/No-Trend, MESA/Hilbert Cycle-Presence, and Hidden Markov Regime-Switching. Reopening requires the research window extended ≥ 6 months past 2026-05-27 with a fresh held-out split, or a forward-lane-documented in-market chop episode.
 **Durable finding:** ρ(ER30, rv30) = +0.071 (BTC) / +0.069 (ETH) full-window, 0.317 / 0.151 on TEST.
 ER is confirmed **orthogonal to volatility level**, so this rejection is a genuinely distinct failure
 mode from the positive-carry-VRP result that killed T-022 and T-024 — not a repeat of it.
@@ -1170,6 +1213,14 @@ explicit naming/behavior mismatch worth flagging to any implementer.
 **Related hypotheses**: Efficiency Ratio Regime Gate, Fisher Transform Mean-Reversion (Mean-Reversion
 §).
 **Source attribution**: Kaufman Ch.11 (John Ehlers); `07_market_regimes.md`, `16_research_hypotheses.md` §1.
+**Status: CLOSED WITHOUT TESTING (2026-07-19, family closure via T-030 / H-ADXGate F-P2).** Member
+of the regime-classifier-overlay family closed by T-030's pre-registered F-P2 rejection: three
+firing-set concentration failures (T-028, T-029, T-030) spanning two structurally different signals
+(ER, ADX) and both threshold constructions (distribution-relative, absolute) establish that the
+frozen research window contains no recent classifier-detectable chop — a pathology no MESA/Hilbert
+substitution can escape. **Reopening condition (pre-registered, T-030 §3):** frozen research window
+extended ≥ 6 months beyond 2026-05-27 with a freshly cut held-out split, OR a forward-dry-run-lane
+documented completed in-market chop episode. Not a re-parameterization.
 
 ### ADX Trend / No-Trend Regime Gate
 
@@ -1185,6 +1236,37 @@ mean-reversion oscillator) should be active.
 **Related hypotheses**: ADX-Filtered Oscillator (Momentum §), Parabolic SAR Trend/Exit Systems
 (Trend-Following §1).
 **Source attribution**: Kaufman Ch.9 (Ruggiero; Lars Kestner 2003); `07_market_regimes.md`.
+**Status: ASSIGNED (Task T-030 / H-ADXGate, Director cycle #10, 2026-07-19).** Binary chop veto
+(the T-028 action) driven by ADX14 < 20 — an **absolute literature threshold**, chosen precisely
+because both ER cycles (T-028 trial #100; T-029 pre-gate stop) died on distribution-relative
+expanding-threshold staleness (ER never breached its expanding tercile after Oct-2025). Single
+changed variable vs T-028 is the **signal**; zero fitted parameters (14 and 20 are Wilder/Kestner
+constants). Gated pre-trial stack: F-P0 replication, F-H1 vol-proxy (|ρ(ADX,rv30)| ≤ 0.70),
+F-H2 fresh harm census on the ADX day-set, F-P1 materiality (≥5% in-market days, ≥20 TEST veto
+days), F-P2 episode dispersion (≥3 TEST months, ≤50% of TEST days postdating last firing),
+F-P3 idealized fee-free bound, F-P4 leave-one-episode-out. Would be trial #101 only if all pass.
+**Declared family implication (binding, `research/NEXT_TASK.md` §3):** rejection at F-P2, F-P3,
+F-P4 or F-T CLOSES the regime-classifier-overlay family (this card + ER + MESA/Hilbert + HMM) on
+the frozen research dataset — F-P2 because a third firing-set concentration failure spanning two
+signals and both threshold constructions establishes the pathology as a property of the frozen
+TEST window itself; reopening requires the research window extended ≥6 months past 2026-05-27
+with a fresh held-out split, or a forward-lane-documented in-market chop episode. A stop at
+F-H1/F-H2/F-P1 closes at most this card; the family stays OPEN.
+
+**Status: TESTED — REJECTED (2026-07-19, T-030 / H-ADXGate, zero trials; Reviewer-verified by
+exact rerun plus an independent TA-Lib-ADX recomputation of the decisive census).** F-P0/F-H1/
+F-H2/F-P1 all passed (replication landed exactly on the 1.154/0.391/33.6% baseline; ρ(ADX14,rv30)
+full-window +0.247 BTC / +0.181 ETH; harm census median −0.13% / mean +0.78% vs unconditional
++0.77% / +1.49%, both strictly below; 224 veto days = 22.9% of in-market, 45 in TEST). Stopped at
+**F-P2**: TEST veto days span 5 months (Jun–Oct 2025) but the last veto day is **2025-10-10** and
+229/351 TEST days (65.2%) postdate it — one day off T-029's ER result (2025-10-09, 65.5%). The
+absolute literature threshold did NOT escape the concentration pathology, proving it is a property
+of the frozen evaluation window, not of threshold construction. **Family closure triggered as
+pre-registered** (see FAMILY CLOSED note on the Efficiency-Ratio card and the family-status
+ledger). Caveats recorded for any future reopening: ρ(ADX14, rv30) on the TEST split alone was
+**+0.709 (BTC)** — above the 0.70 alarm that the full-window gate measures — so in the recent
+regime ADX is borderline a volatility proxy on BTC; and the ADX harm census is weaker than ER's
+(mean +0.78% is below baseline but positive, vs ER's outright-negative −0.36%).
 
 ### Hidden Markov Model Regime-Switching
 
@@ -1202,6 +1284,14 @@ WHEN a switch is imminent. Included here as a documented negative finding, not a
 Chan's own preferred alternative), Data-Mining Turning-Points Regime-Trigger Model.
 **Source attribution**: Chan Ch.7 (surveyed and rejected); `07_market_regimes.md`,
 `16_research_hypotheses.md` §1.
+**Status: CLOSED WITHOUT TESTING (2026-07-19, family closure via T-030 / H-ADXGate F-P2).** Member
+of the regime-classifier-overlay family closed by T-030's pre-registered F-P2 rejection (see the
+Efficiency-Ratio and MESA/Hilbert cards for the full rationale: three concentration failures across
+two signals and both threshold constructions; the frozen window lacks recent classifier-detectable
+chop). **Reopening condition (pre-registered, T-030 §3):** frozen research window extended ≥ 6
+months beyond 2026-05-27 with a freshly cut held-out split, OR a forward-dry-run-lane documented
+completed in-market chop episode. Not a re-parameterization. Chan's own "generally useless for
+actual trading purposes" verdict stands as the independent prior.
 
 ### Regime-Conditional Stop-Loss Logic
 
@@ -1534,6 +1624,26 @@ addresses. See `18_common_failure_modes.md` §8.
 
 ### Linear / Logistic Regression Direction Entry
 
+**Status: TESTED — REJECTED (2026-07-21, Task T-034 / H-LogisticEntry, Independent Reviewer-verified
+by exact rerun + code review, zero DSR trials spent, n_trials stays 100)** — the first
+statistical/ML direction-prediction test this project has ever run (as opposed to fixed technical
+rules), chosen deliberately as the most conservative starting point per Chan's own checklist below
+(few parameters, sound rationale, strict walk-forward-only validation) rather than DNN/AdaBoost,
+whose own source material already documents large train/test overfitting gaps in the book's own
+worked examples. Stopped at the pre-registered zero-cost in-sample-fit-sanity pre-gate: BTC's
+first-window (2018-01-22→2019-06-30, n=525) hit-ratio 53.14% failed significance (binomial
+p=0.1625 > 0.05); ETH's first-window (2019-12-12→2021-04-30, n=506) hit-ratio 56.72% passed
+(p=0.0029), but the pre-registered joint two-asset gate requires both legs to clear before any
+walk-forward backtest is run, so ETH's result was never carried further. Leakage check clean (5/5
+sampled refits, train-max strictly precedes test-min). Reviewer independently reproduced every
+number, confirmed no lookahead bias, confirmed no undisclosed hyperparameter tuning (default
+`sklearn.linear_model.LogisticRegression`, no `ConvergenceWarning` raised), and confirmed the
+underlying BTC/ETH feathers show only appended rows since the last commit (no tampering). See
+`research/results/T-034_report.md`, `research/review_briefs/T-034_brief.md`,
+`research/NEXT_TASK.md`. This closes the simplest member of the statistical/ML family with a
+genuine negative result; DNN/AdaBoost (whose own source material already shows large train/test
+gaps) remain untested and lower-priority per the original rationale for testing this card first.
+
 **Description**: sign(predicted return) from N lagged log returns as regressors/features, using linear
 or logistic regression rather than a nonlinear classifier — a simpler alternative to the DNN/AdaBoost
 approach above.
@@ -1602,6 +1712,10 @@ logic.
 **Source attribution**: Kaufman Ch.13; `15_crypto_specific.md`, `16_research_hypotheses.md` §4.
 **Already tested by this project**: research/research_index.md #4 (funding-rate squeeze) — BLOCKED (data
 unobtainable); #5 (spot-perp basis proxy) — FAIL (pure noise).
+**Data-axis bootstrap EXECUTED 2026-07-20 (T-031 / A-FundingRecorder, frontier card F-7) — data
+CONFIRMED genuine (97-day retention, re-curl verified), cycle REJECTED on an unrelated AC7 defect
+(see F-7 card)** — not this trading hypothesis itself, which stays untestable until F-7's
+pre-registered usage condition is met (≥120 days accrued coverage + passing censuses).
 
 ### CME BTC/ETH COT Positioning Filter
 
@@ -1628,6 +1742,19 @@ baseline 0.627. Silver lining: the CFTC COT download/cache infrastructure is now
 confirmed-working, locally-cached external data axis and remains reusable for other ideas.
 
 ### Crypto Fear & Greed Sentiment Filter
+
+**Status: TESTED — Task T-035, REJECTED (2026-07-21, Research Engineer; Reviewer-CONFIRMED
+2026-07-26 by independent recompute)** — stopped at pre-gate 3 of the six-step ladder (lead/lag).
+Reachability PASS (99.87% coverage since 2018-02-01 — the index is reachable, correcting this
+project's prior "sentiment BLOCKED" note) and redundancy PASS (corr −0.14 vs rv30, 0.70 vs roc30,
+both < 0.90 — genuinely distinct from the champion's own signals), but the index's changes
+correlate far more strongly with *past* price/vol moves (avg |neg-lag| 0.14 returns / 0.0136
+rv30Δ) than *future* ones (avg |pos-lag| 0.008 / 0.0127) — i.e. it is reactive to price, not
+anticipatory of it. Zero DSR trials spent; n_trials stays 100. This specific construction
+(Extreme-Greed anticipatory veto) is CLOSED; a reactive-confirmation framing was not tested and
+is not foreclosed by this result. Raw data cached at `user_data/research/data/fear_greed/`. See
+`research/results/T-035_report.md`, `research/review_briefs/T-035_brief.md`, and row #37 of
+`research/research_index.md`.
 
 **Description**: Use the freely available Crypto Fear & Greed Index (a simple, single-number daily
 series) as a sentiment-extreme filter, potentially sidestepping this project's prior blocked
@@ -1801,7 +1928,39 @@ justification" caution).
 ## Project Measurement Hypotheses (not book-derived; tracked here for status only)
 
 ### H-ForwardParity — live dry-run vs backtest parity (Director-created, cycle #16)
-**Status: PARKED-OPEN / instrument PARTIALLY HARDENED (2026-07-15, Task T-018 /
+**Current status: ASSIGNED (2026-07-26, Task T-036 / A-ForwardParityConfirm)** —
+audits whether the T-033 fix has produced genuine multi-day silent-death-free persistence (heartbeat
+gap analysis, Task Scheduler + Windows Event Viewer cross-check) and runs the existing
+`dryrun_monitor.py` v2.1 unmodified over the now-larger accrued window for an updated mechanical
+parity read. Zero DSR trials; n_trials stays 100. A preliminary, non-citable Director spot-check
+found PID 52788 heartbeating unbroken since 2026-07-20 23:57:12 (2,607 consecutive heartbeats, no
+PID change, no traceback since 07-20 23:19) — promising but requires independent Engineer
+reproduction per this project's anti-fabrication norms. See `research/NEXT_TASK.md`.
+Prior status: STILL PARKED-OPEN, instrument OPERATIONAL again (2026-07-21, Task T-033 / H-EventKiller —
+RESOLVED, fixed directly at operator request outside the Director/Engineer/Reviewer pipeline)** —
+root cause of the T-032 silent-death recurrence CONFIRMED via exact Windows Kernel-Power event-log
+correlation: this host is Modern-Standby-only (no S1-S3) with a 180s AC display-off timeout; every
+idle period froze the console-attached bot, and the resume-from-standby console-control broadcast
+killed it (bot launched 19:25 local → standby entered 19:28:00 → standby exited 23:22:14, exactly 1s
+after the bot's last heartbeat 23:22:13). Fix: `powercfg` AC display-idle timeout set to 0 (never);
+bot relaunched under fresh one-time Task Scheduler task `FreqtradeDryRunBootstrap_T033`. **New PID
+52788**, started 2026-07-20 23:57:07 local, verified heartbeating cleanly for ~15 minutes with zero
+traceback as of report time. H-ForwardParity itself remains untested (still awaiting sustained
+calendar-time accrual); accrual has resumed as of this fix. **Caveats carried forward**: only
+short-duration post-fix survival directly observed so far (do not overclaim, per T-031/T-032's own
+lesson); DC/battery display timeout left unchanged at 180s (residual risk if ever run unplugged); a
+future cycle should independently reconfirm multi-hour/day persistence, and re-verify this report's
+claims per the project's independent-verification norm, since this cycle bypassed the normal
+Reviewer adversarial check. See `research/results/T-033_report.md`. Zero DSR trials; n_trials stays
+100.
+Prior status: ASSIGNED (2026-07-20, Director cycle #12, Task T-032 / A-DryRunPersistence) — the bot
+was again found DOWN on independent audit (T-031 brief §1: restart produced one heartbeat then
+permanent silence, no traceback in `dryrun_stderr.log`, across at least two independent restart
+events). This cycle diagnoses the silent-death pattern as likely session/job-object process-tree
+coupling and tests a Windows-Task-Scheduler-based decoupled launch, with an explicit ≥15-minute
+polled persistence proof (not a single post-restart heartbeat, which is what produced T-031's false
+AC7 claim). Zero DSR trials; n_trials stays 100. See `research/NEXT_TASK.md`.
+Prior status: PARKED-OPEN / instrument PARTIALLY HARDENED (2026-07-15, Task T-018 /
 A-ParityHardening, Reviewer verdict REJECTED — cycle #25). The hypothesis itself remains
 NOT yet tested (≥3 months of coverage still required). Instrument state after T-018:
 M1/S2 per-bar live-side reconstruction IMPLEMENTED and Reviewer-CONFIRMED via genuine
@@ -1825,7 +1984,25 @@ carry-through via the real `freqtrade download-data`, restore the monitor (excis
 Zero DSR trials; n_trials stays 99. Falsifiers pre-registered (F-a default-resolver probe
 <2/3 HTTP 200; F-b no new authentic bar past 2026-07-11). Anti-fabrication design: every new
 BTC/ETH bar must be independently re-curl-verifiable by the Reviewer. An honestly documented
-Status: STILL PARKED-OPEN, instrument ACCEPTED and OPERATIONAL (2026-07-19, Task T-027 / A-ResolverRepair — **ACCEPTED**). The `aiodns` package was uninstalled, forcing `aiohttp` to use `ThreadedResolver` (OS resolver). This restored OKX resolution for freqtrade and ccxt without any code changes. The forward-parity monitor was restored to a read-only freshness check (excising the auto-refresh script), authentic 9-asset feathers were downloaded and verified via curl, and the dry-run bot was launched detached successfully. The forward evidence pipeline is now fully healthy and accruing calendar-time sample again. H-ForwardParity itself remains untested (still on 0/20 in-market days), awaiting data accumulation.
+Status: STILL PARKED-OPEN, instrument DOWN AGAIN (2026-07-21, Independent Reviewer audit of Task
+T-032 — **ACCEPT with critical caveat**). T-032's pre-registered falsification test (§3 of
+NEXT_TASK.md) was honestly executed and genuinely passed: the Reviewer independently reconfirmed
+PID 41472 heartbeating continuously for ~4 hours (2026-07-20 19:26→23:22 local), far exceeding the
+report's own ~16-minute proof window — not fabricated, not overclaimed. **However**, during the
+Reviewer's live audit at 2026-07-21 06:22 UTC (2026-07-20 23:22 PDT), PID 41472 was found to have
+silently terminated — zero traceback in `dryrun_stderr.log`, identical signature to the original
+failure this cycle set out to fix. `schtasks /query` now reports Last Result `-1073741510`
+(STATUS_CONTROL_C_EXIT) vs. the report's own `267009` (task still running) snapshot taken ~4h
+earlier. **Conclusion: the Task-Scheduler decoupled launch extended survival ~240x (≈60s → ≈4h)
+but did NOT eliminate the silent-death failure mode.** The session/job-object-coupling hypothesis
+is only partially confirmed — a residual, still-undiagnosed external-termination cause remains
+(per T-032 §5's own "should fail" contingency: OOM, antivirus/EDR, or a host-level scheduled
+event). H-ForwardParity remains untested; forward-lane accrual has stopped again. A future cycle
+should inspect Windows Event Viewer Application/System logs around the death timestamp (~2026-07-21
+06:22-06:25 UTC) before attempting another launch-mechanism fix. See
+`research/review_briefs/T-032_brief.md`.
+Prior status: STILL PARKED-OPEN, instrument ACCEPTED and OPERATIONAL (2026-07-20, Task T-032 / A-DryRunPersistence — **ACCEPTED**). The dry-run bot is now running under a session-independent launch via Windows Task Scheduler (decoupled from any interactive shell). Confirmed persistent with PID 41472, started at 2026-07-20 19:25 local time. H-ForwardParity itself remains untested, awaiting data accumulation.
+Prior status: STILL PARKED-OPEN, instrument ACCEPTED and OPERATIONAL (2026-07-19, Task T-027 / A-ResolverRepair — **ACCEPTED**). The `aiodns` package was uninstalled, forcing `aiohttp` to use `ThreadedResolver` (OS resolver). This restored OKX resolution for freqtrade and ccxt without any code changes. The forward-parity monitor was restored to a read-only freshness check (excising the auto-refresh script), authentic 9-asset feathers were downloaded and verified via curl, and the dry-run bot was launched detached successfully. The forward evidence pipeline is now fully healthy and accruing calendar-time sample again. H-ForwardParity itself remains untested (still on 0/20 in-market days), awaiting data accumulation.
 Prior status: STILL PARKED-OPEN, instrument INOPERATIVE (2026-07-19, Task T-026 / A-TransportRepair — **REJECT** — Reviewer verdict: the ladder run was honest and data untouched, but the unrepairable conclusion was false. The resolver was never swapped during the test ladder. H-ForwardParity itself remained untested (still 0 valid instrumented days); bot DOWN since 2026-07-15 09:29 UTC; monitor still carried the inert auto-refresh block and the drifted WINDOW_START. See research/review_briefs/T-026_brief.md.)
 Prior status: STILL PARKED-OPEN, **UNBLOCKED-IN-PRINCIPLE** (2026-07-19, Task T-026 /
 A-TransportRepair — Reviewer verdict **REJECT**). The Engineer ran the aiohttp isolation ladder
@@ -1900,6 +2077,28 @@ in-sample by construction.
 **Reopening condition**: a *forward* rolling cointegration census (computed on data accrued after
 2026-07, never refit on the closed window) re-establishes ≥60% passing 730d windows. Until then the
 family stays CLOSED per the ledger.
+
+### F-7. Funding-Rate Axis Live-Recording Bootstrap (class A — free; **DATA BOOTSTRAP CONFIRMED, cycle REJECTED — Task T-031 / A-FundingRecorder, Director cycle #11, executed 2026-07-20, Reviewer-audited 2026-07-20**)
+**Description**: Convert the funding-rate axis (blocked since 2026-05-15, research_index row #4:
+"OKX ~3 months only") into a reachable one by backfilling all OKX-retained 8h funding history for
+the 9-asset swap universe and installing an idempotent, authenticity-verifiable incremental
+recorder (raw REST proven working from this environment — T-025/T-026/T-027). Zero DSR trials;
+descriptive statistics only, no trading conclusions. Includes a documentation-only depth survey of
+the free rubik endpoints (OI, long/short ratio, taker volume).
+**Outcome (Reviewer-verified 2026-07-20)**: the data bootstrap itself is TRUE and RETAINED —
+`user_data/research/data/funding/<instId>.csv` for all 9 instruments, 97-day retention, independent
+12-sample re-curl (BTC/ETH/SOL) exact match, idempotent second run. **However the T-031 cycle as a
+whole is REJECTED**: the report's AC7 (forward-lane preflight) claim is false — heartbeat
+PID=16124 does not appear anywhere in `dryrun.log` (only PID=45356 is logged, once, with zero
+heartbeats in the ~6.5h since); the dry-run bot was found DOWN on independent audit. See
+`research/review_briefs/T-031_brief.md`. The data/recorder require no rework; the bot needs an
+immediate restart-with-confirmed-persistence action, tracked separately from this card.
+**Reopening/usage condition (pre-registered in T-031 §4, binding, UNCHANGED by the rejection)**: no
+funding-based hypothesis may spend a trial until ≥120 days of contiguous BTC+ETH coverage exist AND
+a pre-registered firing-set/materiality census and a harm/favorability census both pass on the
+accrued data. Recording must continue (≥14-day cadence) for this clock to run.
+**Related hypotheses**: Perp-Spot Basis / Funding-Rate Carry Arbitrage (Crypto-Specific §, the
+eventual consumer); F-6 (the paid fallback if this free path fails).
 
 ### F-6. Paid-Vendor Data Axis Evaluation (class A — operator decision required)
 **Description**: The blocked axes (funding history, order book, liquidations, on-chain, sentiment)
