@@ -18,7 +18,7 @@ from validator import (
     load, signal_to_returns, extract_trades, metrics,
     yearly_breakdown, yearly_pnl_dollar_concentration,
     split_70_15_15, monte_carlo, Verdict, save_verdict, print_verdict,
-    ANNUALIZATION_DAILY, COMMISSION, SLIPPAGE,
+    ANNUALIZATION_DAILY, per_side_cost,
 )
 import strategies as S
 
@@ -27,13 +27,19 @@ def portfolio_returns(
     data: dict[str, pd.DataFrame],
     positions: dict[str, pd.Series],
     weights: Optional[dict[str, float]] = None,
-    fee: float = COMMISSION + SLIPPAGE,
+    fee: Optional[float] = None,
+    execution_mode: Optional[str] = None,
 ) -> pd.DataFrame:
     """Combine per-asset positions into a portfolio equity curve.
 
     Weights are normalized internally each bar by SUM of absolute weights of
     assets actually in position. This keeps gross exposure at 1.0 (no leverage).
+
+    `fee` is the PER-SIDE cost; when omitted it resolves from validator.COST_MODEL
+    via per_side_cost(execution_mode).
     """
+    if fee is None:
+        fee = per_side_cost(execution_mode)
     symbols = list(data.keys())
     if weights is None:
         weights = {s: 1.0 for s in symbols}

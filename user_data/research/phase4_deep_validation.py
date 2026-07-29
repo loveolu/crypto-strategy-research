@@ -20,9 +20,13 @@ import sys
 sys.path.insert(0, 'C:/Users/Comec/Projects/freqtrade/user_data/research')
 import numpy as np
 import pandas as pd
-from validator import load, COMMISSION, SLIPPAGE
+from validator import load
 
-FEE = COMMISSION + SLIPPAGE
+# FROZEN HISTORICAL COST — do not re-point at COST_MODEL. This one-shot script is
+# the reproduction record of a June-2026 run made under the old 0.10% commission +
+# 0.05% slippage per-side model. Changing it would silently invalidate the archived
+# numbers. New work must use validator.per_side_cost() (see COST_MODEL).
+FEE = 0.0015
 
 def _sma(s, n): return s.rolling(n).mean()
 def _ema(s, n): return s.ewm(span=n, adjust=False).mean()

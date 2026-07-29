@@ -10,7 +10,7 @@ The harness runs:
   2. Year-by-year breakdown
   3. 70/15/15 train/val/test split
   4. Walk-forward (4 windows)
-  5. Monte Carlo (shuffled trades, +slippage, +commission, +delayed exec)
+  5. Monte Carlo (shuffled trades + one extra round trip of COST_MODEL cost)
 
 A strategy PASSES if:
   - >= 5 years of data
@@ -33,6 +33,12 @@ reporting-only — they do not change the pass bar above):
   - family_context / family_from_results_dir + Verdict.family_context:
     average-of-all-tests (not peak) reporting convention; validate() accepts an
     optional `family` argument to populate it.
+
+Execution cost model (added 2026-07-28, repair item 1): all costs resolve from the
+COST_MODEL dict — maker/taker fees, slippage, spread, venue, and fill_assumption.
+The former COMMISSION / SLIPPAGE constants are gone; use per_side_cost() and
+round_trip_cost(). Every Verdict carries a cost_model snapshot and the warnings
+that must accompany the numbers in a report (Verdict.cost_model / .warnings).
 """
 
 from __future__ import annotations
@@ -48,14 +54,194 @@ import pandas as pd
 
 warnings.filterwarnings("ignore")
 
-DATA_DIR = Path("C:/Users/Comec/Projects/freqtrade/user_data/data/okx")
-RESULTS_DIR = Path("C:/Users/Comec/Projects/freqtrade/user_data/research/results")
+REPO_ROOT = Path(__file__).resolve().parents[2]   # <root>/user_data/research/validator.py
+DATA_DIR = REPO_ROOT / "user_data" / "data" / "okx"
+RESULTS_DIR = REPO_ROOT / "user_data" / "research" / "results"
 RESULTS_DIR.mkdir(parents=True, exist_ok=True)
 
-# Execution model
-COMMISSION = 0.001          # 0.1% per side (OKX taker)
-SLIPPAGE = 0.0005           # 0.05% per side
 ANNUALIZATION_DAILY = 365   # crypto: 365 not 252
+
+
+# --------------------------------------------------------------------------- #
+#  EXECUTION COST MODEL (added 2026-07-28, repair item 1)
+#
+#  Replaces the former COMMISSION / SLIPPAGE module constants. Every cost number
+#  used by this harness resolves from COST_MODEL — nothing downstream may
+#  hardcode a fee, a slippage figure, or a spread.
+#
+#  Fee rates are OKX published regular-tier (non-VIP, no discounts) rates as of
+#  2026-07-28. Slippage and spread are ESTIMATES: no realized-fill data exists in
+#  this repository to calibrate them against. They are flagged as such in
+#  cost_model_warnings() and must be revisited once forward dry-run fill
+#  statistics exist.
+# --------------------------------------------------------------------------- #
+
+#: Published OKX regular-tier fee rates, per side, as a fraction of notional.
+VENUE_FEES = {
+    "okx_spot":      {"maker": 0.0008, "taker": 0.0010},
+    "okx_usdt_perp": {"maker": 0.0002, "taker": 0.0005},
+}
+
+#: Valid values for COST_MODEL["fill_assumption"].
+FILL_ASSUMPTIONS = ("taker", "maker_optimistic")
+
+#: The active cost model. Mutate only via set_venue() / set_fill_assumption().
+COST_MODEL = {
+    "venue": "okx_usdt_perp",
+    "fee_tier": "regular (non-VIP, no fee discounts)",
+    "maker": VENUE_FEES["okx_usdt_perp"]["maker"],   # 0.02% per side
+    "taker": VENUE_FEES["okx_usdt_perp"]["taker"],   # 0.05% per side
+    "slippage_bps": 3.0,   # per side, adverse fill vs. decision price (ESTIMATE)
+    "spread_bps": 2.0,     # full quoted bid-ask; a taker crosses half of it (ESTIMATE)
+    "fill_assumption": "taker",
+    "rates_as_of": "2026-07-28",
+    "slippage_spread_basis": "estimate - not calibrated against realized fills",
+    # REQUIRED whenever fill_assumption == "maker_optimistic". There is deliberately
+    # NO zero default: a maker backtest that charges nothing for adverse selection is
+    # not a conservative estimate, it is a wrong one. per_side_cost() raises if this
+    # is still None on the maker path. Set it (with a basis) via set_fill_assumption().
+    "adverse_selection_bps": None,
+    "adverse_selection_basis": None,
+}
+
+MAKER_OPTIMISTIC_WARNING = (
+    "COST MODEL WARNING - fill_assumption='maker_optimistic': fill rates are "
+    "UNVALIDATED. A resting limit order only fills when price comes to you, which "
+    "is adversely correlated with the move the signal wanted; the fills you do not "
+    "get are systematically the profitable ones. Freqtrade backtesting does not "
+    "model this selection effect, and neither does this harness. The "
+    "adverse_selection_bps charge below is an ASSUMED penalty standing in for that "
+    "unmodelled effect, not a measurement of it. No promotion may rest on a "
+    "maker_optimistic backtest (PROJECT_OPERATOR_MANUAL.md, "
+    "'Execution and cost model')."
+)
+
+ADVERSE_SELECTION_WARNING = (
+    "COST MODEL NOTE - adverse_selection_bps = {adv:.1f} bps/side. Basis: {basis}"
+)
+
+_ADVERSE_SELECTION_REQUIRED = (
+    "COST_MODEL['adverse_selection_bps'] is required when fill_assumption is "
+    "'maker_optimistic' and has no zero default. Set it explicitly, with a basis, "
+    "e.g. set_fill_assumption('maker_optimistic', adverse_selection_bps=X, "
+    "basis='...'). Charging zero for adverse selection is not a conservative "
+    "assumption - it is the assumption that unfilled orders were random."
+)
+
+SLIPPAGE_SPREAD_WARNING = (
+    "COST MODEL NOTE - slippage ({slip:.1f} bps/side) and spread ({spread:.1f} bps) "
+    "are estimates, not calibrated against realized fills. Fee rates are published "
+    "OKX {tier} rates for {venue} as of {as_of}."
+)
+
+
+def set_venue(venue: str, cost_model: Optional[dict] = None) -> dict:
+    """Point the active cost model at a different venue's published fee schedule."""
+    cm = COST_MODEL if cost_model is None else cost_model
+    if venue not in VENUE_FEES:
+        raise ValueError(f"unknown venue {venue!r}; known: {sorted(VENUE_FEES)}")
+    cm["venue"] = venue
+    cm["maker"] = VENUE_FEES[venue]["maker"]
+    cm["taker"] = VENUE_FEES[venue]["taker"]
+    return cm
+
+
+def set_fill_assumption(mode: str,
+                        adverse_selection_bps: Optional[float] = None,
+                        basis: Optional[str] = None,
+                        cost_model: Optional[dict] = None) -> dict:
+    """Set the fill assumption.
+
+    'maker_optimistic' requires adverse_selection_bps (unless already set on the
+    model) together with a non-empty basis string saying where the number came
+    from, and emits MAKER_OPTIMISTIC_WARNING immediately.
+    """
+    cm = COST_MODEL if cost_model is None else cost_model
+    if mode not in FILL_ASSUMPTIONS:
+        raise ValueError(f"fill_assumption must be one of {FILL_ASSUMPTIONS}, got {mode!r}")
+
+    if adverse_selection_bps is not None:
+        if adverse_selection_bps < 0:
+            raise ValueError("adverse_selection_bps must be >= 0")
+        if not (basis and basis.strip()):
+            raise ValueError(
+                "adverse_selection_bps requires a non-empty `basis` string stating "
+                "how the number was derived (measurement, cited study, or stated "
+                "assumption). An uncited cost number is a fabricated one.")
+        cm["adverse_selection_bps"] = float(adverse_selection_bps)
+        cm["adverse_selection_basis"] = basis.strip()
+
+    if mode == "maker_optimistic" and cm.get("adverse_selection_bps") is None:
+        raise ValueError(_ADVERSE_SELECTION_REQUIRED)
+
+    cm["fill_assumption"] = mode
+    if mode == "maker_optimistic":
+        warnings.warn(MAKER_OPTIMISTIC_WARNING, stacklevel=2)
+    return cm
+
+
+def per_side_cost(execution_mode: Optional[str] = None,
+                  cost_model: Optional[dict] = None) -> float:
+    """Total cost of ONE side (entry or exit), as a fraction of notional.
+
+    taker             : exchange taker fee + slippage + half the quoted spread
+                        (a market order crosses the book, so it pays half-spread).
+    maker_optimistic  : exchange maker fee + adverse_selection_bps. A resting limit
+                        order neither crosses the spread nor suffers slippage, but it
+                        only fills when price comes to you — see
+                        MAKER_OPTIMISTIC_WARNING. adverse_selection_bps is REQUIRED
+                        on this path and raises if unset; there is no zero default.
+    """
+    cm = COST_MODEL if cost_model is None else cost_model
+    mode = cm["fill_assumption"] if execution_mode is None else execution_mode
+    if mode not in FILL_ASSUMPTIONS:
+        raise ValueError(f"execution_mode must be one of {FILL_ASSUMPTIONS}, got {mode!r}")
+    if mode == "taker":
+        return cm["taker"] + cm["slippage_bps"] / 1e4 + (cm["spread_bps"] / 1e4) / 2.0
+    adverse = cm.get("adverse_selection_bps")
+    if adverse is None:
+        raise ValueError(_ADVERSE_SELECTION_REQUIRED)
+    return cm["maker"] + adverse / 1e4
+
+
+def round_trip_cost(execution_mode: Optional[str] = None,
+                    cost_model: Optional[dict] = None) -> float:
+    """Cost of a complete entry+exit round trip, as a fraction of notional."""
+    return 2.0 * per_side_cost(execution_mode, cost_model)
+
+
+def cost_model_warnings(execution_mode: Optional[str] = None,
+                        cost_model: Optional[dict] = None) -> list[str]:
+    """Warnings that MUST be reproduced verbatim in any report using this run.
+
+    Consumed by validate() -> Verdict.warnings, so a future
+    render_report_sections(verdict) can emit them without an agent retyping them.
+    """
+    cm = COST_MODEL if cost_model is None else cost_model
+    mode = cm["fill_assumption"] if execution_mode is None else execution_mode
+    out = [SLIPPAGE_SPREAD_WARNING.format(
+        slip=cm["slippage_bps"], spread=cm["spread_bps"],
+        tier=cm["fee_tier"], venue=cm["venue"], as_of=cm["rates_as_of"])]
+    if mode == "maker_optimistic":
+        out.insert(0, MAKER_OPTIMISTIC_WARNING)
+        out.insert(1, ADVERSE_SELECTION_WARNING.format(
+            adv=cm.get("adverse_selection_bps") if cm.get("adverse_selection_bps") is not None else float("nan"),
+            basis=cm.get("adverse_selection_basis") or "UNSTATED"))
+    return out
+
+
+def describe_cost_model(execution_mode: Optional[str] = None,
+                        cost_model: Optional[dict] = None) -> str:
+    """One-line human-readable summary for report headers."""
+    cm = COST_MODEL if cost_model is None else cost_model
+    mode = cm["fill_assumption"] if execution_mode is None else execution_mode
+    adv = cm.get("adverse_selection_bps")
+    return (f"{cm['venue']} / {cm['fee_tier']} / fill={mode}: "
+            f"maker {cm['maker']*1e4:.1f}bps, taker {cm['taker']*1e4:.1f}bps, "
+            f"slippage {cm['slippage_bps']:.1f}bps/side, spread {cm['spread_bps']:.1f}bps, "
+            f"adverse selection {'unset' if adv is None else f'{adv:.1f}bps/side'} "
+            f"-> {per_side_cost(mode, cm)*1e4:.2f}bps/side, "
+            f"{round_trip_cost(mode, cm)*1e4:.2f}bps round trip")
 
 
 def load(symbol: str, timeframe: str) -> pd.DataFrame:
@@ -65,7 +251,9 @@ def load(symbol: str, timeframe: str) -> pd.DataFrame:
     return df.astype({"open": float, "high": float, "low": float, "close": float, "volume": float})
 
 
-def signal_to_returns(df: pd.DataFrame, signal: pd.Series, fee: float = COMMISSION + SLIPPAGE) -> pd.DataFrame:
+def signal_to_returns(df: pd.DataFrame, signal: pd.Series,
+                      fee: Optional[float] = None,
+                      execution_mode: Optional[str] = None) -> pd.DataFrame:
     """
     Take a signal series (-1/0/1) and produce bar returns net of fees.
 
@@ -80,8 +268,11 @@ def signal_to_returns(df: pd.DataFrame, signal: pd.Series, fee: float = COMMISSI
         position[t] = signal[t-2]        # signal at t-2 → exec at open[t-1] → held by close[t-1] onward
         bar_ret[t]  = close[t]/close[t-1] - 1
 
-    Fees charged per side on any position change.
+    Fees charged per side on any position change. `fee` is the PER-SIDE cost; when
+    omitted it resolves from COST_MODEL via per_side_cost(execution_mode).
     """
+    if fee is None:
+        fee = per_side_cost(execution_mode)
     signal = signal.reindex(df.index).fillna(0).clip(-1, 1)
     position = signal.shift(2).fillna(0)  # 2-bar lag: signal at close[t-2] -> exec open[t-1] -> by close[t-1] in position
 
@@ -215,7 +406,8 @@ def split_70_15_15(df: pd.DataFrame):
     return df.iloc[:i1], df.iloc[i1:i2], df.iloc[i2:]
 
 
-def walk_forward(df: pd.DataFrame, signal_fn, windows: int = 4) -> list[dict]:
+def walk_forward(df: pd.DataFrame, signal_fn, windows: int = 4,
+                 execution_mode: Optional[str] = None) -> list[dict]:
     """Anchored walk-forward: 4 OOS windows. Each window: prior 60%+ is IS, next 10% is OOS."""
     n = len(df)
     results = []
@@ -228,7 +420,7 @@ def walk_forward(df: pd.DataFrame, signal_fn, windows: int = 4) -> list[dict]:
         if len(oos_df) < 30:
             continue
         sig = signal_fn(oos_df)
-        rets = signal_to_returns(oos_df, sig)
+        rets = signal_to_returns(oos_df, sig, execution_mode=execution_mode)
         trs = extract_trades(rets)
         m = metrics(rets, trs)
         m["window"] = k
@@ -238,11 +430,22 @@ def walk_forward(df: pd.DataFrame, signal_fn, windows: int = 4) -> list[dict]:
     return results
 
 
-def monte_carlo(returns: pd.DataFrame, trades: pd.DataFrame, n_sims: int = 200, extra_slippage: float = 0.0005) -> dict:
-    """Shuffle trade order + add extra slippage. Returns distribution of Sharpe and final equity."""
+def monte_carlo(returns: pd.DataFrame, trades: pd.DataFrame, n_sims: int = 200,
+                extra_cost: Optional[float] = None,
+                execution_mode: Optional[str] = None) -> dict:
+    """Shuffle trade order + apply an execution-stress cost. Returns distribution of
+    Sharpe and final equity.
+
+    `extra_cost` is charged once per trade ON TOP of the costs already baked into
+    trades["pnl"] by signal_to_returns(). When omitted it resolves from COST_MODEL
+    as one additional full round trip — i.e. the stress scenario is "every trade
+    executed twice as expensively as modelled".
+    """
     if len(trades) < 30:
         return {"mc_p5_sharpe": np.nan, "mc_p50_sharpe": np.nan, "mc_p5_return": np.nan}
-    pnl = trades["pnl"].values - extra_slippage  # per-trade extra cost
+    if extra_cost is None:
+        extra_cost = round_trip_cost(execution_mode)
+    pnl = trades["pnl"].values - extra_cost  # per-trade extra execution stress
     sharpes = []
     finals = []
     rng = np.random.default_rng(42)
@@ -508,21 +711,44 @@ class Verdict:
     # strategy sits inside the family of variants it was selected from. Populated via
     # family_context() / family_context_from_results(); empty when not applicable.
     family_context: dict = field(default_factory=dict)
+    # Execution-cost provenance (added 2026-07-28, repair item 1). A snapshot of the
+    # COST_MODEL actually used for this run plus its derived per-side/round-trip
+    # figures, and the warnings that must appear in any report quoting these numbers.
+    # Reports render these from the Verdict; they are never retyped by hand.
+    cost_model: dict = field(default_factory=dict)
+    warnings: list[str] = field(default_factory=list)
+
+
+def cost_model_snapshot(execution_mode: Optional[str] = None,
+                        cost_model: Optional[dict] = None) -> dict:
+    """Immutable record of the cost model used by a run, for Verdict.cost_model."""
+    cm = dict(COST_MODEL if cost_model is None else cost_model)
+    mode = cm["fill_assumption"] if execution_mode is None else execution_mode
+    cm["fill_assumption"] = mode
+    cm["per_side_cost"] = per_side_cost(mode, cm)
+    cm["round_trip_cost"] = round_trip_cost(mode, cm)
+    cm["summary"] = describe_cost_model(mode, cm)
+    return cm
 
 
 def validate(name: str, df: pd.DataFrame, signal_fn: Callable[[pd.DataFrame], pd.Series],
              bars_per_year: int = ANNUALIZATION_DAILY,
-             family: Optional[list] = None) -> Verdict:
+             family: Optional[list] = None,
+             execution_mode: Optional[str] = None) -> Verdict:
     """Run the full pipeline. signal_fn(df) -> pd.Series of {-1, 0, 1} indexed by df.index.
 
     family (optional): list of {"name", "full_sharpe", "test_sharpe"} dicts for the
     search family this candidate was selected from; populates Verdict.family_context
     (Kaufman average-of-all-tests convention). Pass family_from_results_dir() to use
     the saved historical record. Omitting it leaves behavior unchanged.
+
+    execution_mode (optional): "taker" or "maker_optimistic"; defaults to
+    COST_MODEL["fill_assumption"]. Recorded on the Verdict along with the resulting
+    cost figures and any warnings they carry.
     """
     t0 = time.time()
     sig = signal_fn(df)
-    rets = signal_to_returns(df, sig)
+    rets = signal_to_returns(df, sig, execution_mode=execution_mode)
     trs = extract_trades(rets)
     m_full = metrics(rets, trs, bars_per_year)
     yearly = yearly_breakdown(rets)
@@ -534,13 +760,12 @@ def validate(name: str, df: pd.DataFrame, signal_fn: Callable[[pd.DataFrame], pd
     sig_tr = signal_fn(df_tr)
     sig_vl = signal_fn(df_vl)
     sig_te = signal_fn(df_te)
-    m_tr = metrics(*[signal_to_returns(df_tr, sig_tr)], pd.DataFrame()) if False else None
-    rets_tr = signal_to_returns(df_tr, sig_tr); trs_tr = extract_trades(rets_tr); m_tr = metrics(rets_tr, trs_tr, bars_per_year)
-    rets_vl = signal_to_returns(df_vl, sig_vl); trs_vl = extract_trades(rets_vl); m_vl = metrics(rets_vl, trs_vl, bars_per_year)
-    rets_te = signal_to_returns(df_te, sig_te); trs_te = extract_trades(rets_te); m_te = metrics(rets_te, trs_te, bars_per_year)
+    rets_tr = signal_to_returns(df_tr, sig_tr, execution_mode=execution_mode); trs_tr = extract_trades(rets_tr); m_tr = metrics(rets_tr, trs_tr, bars_per_year)
+    rets_vl = signal_to_returns(df_vl, sig_vl, execution_mode=execution_mode); trs_vl = extract_trades(rets_vl); m_vl = metrics(rets_vl, trs_vl, bars_per_year)
+    rets_te = signal_to_returns(df_te, sig_te, execution_mode=execution_mode); trs_te = extract_trades(rets_te); m_te = metrics(rets_te, trs_te, bars_per_year)
 
-    wf = walk_forward(df, signal_fn)
-    mc = monte_carlo(rets, trs)
+    wf = walk_forward(df, signal_fn, execution_mode=execution_mode)
+    mc = monte_carlo(rets, trs, execution_mode=execution_mode)
 
     reasons = []
     if m_full["years"] < 5: reasons.append(f"only {m_full['years']:.1f}y data (need 5+)")
@@ -573,6 +798,8 @@ def validate(name: str, df: pd.DataFrame, signal_fn: Callable[[pd.DataFrame], pd
         wf=wf,
         mc=mc,
         family_context=fam_ctx,
+        cost_model=cost_model_snapshot(execution_mode),
+        warnings=cost_model_warnings(execution_mode),
     )
 
 
@@ -587,6 +814,10 @@ def print_verdict(v: Verdict):
     print(f"\n{'='*70}")
     print(f"STRATEGY: {v.name}")
     print(f"{'='*70}")
+    if v.cost_model:
+        print(f"Costs: {v.cost_model.get('summary', '')}")
+    for w in v.warnings:
+        print(f"\n  !! {w}\n")
     f = v.full
     print(f"Full window: return {f['total_return']*100:+.1f}%  CAGR {f['cagr']*100:+.1f}%  "
           f"Sharpe {f['sharpe']:.2f}  PF {f['profit_factor']:.2f}  "
@@ -600,7 +831,7 @@ def print_verdict(v: Verdict):
         for w in v.wf:
             print(f"  W{w['window']}: ret {w['total_return']*100:+5.1f}%  Sharpe {w['sharpe']:5.2f}  trades {w['n_trades']}")
     if v.mc:
-        print(f"Monte Carlo (200 sims, +slip): p5 Sharpe {v.mc.get('mc_p5_sharpe', float('nan')):.2f}  "
+        print(f"Monte Carlo (200 sims, +1 extra round trip of cost): p5 Sharpe {v.mc.get('mc_p5_sharpe', float('nan')):.2f}  "
               f"p50 Sharpe {v.mc.get('mc_p50_sharpe', float('nan')):.2f}  p5 ret {v.mc.get('mc_p5_return', float('nan'))*100:+.1f}%")
     if v.family_context:
         ts = v.family_context.get("test_sharpe", {})

@@ -3,9 +3,12 @@ import sys
 sys.path.insert(0, 'C:/Users/Comec/Projects/freqtrade/user_data/research')
 import numpy as np
 import pandas as pd
-from validator import load, COMMISSION, SLIPPAGE
+from validator import load
 
-FEE = COMMISSION + SLIPPAGE
+# FROZEN HISTORICAL COST — see the identical note in phase4_deep_validation.py.
+# This reproduces a June-2026 run at 0.15%/side. New work must use
+# validator.per_side_cost() (see COST_MODEL).
+FEE = 0.0015
 def _sma(s, n): return s.rolling(n).mean()
 def _ema(s, n): return s.ewm(span=n, adjust=False).mean()
 

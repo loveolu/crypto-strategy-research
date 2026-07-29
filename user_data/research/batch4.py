@@ -7,7 +7,7 @@ import pandas as pd
 from validator import (load, signal_to_returns, extract_trades, metrics,
                        yearly_breakdown, yearly_pnl_dollar_concentration,
                        split_70_15_15, monte_carlo, Verdict, save_verdict, print_verdict,
-                       ANNUALIZATION_DAILY, COMMISSION, SLIPPAGE, validate)
+                       ANNUALIZATION_DAILY, per_side_cost, validate)
 import strategies as S
 import multi_asset as MA
 
