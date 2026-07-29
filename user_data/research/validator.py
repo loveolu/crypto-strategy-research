@@ -63,6 +63,66 @@ ANNUALIZATION_DAILY = 365   # crypto: 365 not 252
 
 
 # --------------------------------------------------------------------------- #
+#  DATA INTEGRITY GATE (added 2026-07-28, repair item 4)
+#
+#  Importing this module verifies every file under user_data/data/ against the
+#  committed SHA-256 manifest and RAISES if anything has changed. Three cycles in
+#  this project wrote fabricated candles straight into the feathers (T-023,
+#  T-025) or reported a number the script never produced (T-019); by the time a
+#  Reviewer caught it, results had already been computed and written up.
+#
+#  This fails closed on purpose. A missing manifest, an unreadable manifest, or a
+#  missing checker is a failure, not a pass — an unverifiable data tree must not
+#  quietly behave like a verified one.
+#
+#  Legitimate data updates: confirm the new data is genuine, run
+#  `python scripts/data_manifest.py build`, and commit the manifest with the data.
+#  FREQTRADE_SKIP_DATA_VERIFY=1 bypasses the check; DATA_INTEGRITY["bypassed"]
+#  then records that it did not run, and that fact is carried onto every Verdict.
+# --------------------------------------------------------------------------- #
+
+def _load_data_manifest_module():
+    """Import scripts/data_manifest.py by path (it is outside this package)."""
+    import importlib.util
+    fp = REPO_ROOT / "scripts" / "data_manifest.py"
+    if not fp.exists():
+        raise RuntimeError(
+            f"data integrity checker not found at {fp}. validator.py refuses to run "
+            f"without it: an unverifiable data tree must not look like a verified one.")
+    spec = importlib.util.spec_from_file_location("freqtrade_data_manifest", fp)
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    return mod
+
+
+data_manifest = _load_data_manifest_module()
+DataIntegrityError = data_manifest.DataIntegrityError
+
+#: Result of the import-time verification. Raises before this binds on mismatch.
+DATA_INTEGRITY = data_manifest.verify()
+
+
+def data_integrity_snapshot() -> dict:
+    """Compact record of the data-integrity check, for Verdict.data_manifest."""
+    return {
+        "verified": bool(DATA_INTEGRITY.get("ok")) and not DATA_INTEGRITY.get("bypassed"),
+        "bypassed": bool(DATA_INTEGRITY.get("bypassed")),
+        "files_checked": DATA_INTEGRITY.get("checked_count", 0),
+        "manifest_built_utc": DATA_INTEGRITY.get("built_utc"),
+    }
+
+
+def data_integrity_warnings() -> list[str]:
+    """Warnings that must appear in any report built on this run."""
+    if DATA_INTEGRITY.get("bypassed"):
+        return ["DATA INTEGRITY WARNING - the manifest check was BYPASSED via "
+                "FREQTRADE_SKIP_DATA_VERIFY=1. The data underlying these numbers is "
+                "unverified. This run is not evidence and must not be cited in a "
+                "report, a verdict, or a promotion argument."]
+    return []
+
+
+# --------------------------------------------------------------------------- #
 #  EXECUTION COST MODEL (added 2026-07-28, repair item 1)
 #
 #  Replaces the former COMMISSION / SLIPPAGE module constants. Every cost number
@@ -717,6 +777,10 @@ class Verdict:
     # Reports render these from the Verdict; they are never retyped by hand.
     cost_model: dict = field(default_factory=dict)
     warnings: list[str] = field(default_factory=list)
+    # Data-integrity provenance (added 2026-07-28, repair item 4): the state of the
+    # SHA-256 manifest check at the time this run imported the harness. A Verdict
+    # whose data_manifest["verified"] is False was computed on an unverified tree.
+    data_manifest: dict = field(default_factory=dict)
 
 
 def cost_model_snapshot(execution_mode: Optional[str] = None,
@@ -799,7 +863,8 @@ def validate(name: str, df: pd.DataFrame, signal_fn: Callable[[pd.DataFrame], pd
         mc=mc,
         family_context=fam_ctx,
         cost_model=cost_model_snapshot(execution_mode),
-        warnings=cost_model_warnings(execution_mode),
+        warnings=data_integrity_warnings() + cost_model_warnings(execution_mode),
+        data_manifest=data_integrity_snapshot(),
     )
 
 
@@ -814,6 +879,11 @@ def print_verdict(v: Verdict):
     print(f"\n{'='*70}")
     print(f"STRATEGY: {v.name}")
     print(f"{'='*70}")
+    if v.data_manifest:
+        dm = v.data_manifest
+        state = "VERIFIED" if dm.get("verified") else ("BYPASSED" if dm.get("bypassed") else "UNVERIFIED")
+        print(f"Data: {state} ({dm.get('files_checked', 0)} files, "
+              f"manifest {dm.get('manifest_built_utc')})")
     if v.cost_model:
         print(f"Costs: {v.cost_model.get('summary', '')}")
     for w in v.warnings:

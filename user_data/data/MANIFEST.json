@@ -1,0 +1,219 @@
+{
+  "algorithm": "sha256",
+  "built_utc": "2026-07-29T07:58:59Z",
+  "file_count": 52,
+  "files": {
+    ".gitkeep": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "binanceus/BTC_USDT-1d.feather": {
+      "bytes": 83810,
+      "sha256": "ed0f66490e0a29090f64c0763a85f63871f7db9126a68297d38a165865c929b5"
+    },
+    "binanceus/ETH_USDT-1d.feather": {
+      "bytes": 76242,
+      "sha256": "911f215958b6172841fa32a2de7c79fcdaa567c3972253c6689f94ce99e38900"
+    },
+    "okx/ADA_USDT-1d.feather": {
+      "bytes": 92914,
+      "sha256": "1417f346d7db9775e5ef1e8c77362c9b4ae1133097fb573e1a1f7b8f00199d94"
+    },
+    "okx/AVAX_USDT-1d.feather": {
+      "bytes": 69986,
+      "sha256": "bc78171c7c29e18a799ec9e893189e7ec40ef211b4cc6214277b72750a1ea1da"
+    },
+    "okx/BNB_USDT-1d.feather": {
+      "bytes": 42802,
+      "sha256": "5395f1a04ebdf592b96113a0de6a07961752106a5b05055ce49387afe3d06dac"
+    },
+    "okx/BTC_USDT-1d.feather": {
+      "bytes": 103106,
+      "sha256": "c2fd965674708fce9bca70b5405ae030e6106e99def69f23ea91fa0cff9123db"
+    },
+    "okx/BTC_USDT-1h.feather": {
+      "bytes": 1455234,
+      "sha256": "efafd20d6701f332efa60f4dc0817e3e85496e57ef7dd759762a39c32c519d7c"
+    },
+    "okx/BTC_USDT-4h.feather": {
+      "bytes": 417482,
+      "sha256": "619486b4881e657d06b62513f9f68f44749b3e529b33541dc7a3dc1678a8ceb6"
+    },
+    "okx/DOT_USDT-1d.feather": {
+      "bytes": 70858,
+      "sha256": "c50779872c39dc8c0ab86f9cca8c105dc558df19e0ab00fc483e344a09397ad5"
+    },
+    "okx/ETH_USDT-1d.feather": {
+      "bytes": 80914,
+      "sha256": "c88f839bc40218cd1d5ba8440c58f273dbd4aa5f7cf0cdabd4901e8f91dbb0a9"
+    },
+    "okx/LINK_USDT-1d.feather": {
+      "bytes": 77682,
+      "sha256": "bb7362f5df2297027d6b9d62c1551e8a9daeb1ae29369b223ff4a17b39ed6e5d"
+    },
+    "okx/SOL_USDT-1d.feather": {
+      "bytes": 69722,
+      "sha256": "1271aabb4432797acc871b4fdb4183d137f5ef829148c532a01528024efaed61"
+    },
+    "okx/UNI_USDT-1d.feather": {
+      "bytes": 69226,
+      "sha256": "c093d55bfb83e1c6644afe7fe24b0dd0d346ff82d771f527f13cc06c334a9f55"
+    },
+    "okx/futures/ADA_USDT_USDT-1d-futures.feather": {
+      "bytes": 77530,
+      "sha256": "d26ea8bbd274d5f0cb9f2cd20939775d05939b3cffadae3466a5947ae004f976"
+    },
+    "okx/futures/ADA_USDT_USDT-1h-funding_rate.feather": {
+      "bytes": 6330,
+      "sha256": "1530e8390b82c9d81714cb6923d9c29d4d032735c632734024c88990ab2dad7d"
+    },
+    "okx/futures/ADA_USDT_USDT-1h-futures.feather": {
+      "bytes": 950506,
+      "sha256": "5bfcdfa8a69bbc1fbafb575096fe35e2d503fd6cede0c6c7b0639c4f8373a4ca"
+    },
+    "okx/futures/ADA_USDT_USDT-1h-mark.feather": {
+      "bytes": 1036442,
+      "sha256": "de7aff3c869dc707260f84576e69583e5f9ae427888ca6295f8746552a29a8bc"
+    },
+    "okx/futures/AVAX_USDT_USDT-1d-futures.feather": {
+      "bytes": 63674,
+      "sha256": "c9cddc10e363f816b0d000ae819d058c6b15852fc420be4ff34df27f2dac9fe6"
+    },
+    "okx/futures/AVAX_USDT_USDT-1h-funding_rate.feather": {
+      "bytes": 6618,
+      "sha256": "31d63633670454c985f043498116e0af91b176cccbd040baeb402fea39c4ff87"
+    },
+    "okx/futures/AVAX_USDT_USDT-1h-futures.feather": {
+      "bytes": 901034,
+      "sha256": "d7245a5f0eb7243ddaf38c814e040a6d57f5256092cf40fa148d5eae4105cdd5"
+    },
+    "okx/futures/AVAX_USDT_USDT-1h-mark.feather": {
+      "bytes": 963266,
+      "sha256": "c2173f72cf3dc09b841f4b5eb5b8896d5096831dc9006111aece9b9f8712141e"
+    },
+    "okx/futures/BNB_USDT_USDT-1d-futures.feather": {
+      "bytes": 38434,
+      "sha256": "03cfddd612942a73525dec9a9346dfcead07958c6f234db972898614b60a81c5"
+    },
+    "okx/futures/BNB_USDT_USDT-1h-funding_rate.feather": {
+      "bytes": 6730,
+      "sha256": "a8c4ac3174534b2d990716507f937d4d90f0b6e9a0b1e8f6f991939aae5ba587"
+    },
+    "okx/futures/BNB_USDT_USDT-1h-futures.feather": {
+      "bytes": 643858,
+      "sha256": "01679e6ef35f2ce8cb0e9dc44422d1979ffbbe2f91b71d4f42fc5aca847f1470"
+    },
+    "okx/futures/BNB_USDT_USDT-1h-mark.feather": {
+      "bytes": 513674,
+      "sha256": "d3318febb687317d212962d222ca120bee024e120b3b6887615f95f0b77cc354"
+    },
+    "okx/futures/BTC_USDT_USDT-1d-futures.feather": {
+      "bytes": 75034,
+      "sha256": "6b2e88135f0bc305bb142cfe19e4a8e534cec413197d7e4b124d6e5002259598"
+    },
+    "okx/futures/BTC_USDT_USDT-1h-funding_rate.feather": {
+      "bytes": 7314,
+      "sha256": "26b4762848195462a0814bba0d3fe519497084659a53348609029d2138190ed2"
+    },
+    "okx/futures/BTC_USDT_USDT-1h-futures.feather": {
+      "bytes": 1010154,
+      "sha256": "fb3e545a22ed76926633bf10aba8b13e4c91bbb5453f327f55680f494cc22570"
+    },
+    "okx/futures/BTC_USDT_USDT-1h-mark.feather": {
+      "bytes": 179450,
+      "sha256": "cc3c82efe4cdb7a6fa8ff9c7cfa049d3480ac71b962043d1ac0ca3f625d04d0a"
+    },
+    "okx/futures/DOT_USDT_USDT-1d-futures.feather": {
+      "bytes": 62010,
+      "sha256": "ad22fcd8574b489750c2c19304108ae0c49372f2c36333edde7f952b69d83797"
+    },
+    "okx/futures/DOT_USDT_USDT-1h-funding_rate.feather": {
+      "bytes": 6618,
+      "sha256": "2e2018fcbc49570ed99197267ff2cd09181c1ee53b8d92fa3fecbae1edec3d61"
+    },
+    "okx/futures/DOT_USDT_USDT-1h-futures.feather": {
+      "bytes": 860978,
+      "sha256": "9fb040e0156209951446608f0a3c53f2eef4f629d1f89bffa1d1485dc0718898"
+    },
+    "okx/futures/DOT_USDT_USDT-1h-mark.feather": {
+      "bytes": 921202,
+      "sha256": "4244d4f36511c32f19d8d5ad6a7f279fbfec1c89148948e7e31aad50fd0397be"
+    },
+    "okx/futures/ETH_USDT_USDT-1d-futures.feather": {
+      "bytes": 65258,
+      "sha256": "b465b228789599741f3eda25a28c5420c3e58e557f43484ebffa19ba876e2aa1"
+    },
+    "okx/futures/ETH_USDT_USDT-1h-funding_rate.feather": {
+      "bytes": 7202,
+      "sha256": "33438801d476ce51ec10b9027d79da03d997c32daa75d078cdd18567bbc91f62"
+    },
+    "okx/futures/ETH_USDT_USDT-1h-futures.feather": {
+      "bytes": 999946,
+      "sha256": "5b20079a977511c177887e84f4dcb1abb284413baa9ad1a18ceee057cd0fa8ef"
+    },
+    "okx/futures/ETH_USDT_USDT-1h-mark.feather": {
+      "bytes": 1053314,
+      "sha256": "2fe55dc256c50cf0abbe61a959e3f693463e70f67ef0560f0a7339258268e769"
+    },
+    "okx/futures/LINK_USDT_USDT-1d-futures.feather": {
+      "bytes": 62930,
+      "sha256": "b5f442c40cf7752ad2a1ce04e15fe474f1fc1e0f6f65a3f5ccd590f7dd22ebde"
+    },
+    "okx/futures/LINK_USDT_USDT-1h-funding_rate.feather": {
+      "bytes": 6794,
+      "sha256": "05df283905b30167745bdacde3053923da3716cd4b0c35fcfb8c655dc351d31f"
+    },
+    "okx/futures/LINK_USDT_USDT-1h-futures.feather": {
+      "bytes": 890770,
+      "sha256": "474813017465ee27a0a96ce640811cf6f7a5cffa4e03424e59746d0004aa6a6e"
+    },
+    "okx/futures/LINK_USDT_USDT-1h-mark.feather": {
+      "bytes": 947754,
+      "sha256": "586bd4be8344738b36a4f9998b8f8a99c5c018d3cc9fa379bbdbf2d6cec1630a"
+    },
+    "okx/futures/SOL_USDT_USDT-1d-futures.feather": {
+      "bytes": 61834,
+      "sha256": "fe8771a320ae6e459574c2c450cead8496c38c8a7cd0502ee5de817a9058fe92"
+    },
+    "okx/futures/SOL_USDT_USDT-1h-funding_rate.feather": {
+      "bytes": 7074,
+      "sha256": "4aecc78cc3223cc71d55fa16b68a9f0403f984debc7842d1771f1387336a73df"
+    },
+    "okx/futures/SOL_USDT_USDT-1h-futures.feather": {
+      "bytes": 924434,
+      "sha256": "783503b887a2818b6b5a9fe4c950c3c63fd854ad33314899d1e3afd1d9a6defe"
+    },
+    "okx/futures/SOL_USDT_USDT-1h-mark.feather": {
+      "bytes": 924674,
+      "sha256": "038feb17073190f2be7223dc6394669e1b454ac0b7f8231af17c96f77bf32f52"
+    },
+    "okx/futures/XRP_USDT_USDT-1d-futures.feather": {
+      "bytes": 77754,
+      "sha256": "dcb973f358b9932ac28ccb7c40695183176e1474b4aee53efbf59cc3ccc04319"
+    },
+    "okx/futures/XRP_USDT_USDT-1h-funding_rate.feather": {
+      "bytes": 6874,
+      "sha256": "5fd92c515bb6f1ea6d4e25892e09293dd67a2e362619251b4fbdb74ccfa2c86a"
+    },
+    "okx/futures/XRP_USDT_USDT-1h-futures.feather": {
+      "bytes": 965706,
+      "sha256": "cdfa798386647a7d4814936e9705d3786e6cb56877e68cd5f4576d47e407c9dc"
+    },
+    "okx/futures/XRP_USDT_USDT-1h-mark.feather": {
+      "bytes": 1018306,
+      "sha256": "367963ca0c42a71b8131b62949b285e29ad1fb198443ba4c571694c1bef4d420"
+    },
+    "okx/futures/leverage_tiers_USDT.json": {
+      "bytes": 10490180,
+      "sha256": "d9699b164892e359cc8fd6fc36bb0d1775442878bf37ecdd36fc20dd8f0b9d73"
+    },
+    "voo_daily.csv": {
+      "bytes": 72226,
+      "sha256": "d890ffa0fab5b24798abca70a414b6d9a741e7308975a79d2b9c0f72932a92e0"
+    }
+  },
+  "note": "initial manifest, repair item 4; BTC/ETH 1d feathers verified against live OKX (bar=1Dutc) on 2026-07-28",
+  "root": "user_data/data",
+  "total_bytes": 29623864,
+  "version": 1
+}
