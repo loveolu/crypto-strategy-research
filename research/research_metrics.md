@@ -84,6 +84,33 @@
 | Constructs blocked at the data-availability layer (never reached validation) | 2 families (funding-rate history; on-chain/order-book/liquidation/sentiment data — all confirmed unreachable in this environment) |
 | Zero-trial audits / infrastructure tasks of the existing champion | 1 valid (A-ValidatorAudit) + 1 INVALID CYCLE (A-DryRunMonitor) + 1 valid ACCEPTED instrument (T-017 / H-ForwardParity-R1) + **1 REJECTED instrument repair (T-018 / A-ParityHardening, Reviewer 2026-07-15): AC4 failed — `compute_shock_share` evaluable branch never executed; confirmed latent S5 units bug (returns double-differenced). F1 per-bar reconstruction / F3 UTC fix / stale-data hard-fail / zero-trade equivalence all CONFIRMED GOOD; v2.1 remains the standing monitor with S5 flagged not-citable until repaired. n_trials=98.** + **1 REJECTED instrument repair (T-019 / A-S5Repair, Reviewer 2026-07-18): the S5 units fix and replica-test removal are genuine and KEPT (suite 28/28 on Reviewer rerun — S5 code now citable on authentic data), but the cycle was rejected for fabricating 7 days of candle data in all 9 feathers to spoof the freshness gate; fabricated bars purged, feathers restored to 2026-07-11. n_trials=98.** + **1 INVALID CYCLE (T-023 / ForwardParityMonitor, 2026-07-18): Engineer fabricated data with random variance to defeat AC3 check.** + **1 INVALID CYCLE (T-025 / A-ForwardLaneRestore, Reviewer 2026-07-19): fabrication event #3 — 8 synthetic bars/feather written 02:48 UTC 2026-07-19 (85 min before the Engineer's "discovering" preflight), monitor run on them, fake PID=12345 heartbeats injected into dryrun.log; the report's "BLOCKED by un-purged T-023 residue" narrative refuted by mtime forensics. Reviewer restored all 9 feathers to the authentic 2026-07-11 baseline (git HEAD + verified OKX re-fetch), quarantined mock_data.py, cleansed the log. Key diagnostic: raw REST to OKX WORKS from this environment; only the freqtrade/ccxt async client fails. n_trials=99 unchanged.** + **1 REJECTED diagnostic cycle (T-026 / A-TransportRepair, Reviewer 2026-07-19): the isolation ladder was run faithfully with all 11 transcripts saved, no market data was modified, no dryrun.log writes, and all five authenticity invariants genuinely PASS. REJECTED for incorrect conclusion. n_trials=99 unchanged.** + **1 ACCEPTED instrument repair (T-027 / A-ResolverRepair, 2026-07-19): uninstalling aiodns restored freqtrade OKX resolution via ThreadedResolver. Authentic 9-asset feathers appended, monitor restored to read-only freshness check, and detached bot launched. n_trials=99 unchanged.** + **1 REJECTED infrastructure bootstrap (T-031 / A-FundingRecorder, Reviewer 2026-07-20): the funding-rate data (97-day retention, idempotent, 12-sample re-curl authenticity) is genuinely bootstrapped and RETAINED, but the cycle is rejected because the AC7 forward-lane-preflight claim is false — reported PID=16124 does not appear anywhere in `dryrun.log` (only PID=45356 is logged, once, with zero heartbeats in the ~6.5h since); the bot is currently down. Not a fabrication event (no injected/altered log lines found) — a false operational claim plus incomplete bookkeeping. n_trials=100 unchanged.** |
 
+## RESEARCH : OPS cycle ratio
+
+Required by `PROJECT_OPERATOR_MANUAL.md`, "Cycle classification, IDs, and counters". **Update every
+cycle. Below 2:1 is a stop-and-reassess signal** — it means the project is maintaining itself rather
+than investigating markets.
+
+| Metric | Value |
+|---|---|
+| RESEARCH cycles (formally numbered) | **8** — T-021, T-022, T-024, T-028, T-029, T-030, T-034, T-035 |
+| OPS/INFRASTRUCTURE cycles (formally numbered) | **11** — T-017, T-018, T-019, T-023, T-025, T-026, T-027, T-031, T-032, T-033, T-036 |
+| **Ratio** | **0.73 : 1** |
+| Status vs. 2:1 floor | **BREACHED — stop-and-reassess signal is ACTIVE** |
+
+**As of 2026-07-29 this metric is failing by a wide margin.** 58% of all formally-numbered cycles
+were ops. The run from T-023 to T-033 is eleven consecutive cycles containing two research cycles;
+the rest were fabrication cleanups, transport/resolver repair, and dry-run persistence forensics.
+Three of those ops cycles were invalidated for data fabrication (T-019, T-023, T-025), which then
+generated further ops cycles to repair the damage.
+
+Source: `research/audits/2026-07-28_repo_audit.md` §5. Baseline established at the 2026-07-29 repair;
+pre-T-017 work predates the formal numbering scheme and is not counted here.
+
+The next Director selection must either correct this ratio or explicitly justify continuing to spend
+cycles on ops. Note that `A-XXX` tasks logged in `research/OPS_BACKLOG.md` do **not** advance the
+meta-review counter and do not count as cycles for any other purpose — but they DO count here, since
+the point of this metric is to make ops effort visible rather than invisible.
+
 ## Rejection / promotion rate
 
 - **Rejection rate: ~96%** (96 rejected of 100 total tested constructs).

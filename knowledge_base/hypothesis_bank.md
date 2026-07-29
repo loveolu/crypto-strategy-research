@@ -50,50 +50,49 @@ cards stay in the archive and this row governs.
 | Family / theme | Status | Cards | Closure evidence (research_index.md rows) |
 |---|---|---|---|
 | Mean reversion on crypto OHLCV (all tested timeframes) | **CLOSED** | 17 archived | #2, #3 (negative even in-sample), #8, #13; fees vs reversion amplitude structural |
-| Intraday / time-of-day / sub-daily constructions | **CLOSED** | 4 archived | #6, #12 (fee floor 0.15%/side; real 21-22 UTC anomaly untradeable 25:1) |
+| Intraday / time-of-day / sub-daily constructions | **REOPENED 2026-07-29** | 4 archived (cards stay archived; this row governs) | Closed on a cost model that overstated achievable perp round-trip cost. Requires re-test at real rates before it may be re-closed — see the reopening note below. |
 | Short side / symmetric TSMOM of the champion's gate | **CLOSED** | 1 archived | #16 whipsaw census (median episode 3 bars; 2018's −84% bear → +2.6% gross) |
 | BTC-ETH pairs / relative value / rotation / dominance / ratio | **CLOSED** | 4 archived | #18 (no cointegration any window; post-2024 ETF-era break formal, ADF p 0.405) |
 | Sleeve sizing refinement (estimator quality AND rebalance granularity) | **CLOSED** | 0 (no book card; champion's own card stays live) | #15 + #19 (efficient frontier from both directions; 25% quantizer is protective) |
 | DVOL daily-bar champion modifications | **CLOSED** | 4 archived | #21 (veto, B3a) + #22 (sizing, P2 — VRP positive-carry) |
 | Regime-classifier overlay (ER, ADX, MESA, HMM) | **CLOSED** | 4 archived | #30 (post-hoc), #31, #32 (three firing-set concentration failures on the same Oct-2025 boundary across two signals and both threshold types; dataset lacks recent classifier-detectable chop). Reopen ONLY per T-030 §3: window extended ≥6 months past 2026-05-27 with fresh held-out split, OR forward-lane documented in-market chop episode |
 
-### CORRECTION (2026-07-21, Director cycle #16 — self-audit, prompted by operator challenge)
+### REOPENING (2026-07-29) — intraday / time-of-day / sub-daily
 
-The row previously here — **"New OHLCV signal-prediction constructs generally | CLOSED | #8 (0/61)
-+ entire history"** — overclaimed. It has been **removed as a blanket closure**. An audit run this
-cycle counted the named hypothesis cards in sections 1-9 below: **83 distinct named entries, of
-which only 20 (24%) carry an explicit "Already tested by this project" line.** The "0/61" evidence
-(row #8, a *generic* autonomous search across broad buckets — "indicators, multi-asset, 4h,
-ensembles, oscillators") was generalized to declare the **entire remaining 76%** closed by
-inference, without individually implementing and backtesting them. That inference is too strong for
-several categories that are mechanistically distinct from anything the generic search or the ~20
-individually-tested entries actually tried:
+This family was closed on a cost model that **overstated achievable perp round-trip cost by 3x
+(taker) to 7.5x (maker)**. Archived runs charged a blended 15 bps/side with zero spread and no
+maker/taker distinction — 30 bps round trip. Real OKX regular-tier perp fees are 10 bps round trip
+taker, 4 bps maker. Those ratios compare the archived all-in figure against *fee-only* perp rates,
+because the old model never separated its fee component; on an all-in basis the current taker model
+is 18 bps round trip, so the archived cost was 1.67x too high. **Do not quote 3x/7.5x as an expected
+P&L improvement.** See `user_data/research/ARCHIVE_COST_NOTE.md`.
 
-- **Statistical/ML direction classifiers** (DNN, AdaBoost, Linear/Logistic Regression — Section 8):
-  a fundamentally different paradigm (fitted models vs. fixed technical rules). No book-derived ML
-  classifier has ever been coded and backtested by this project. The "~1.2-1.3 Sharpe ceiling"
-  finding is evidence only about the rule-based technical-indicator constructs actually tried, not
-  a proof that statistical learning on the same OHLCV data hits the same ceiling — that is itself
-  an untested empirical claim.
-- **Idiosyncratic named systems never coded** (Kase DevStop, DeMark's Sequential, Taylor Trading
-  Technique, Gustafson's Price Persistency, Nofri's Congestion-Phase, Fischer's Golden Section/Hurst
-  Phasing, Point-and-Figure/Renko, GASP, CSI-Ranked Selection, Low-Volatility Anomaly, and others) —
-  each has a specific, documented rule structure a generic indicator sweep would not reproduce by
-  accident.
-- **Portfolio-construction-layer hypotheses** (Kelly F\*=C⁻¹M, Vince's Geometric-Optimal/CPA,
-  Equal-Risk parity weighting) were never claimed closed by this row in the first place (see "Still
-  OPEN" below) — flagged here only to note the correction does not newly open them; they were
-  already correctly open.
+Turnover-heavy constructs are the ones this mispricing hurt most, and this family is the most
+turnover-heavy in the bank — so its closure rests on exactly the assumption that was wrong.
+**Status: OPEN for re-test at real rates. It may not be re-closed on archived evidence**; a fresh
+closure requires a run under the current `COST_MODEL`. No sub-hourly data exists yet, and acquiring
+it is an `A-XXX` ops task gated on A-002 (`research/OPS_BACKLOG.md`) — not something a cycle may do.
 
-**What remains genuinely, narrowly CLOSED** (the ~20 tested entries plus the other rows in this
-ledger above): the specific rule-based technical-indicator constructs actually coded and run —
-moving-average/EMA/ROC trend variants, Donchian/N-day breakout, oscillator/RSI mean-reversion,
-ADX/ER/MESA/HMM regime classifiers, DVOL-based vetoes/sizing, BTC-ETH pairs, sizing-layer
-refinements, and the ~61 variants in the generic autonomous search (row #8). Future Directors:
-before treating any specific named hypothesis in this file as closed, check for its own explicit
-"Already tested by this project" line — do not rely on a family-level inference from row #8 alone.
-The 20 explicitly-tested entries and their outcomes are unaffected by this correction; this only
-retracts the *blanket extension* to the other 63.
+**Finding #12 (hours 21-22 UTC anomaly) STAYS CLOSED.** Its fee-to-edge ratio improves from 25:1 to
+roughly **3.3:1 at real maker rates** — still losing by a wide margin, and the maker path is itself
+unproven (no promotion may rest on it; see the manual's cost-model section). The reopening applies to
+the family, not to this specific construct: #12 was re-examined and remains rejected on its own
+numbers. The statistical finding (t = 2.4-3.0, stable) was never in doubt; its tradeability is.
+
+### CORRECTION (2026-07-21) — the blanket OHLCV closure was retracted
+
+A former ledger row, *"New OHLCV signal-prediction constructs generally | CLOSED | #8 (0/61) +
+entire history"*, was **removed as overclaiming**. An audit counted **83 named cards in sections 1-9;
+only 20 (24%) carry an explicit "Already tested by this project" line.** Row #8 was a *generic*
+autonomous sweep; generalising it to close the other 76% by inference was too strong — notably for
+statistical/ML classifiers (a different paradigm, never coded here), idiosyncratic named systems
+never implemented, and portfolio-construction hypotheses (never covered by that row).
+
+**Operative rule: before treating any named card as closed, check for its own explicit "Already
+tested by this project" line. Do not infer closure from row #8.** What remains narrowly closed is the
+~20 tested entries plus the ledger rows above.
+
+Full text: `knowledge_base/archive/closed_families.md`, appendix.
 
 Still OPEN (revised): H-ForwardParity (forward dry-run evidence — the highest-EV lane);
 portfolio/allocation layer above the sleeve (one interior point validated, H-TailAlloc #20;

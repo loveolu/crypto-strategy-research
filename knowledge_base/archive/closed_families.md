@@ -802,3 +802,47 @@ completed in-market chop episode. Not a re-parameterization. Chan's own "general
 actual trading purposes" verdict stands as the independent prior.
 
 ---
+
+---
+
+## Appendix — full text of the 2026-07-21 scope correction
+
+Moved out of the hypothesis bank's Director-mandatory region on 2026-07-29 (repair item 6) for context budget. The bank retains a compacted version carrying the operative rule; this is the complete original, verbatim.
+
+### CORRECTION (2026-07-21, Director cycle #16 — self-audit, prompted by operator challenge)
+
+The row previously here — **"New OHLCV signal-prediction constructs generally | CLOSED | #8 (0/61)
++ entire history"** — overclaimed. It has been **removed as a blanket closure**. An audit run this
+cycle counted the named hypothesis cards in sections 1-9 below: **83 distinct named entries, of
+which only 20 (24%) carry an explicit "Already tested by this project" line.** The "0/61" evidence
+(row #8, a *generic* autonomous search across broad buckets — "indicators, multi-asset, 4h,
+ensembles, oscillators") was generalized to declare the **entire remaining 76%** closed by
+inference, without individually implementing and backtesting them. That inference is too strong for
+several categories that are mechanistically distinct from anything the generic search or the ~20
+individually-tested entries actually tried:
+
+- **Statistical/ML direction classifiers** (DNN, AdaBoost, Linear/Logistic Regression — Section 8):
+  a fundamentally different paradigm (fitted models vs. fixed technical rules). No book-derived ML
+  classifier has ever been coded and backtested by this project. The "~1.2-1.3 Sharpe ceiling"
+  finding is evidence only about the rule-based technical-indicator constructs actually tried, not
+  a proof that statistical learning on the same OHLCV data hits the same ceiling — that is itself
+  an untested empirical claim.
+- **Idiosyncratic named systems never coded** (Kase DevStop, DeMark's Sequential, Taylor Trading
+  Technique, Gustafson's Price Persistency, Nofri's Congestion-Phase, Fischer's Golden Section/Hurst
+  Phasing, Point-and-Figure/Renko, GASP, CSI-Ranked Selection, Low-Volatility Anomaly, and others) —
+  each has a specific, documented rule structure a generic indicator sweep would not reproduce by
+  accident.
+- **Portfolio-construction-layer hypotheses** (Kelly F\*=C⁻¹M, Vince's Geometric-Optimal/CPA,
+  Equal-Risk parity weighting) were never claimed closed by this row in the first place (see "Still
+  OPEN" below) — flagged here only to note the correction does not newly open them; they were
+  already correctly open.
+
+**What remains genuinely, narrowly CLOSED** (the ~20 tested entries plus the other rows in this
+ledger above): the specific rule-based technical-indicator constructs actually coded and run —
+moving-average/EMA/ROC trend variants, Donchian/N-day breakout, oscillator/RSI mean-reversion,
+ADX/ER/MESA/HMM regime classifiers, DVOL-based vetoes/sizing, BTC-ETH pairs, sizing-layer
+refinements, and the ~61 variants in the generic autonomous search (row #8). Future Directors:
+before treating any specific named hypothesis in this file as closed, check for its own explicit
+"Already tested by this project" line — do not rely on a family-level inference from row #8 alone.
+The 20 explicitly-tested entries and their outcomes are unaffected by this correction; this only
+retracts the *blanket extension* to the other 63.

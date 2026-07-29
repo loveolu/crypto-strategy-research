@@ -512,6 +512,79 @@ Stress test using shuffled trade order, removed random trades, increased slippag
 
 ⸻
 
+## Execution and cost model
+
+**Venue: OKX, USDT-margined perpetual swaps, regular (non-VIP) tier.** Rates as of 2026-07-28.
+The single source of truth is `COST_MODEL` in `user_data/research/validator.py`; every cost number
+anywhere must resolve from it via `per_side_cost()` / `round_trip_cost()`.
+
+| Component | Value |
+|---|---|
+| maker fee | 2.0 bps/side |
+| taker fee | 5.0 bps/side |
+| slippage | 3.0 bps/side (estimate, uncalibrated) |
+| spread | 2.0 bps quoted; a taker crosses half = 1.0 bps/side (estimate, uncalibrated) |
+| adverse selection | **required** on the maker path, no zero default |
+| **taker all-in** | **9.0 bps/side, 18.0 bps round trip** |
+
+`user_data/config_perp.json` sets `"fee": 0.0009` — the all-in per-side figure, not the exchange
+fee, because freqtrade's `fee` is the engine's only per-side cost lever (it models no slippage and no
+spread). `fee_open`/`fee_close` in a result are therefore all-in; exchange fees are 5/9 of them.
+
+**Rule — no backtest may run without explicit costs.** A run that inherits a default fee, or
+hardcodes a cost number anywhere, is void. Before 2026-07-28 the engine silently applied its own
+0.15%/side default because `config.json` had no `fee` key. Pre-2026-07-28 numbers used 15 bps/side
+with zero spread and are **not comparable** — see `user_data/research/ARCHIVE_COST_NOTE.md`.
+
+**Rule — maker-fill assumptions are unproven.** `fill_assumption = "maker_optimistic"` is a
+hypothesis about execution, not a cost setting. A resting limit order fills only when price comes to
+you, which is adversely correlated with the move the signal wanted; the fills you do not get are
+systematically the profitable ones, and neither freqtrade nor this harness models that selection
+effect. **No promotion may rest on a `maker_optimistic` backtest.** The assumption becomes usable
+only when validated against forward dry-run fill statistics — realised fill rate and realised
+adverse selection, measured, on this venue. Until then `adverse_selection_bps` must be set
+explicitly with a stated basis, and the harness refuses to run the maker path without it.
+
+**Rule — any backtest showing >100% CAGR is presumed defective.** Not impressive: defective. Treat
+it as a bug report until the cost model and the lookahead checks have been re-verified, and say in
+the report that you did so. Check in this order: costs actually applied (not defaulted, not zero),
+signal lag (`signal_to_returns` uses a 2-bar convention for a reason), any indicator computed over
+the full series before splitting, and survivorship in the instrument list. A >100% CAGR that
+survives all four is reported *with* that verification stated; one that has not been checked is not
+reportable at all.
+
+## Cycle classification, IDs, and counters
+
+**OPS/INFRASTRUCTURE tasks use the `A-XXX` ID space.** Monitoring, tooling, data acquisition,
+environment repair, bookkeeping, and instrument builds are ops. Research is a falsifiable claim
+about market behaviour tested against data.
+
+An `A-XXX` task:
+- **never increments `n_trials`** — it tests no hypothesis, so it consumes no multiple-testing budget;
+- **never advances the meta-review cycle counter** — meta-reviews audit research, and ops work
+  padding the count triggers reviews that have little research to review;
+- is logged in `research/OPS_BACKLOG.md` and assigned from there.
+
+This matters because the project has been misclassifying: **11 of 19 formally-numbered cycles were
+ops**, several carrying `T-` or even `H-` prefixes (T-033 was Windows power-plan forensics under an
+`H-` name). The counters were measuring activity, not research.
+
+**Rule — track the RESEARCH:OPS cycle ratio in `research_metrics.md`.** Update it every cycle.
+**Below 2:1 is a stop-and-reassess signal**: it means the project is maintaining itself rather than
+investigating markets. It is not an automatic halt, but it must be named in the next Director
+selection and either corrected or explicitly justified.
+
+## Reserved holdout
+
+**All bars after 2026-05-27 are RESERVED HOLDOUT.** The BTC/ETH 1d feathers now run to 2026-07-18;
+every recorded split boundary in this repository was drawn on a dataset ending on or before
+2026-05-27. No training, validation, parameter selection, or pre-gate screening may touch those bars.
+
+**Pin splits by DATE, not by fraction, while the holdout is reserved.** `split_70_15_15()` and
+`walk_forward()` compute boundaries as percentages of whatever they are handed, so a data top-up
+slides the TEST window forward into the holdout silently — no error, no warning, just a construct
+scored on bars that helped choose it. A data refresh is not a neutral maintenance action.
+
 ## Data acquisition is not research
 
 **A research cycle may not create, modify, delete or rebuild any file under `user_data/data/`, and
@@ -539,17 +612,15 @@ Consequences an Engineer must plan around:
 ## Independent Reviewer output standard
 
 **A review brief must not exceed 4 KB (4,096 bytes).** The latest brief is MANDATORY Director
-context every cycle, so its size is a direct tax on every future hypothesis selection. `T-035_brief.md`
-was 10,219 bytes — two and a half times the cap.
+context every cycle, so its size taxes every future hypothesis selection.
 
-A brief at or under the cap contains: the verdict; the falsification condition and whether it fired;
-what the Reviewer independently reproduced and what they could not; any defect found, with its
-outcome-changing status stated explicitly; and the resulting `n_trials`. Nothing else.
+A brief contains: the verdict; the falsification condition and whether it fired; what the Reviewer
+independently reproduced and what they could not; any defect found, with its outcome-changing status
+stated explicitly; and the resulting `n_trials`. Nothing else.
 
 Everything longer belongs in the cycle's own report (`research/results/T-*_report.md`), which is
-unbounded and on-demand. The brief is a verdict record, not a narrative. If a brief cannot be
-written in 4 KB, the excess is analysis and belongs in the report — say so in the report and cite it
-from the brief.
+unbounded and on-demand. The brief is a verdict record, not a narrative. If a brief cannot be written
+in 4 KB, the excess is analysis — put it in the report and cite it from the brief.
 
 Enforced by `scripts/check_context_budget.py`, which counts the highest-Task-ID file in
 `research/review_briefs/` against the mandatory budget.
