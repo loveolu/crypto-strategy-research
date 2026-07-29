@@ -25,6 +25,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import sys
 from pathlib import Path
 
@@ -63,13 +64,62 @@ ON_DEMAND = [
 ]
 
 
+#: Task ID at the start of a brief filename, e.g. "T-035_brief.md" -> 35,
+#: "T-000-PERPS_brief.md" -> 0. Anything not matching has no task ID.
+TASK_ID_RE = re.compile(r"^T-(\d+)")
+
+
+def task_id(p: Path) -> int | None:
+    m = TASK_ID_RE.match(p.name)
+    return int(m.group(1)) if m else None
+
+
 def latest_brief() -> Path | None:
-    """Newest file in the review-briefs directory, by mtime."""
+    """Highest Task ID in the review-briefs directory.
+
+    Resolved by Task ID parsed from the filename, NOT by mtime. mtime is not a
+    reliable ordering here: a clone, a checkout, a file-system copy or a later
+    editorial fix to an old brief all rewrite mtime, which would silently swap
+    which brief counts as the Director's mandatory context. The Task ID is the
+    project's own sequence number and is stable under all of those.
+
+    Files with no parseable Task ID (e.g. H-ForwardParity_brief.md) are ignored
+    for this purpose and reported by unparseable_briefs().
+    """
     d = REPO_ROOT / REVIEW_BRIEFS_DIR
     if not d.is_dir():
         return None
-    briefs = [p for p in d.glob("*.md") if p.is_file()]
-    return max(briefs, key=lambda p: p.stat().st_mtime) if briefs else None
+    numbered = [(task_id(p), p) for p in d.glob("*.md") if p.is_file()]
+    numbered = [(n, p) for n, p in numbered if n is not None]
+    if not numbered:
+        return None
+    # tie-break on filename so the result is deterministic
+    return max(numbered, key=lambda np: (np[0], np[1].name))[1]
+
+
+def unparseable_briefs() -> list[str]:
+    """Brief filenames carrying no Task ID; these can never be selected as latest."""
+    d = REPO_ROOT / REVIEW_BRIEFS_DIR
+    if not d.is_dir():
+        return []
+    return sorted(p.name for p in d.glob("*.md") if p.is_file() and task_id(p) is None)
+
+
+def latest_meta_review() -> Path | None:
+    """Highest-numbered meta-review, by the N in meta_review_N.md (not mtime).
+
+    Meta-reviews are ON-DEMAND, so this does not count against the budget; it is
+    here so the Director context spec has one consistent definition of "latest".
+    """
+    d = REPO_ROOT / "research/meta_reviews"
+    if not d.is_dir():
+        return None
+    numbered = []
+    for p in d.glob("*.md"):
+        m = re.search(r"(\d+)", p.stem)
+        if m:
+            numbered.append((int(m.group(1)), p))
+    return max(numbered, key=lambda np: (np[0], np[1].name))[1] if numbered else None
 
 
 def measure(rel: str, region: str | None) -> tuple[int, str | None]:
@@ -129,12 +179,22 @@ def main() -> int:
             desc = "marked region" if region == "markers" else "whole file"
         rows.append({"file": label, "region": desc, "bytes": n})
 
+    skipped = unparseable_briefs()
+    if skipped:
+        warnings.append(
+            "review briefs with no parseable Task ID can never be selected as the latest "
+            f"mandatory brief: {', '.join(skipped)}")
+
     on_demand_rows = []
     for rel in ON_DEMAND:
         fp = REPO_ROOT / rel
         on_demand_rows.append({"file": rel,
                                "bytes": fp.stat().st_size if fp.exists() else 0,
                                "exists": fp.exists()})
+    mr = latest_meta_review()
+    if mr:
+        on_demand_rows.append({"file": f"research/meta_reviews/{mr.name} (latest by number)",
+                               "bytes": mr.stat().st_size, "exists": True})
 
     over = total > budget
     result = {

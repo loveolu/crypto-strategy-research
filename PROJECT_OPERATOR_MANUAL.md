@@ -61,6 +61,14 @@ fails nonzero if the MANDATORY set exceeds 40 KB. Run it after editing any manda
 | `research/STANDING_DIRECTIVES.md` | whole file — the accumulated binding directives from every meta-review |
 | `research/review_briefs/` (latest only) | whole file — capped at 4 KB by the Reviewer standard below |
 
+**"Latest" means highest ID, never most recent mtime.** The latest review brief is the one with the
+highest Task ID parsed from its filename (`T-035_brief.md` → 35); the latest meta-review is the
+highest N in `meta_review_N.md`. A clone, a checkout, a file copy, or an editorial fix to an old
+document all rewrite mtime and would silently swap which document the Director is required to read.
+The ID is the project's own sequence number and is stable under all of those. Briefs whose filename
+carries no Task ID (e.g. `H-ForwardParity_brief.md`) can never be selected as latest;
+`scripts/check_context_budget.py` reports them.
+
 **Where new content goes.** A new *standard* (a rule that constrains what may be tested, validated
 or promoted) belongs inside this manual's marked region. A new *directive* from a meta-review
 belongs in `research/STANDING_DIRECTIVES.md`. Narrative, rationale and history belong outside both.
@@ -519,7 +527,7 @@ unbounded and on-demand. The brief is a verdict record, not a narrative. If a br
 written in 4 KB, the excess is analysis and belongs in the report — say so in the report and cite it
 from the brief.
 
-Enforced by `scripts/check_context_budget.py`, which counts the newest file in
+Enforced by `scripts/check_context_budget.py`, which counts the highest-Task-ID file in
 `research/review_briefs/` against the mandatory budget.
 
 ## Champion Classification & Progression Pipeline
