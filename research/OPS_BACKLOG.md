@@ -209,16 +209,34 @@ results are known is not a benchmark; it is a number chosen to be beaten.
 
 ### Deliverables
 
-- A committed script that reproduces the numbers from the committed data, and its output.
-- Full metric set on the same basis the harness reports for a candidate: Sharpe, CAGR, max DD,
-  profit factor, MC tail, DSR — full window, train/val/test, walk-forward.
-- The benchmark's figures recorded in `research/research_index.md` standing constraints.
+**A DSR figure alone is NOT sufficient.** The promotion rule
+(`PROJECT_OPERATOR_MANUAL.md`, "Promotion rule") evaluates a candidate against this benchmark on
+TEST-split Sharpe and MaxDD, and criterion 3 needs the benchmark's *per-bar returns* — not a summary
+statistic — to compute the paired standard error. Confirmed required artifacts:
+
+1. **Benchmark TEST-split Sharpe** — per-period and annualised, both stated, with the annualisation
+   factor named. Criterion 3's formula takes per-period Sharpes; mixing conventions changes the
+   verdict.
+2. **Benchmark TEST-split MaxDD** — feeds criterion 4 (candidate MaxDD ≤ 1.25 × benchmark MaxDD).
+3. **The benchmark's TEST-split return series, committed as a data artifact** (date-indexed, one row
+   per bar). Criterion 3 computes `ρ` between candidate and benchmark returns and `N` from the
+   overlapping bars; neither is recoverable from summary statistics. Without this series, criterion 3
+   cannot be evaluated and **no candidate can ever be promoted.**
+4. A committed script that reproduces all of the above from the committed data, and its output.
+5. Full metric set on the same basis the harness reports for a candidate: Sharpe, CAGR, max DD,
+   profit factor, MC tail, DSR — full window, train/val/test, walk-forward.
+6. The benchmark's headline figures recorded in `research/research_index.md` standing constraints.
+
+The return series must carry the exact split dates it was computed on, so a later candidate can be
+checked for date-identical overlap ("Like-for-like or void").
 
 ### Acceptance criteria
 
 - Reproducible from committed data with `scripts/data_manifest.py verify` clean.
 - Costs resolved from `COST_MODEL`; no hardcoded fee anywhere.
-- Funding treatment stated explicitly.
+- **Funding treatment stated explicitly**, including the source series, per the original spec above.
+- TEST-split Sharpe (per-period and annualised), TEST-split MaxDD, and the TEST-split return series
+  all committed — not just DSR.
 - Committed BEFORE any T-038 work begins.
 
 ### Explicit non-goals
