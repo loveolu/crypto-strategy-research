@@ -540,18 +540,17 @@ with zero spread and are **not comparable** — see `user_data/research/ARCHIVE_
 hypothesis about execution, not a cost setting. A resting limit order fills only when price comes to
 you, which is adversely correlated with the move the signal wanted; the fills you do not get are
 systematically the profitable ones, and neither freqtrade nor this harness models that selection
-effect. **No promotion may rest on a `maker_optimistic` backtest.** The assumption becomes usable
-only when validated against forward dry-run fill statistics — realised fill rate and realised
-adverse selection, measured, on this venue. Until then `adverse_selection_bps` must be set
-explicitly with a stated basis, and the harness refuses to run the maker path without it.
+effect. **No promotion may rest on a `maker_optimistic` backtest.** It becomes usable only when
+validated against forward dry-run fill statistics — measured fill rate and adverse selection on this
+venue. Until then `adverse_selection_bps` must be set explicitly with a stated basis, and the harness
+refuses the maker path without it.
 
-**Rule — any backtest showing >100% CAGR is presumed defective.** Not impressive: defective. Treat
-it as a bug report until the cost model and the lookahead checks have been re-verified, and say in
-the report that you did so. Check in this order: costs actually applied (not defaulted, not zero),
-signal lag (`signal_to_returns` uses a 2-bar convention for a reason), any indicator computed over
-the full series before splitting, and survivorship in the instrument list. A >100% CAGR that
-survives all four is reported *with* that verification stated; one that has not been checked is not
-reportable at all.
+**Rule — any backtest showing >100% CAGR is presumed defective.** Not impressive: defective. Treat it
+as a bug report until costs and lookahead are re-verified, and state in the report that you did.
+Check: costs actually applied (not defaulted, not zero); signal lag (`signal_to_returns`'s 2-bar
+convention); indicators computed over the full series before splitting; survivorship in the
+instrument list. A result that survives all four is reported *with* that verification stated; one
+that has not been checked is not reportable at all.
 
 ## Cycle classification, IDs, and counters
 
@@ -585,16 +584,31 @@ every recorded split boundary in this repository was drawn on a dataset ending o
 slides the TEST window forward into the holdout silently — no error, no warning, just a construct
 scored on bars that helped choose it. A data refresh is not a neutral maintenance action.
 
+**The perps program's holdout boundary must be declared in writing and committed BEFORE any
+sub-hourly data is downloaded.** Not after inspecting it, not while designing the first hypothesis.
+
+Mechanism, fixed in advance so it cannot be chosen to flatter a result: **the holdout is the most
+recent 20% of the series by CALENDAR DATE, computed from the download end date.** With span
+`S = end − start` in days, the boundary is `end − 0.20 × S`, rounded to a whole UTC date; everything
+after it is holdout. Calendar date, not bar count, so a venue outage or a thin period cannot shift
+the boundary. The download's start date, end date, and the resulting boundary go in the `A-XXX`
+acquisition task's commit message and in `research_index.md` standing constraints, in the same commit
+as the data.
+
+A holdout boundary chosen or adjusted after any of the data has been examined is not a holdout, and
+every result measured against it is in-sample. If the boundary must change, that is a new declaration
+with a new date, stated as such — and every prior result on the old boundary is void, not rebased.
+
 ## Data acquisition is not research
 
 **A research cycle may not create, modify, delete or rebuild any file under `user_data/data/`, and
 may not rebuild `user_data/data/MANIFEST.json`.** A cycle runs against a frozen dataset. Full stop.
 
 **A cycle whose git diff touches `user_data/data/` is INVALID** — the Reviewer rejects it on that
-basis alone, without assessing the hypothesis. This is not a formality: T-023 and T-025 both wrote
-fabricated candles into the feathers *during* a cycle, and both produced results and write-ups
-before anyone noticed. A cycle that can change its own inputs cannot be audited, because the data
-the Reviewer re-runs against is not the data the Engineer ran against.
+basis alone, without assessing the hypothesis. Not a formality: T-023 and T-025 both wrote fabricated
+candles into the feathers *during* a cycle and produced write-ups before anyone noticed. A cycle that
+can change its own inputs cannot be audited — the data the Reviewer re-runs against is not the data
+the Engineer ran against.
 
 Data acquisition, extension, repair and re-fetch are **`A-XXX` ops tasks only**. They are assigned
 separately, they change no `n_trials`, and they land in their own commit — data plus rebuilt

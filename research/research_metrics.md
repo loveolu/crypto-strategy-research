@@ -90,26 +90,45 @@ Required by `PROJECT_OPERATOR_MANUAL.md`, "Cycle classification, IDs, and counte
 cycle. Below 2:1 is a stop-and-reassess signal** — it means the project is maintaining itself rather
 than investigating markets.
 
+**This metric is scoped PER PROGRAM and does not carry across the spot→perps boundary.** Mixing them
+would let a fresh program inherit a breach it did not cause, or let new cycles dilute a closed
+program's record. Each program's counter stands alone.
+
+### OHLCV / spot program — CLOSED, final value
+
 | Metric | Value |
 |---|---|
-| RESEARCH cycles (formally numbered) | **8** — T-021, T-022, T-024, T-028, T-029, T-030, T-034, T-035 |
-| OPS/INFRASTRUCTURE cycles (formally numbered) | **11** — T-017, T-018, T-019, T-023, T-025, T-026, T-027, T-031, T-032, T-033, T-036 |
-| **Ratio** | **0.73 : 1** |
-| Status vs. 2:1 floor | **BREACHED — stop-and-reassess signal is ACTIVE** |
+| RESEARCH cycles | **8** — T-021, T-022, T-024, T-028, T-029, T-030, T-034, T-035 |
+| OPS/INFRASTRUCTURE cycles | **11** — T-017, T-018, T-019, T-023, T-025, T-026, T-027, T-031, T-032, T-033, T-036 |
+| **Final ratio** | **0.73 : 1** |
+| Status vs. 2:1 floor | **BREACHED** |
 
-**As of 2026-07-29 this metric is failing by a wide margin.** 58% of all formally-numbered cycles
-were ops. The run from T-023 to T-033 is eleven consecutive cycles containing two research cycles;
-the rest were fabrication cleanups, transport/resolver repair, and dry-run persistence forensics.
-Three of those ops cycles were invalidated for data fabrication (T-019, T-023, T-025), which then
-generated further ops cycles to repair the damage.
+**Final and frozen as of 2026-07-29.** 58% of formally-numbered cycles were ops. T-023→T-033 is
+eleven consecutive cycles containing two research cycles; the rest were fabrication cleanups,
+transport/resolver repair, and dry-run persistence forensics. Three of those ops cycles were
+themselves invalidated for data fabrication (T-019, T-023, T-025), which then generated further ops
+cycles to repair the damage. This is the number the perps program exists not to repeat.
 
-Source: `research/audits/2026-07-28_repo_audit.md` §5. Baseline established at the 2026-07-29 repair;
-pre-T-017 work predates the formal numbering scheme and is not counted here.
+Source: `research/audits/2026-07-28_repo_audit.md` §5. Pre-T-017 work predates the formal numbering
+scheme and is not counted.
 
-The next Director selection must either correct this ratio or explicitly justify continuing to spend
-cycles on ops. Note that `A-XXX` tasks logged in `research/OPS_BACKLOG.md` do **not** advance the
-meta-review counter and do not count as cycles for any other purpose — but they DO count here, since
-the point of this metric is to make ops effort visible rather than invisible.
+### Perps program — ACTIVE
+
+| Metric | Value |
+|---|---|
+| RESEARCH cycles | **0** |
+| OPS/INFRASTRUCTURE cycles | **0** |
+| Ratio | n/a — no cycles completed |
+| Floor status | **Not yet in force** |
+
+**The 2:1 floor applies only after 6 completed perps cycles.** Below that count the ratio is
+statistically meaningless — a single early ops task would read as a catastrophic breach and trigger a
+reassessment with nothing to reassess. Report the running counts every cycle regardless; begin
+enforcing the floor at cycle 7.
+
+`A-XXX` tasks do **not** advance the meta-review counter and are not cycles for any other purpose —
+but they DO count here, in the OPS column, because the whole point is to make ops effort visible
+rather than invisible.
 
 ## Rejection / promotion rate
 

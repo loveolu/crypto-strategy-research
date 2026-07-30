@@ -1,10 +1,5 @@
 # research_index.md — compressed project dashboard
 
-> Companions: `research_metrics.md` (project statistics), `NEXT_TASK.md` (single active assignment),
-> `current_champion.md` (champion detail), `strategy_portfolio.md` (allocation stance),
-> `strategy_iteration_log.md` (chronological journal), `strategy_research_notes.md` (durable lessons),
-> `knowledge_base/hypothesis_bank.md` (family status ledger + hypothesis cards).
->
 > **Format (per `PROJECT_OPERATOR_MANUAL.md`): one line per completed cycle, no detailed analysis.**
 > Compacted 2026-07-28 from 41,172 bytes; all prior narrative preserved verbatim in
 > `research/archive/index_narrative_pre_2026-07-28.md`.
@@ -19,12 +14,9 @@
   `research_metrics.md` is authoritative; the two counts must always match.
 - Judge on TEST-set / walk-forward numbers only. Full-window Sharpe runs 2-4x inflated here.
 - Asset universe is not restricted to BTC/ETH — they are the default because most liquid/stable.
-- **Costs come from `validator.COST_MODEL` only** (2026-07-28). No backtest may run without explicit
-  costs. Pre-2026-07-28 results used 15 bps/side with zero spread and are **not comparable** — see
-  `user_data/research/ARCHIVE_COST_NOTE.md`.
-- **Reserved holdout: all bars after 2026-05-27** (BTC/ETH 1d feathers now run to 2026-07-18). No
-  training, validation, parameter selection or pre-gate screening on them. Pin splits by DATE, not
-  by fraction — see `strategy_research_notes.md`, "Data provenance and reserved holdout".
+- **Costs**: `validator.COST_MODEL` only; pre-2026-07-28 results are not comparable. **Holdout**: all
+  bars after 2026-05-27. Both rules in full: `PROJECT_OPERATOR_MANUAL.md`, "Execution and cost model"
+  and "Reserved holdout".
 
 ## Current best strategy
 
@@ -82,11 +74,9 @@ MC P(DD<−25%)=16.5% (champion alone 30.5%). Detail: `strategy_portfolio.md`.
 | T-034 | H-LogisticEntry (per-asset logistic regression) | REJECT at pre-gate (0 trials) | BTC hit-ratio 53.1%, p=0.162; joint two-asset gate never cleared |
 | T-035 | H-FearGreed (Extreme-Greed veto) | STOPPED AT PRE-GATE 3 (0 trials) | F&G reactive not anticipatory (neg-lag 0.14 vs pos-lag 0.008) |
 
-**Numbering note.** Rows #1-#22 predate the formal `T-XXX` scheme (which begins at T-017) and are
-tracked by row number and date. `T-017` (H-ForwardParity-R1), `T-018` (A-ParityHardening),
-`T-019` (A-S5Repair) and `T-036` (A-ForwardParityConfirm) are ops cycles that were never given index
-rows; they exist only in `research/results/` and `research/review_briefs/`. This gap is recorded, not
-back-filled — no verdict has been invented for them here.
+**Numbering note.** Rows #1-#22 predate the `T-XXX` scheme (begins T-017). T-017, T-018, T-019 and
+T-036 are ops cycles with no index row — gap recorded, not back-filled, no verdict invented; see
+A-001 in `research/OPS_BACKLOG.md`.
 
 ## Open / closed directions
 
@@ -107,9 +97,8 @@ Authoritative family status is `knowledge_base/hypothesis_bank.md` FAMILY STATUS
 
 ## Where detail lives
 
-Detailed analysis does not belong in this file. Per-cycle reports: `research/results/T-*_report.md`.
-Reviewer audits: `research/review_briefs/`. Durable lessons (including all 27 empirical-testing
-lessons and the book-lesson summaries formerly inline here):
-`research/strategy_research_notes.md` and
-`research/archive/index_narrative_pre_2026-07-28.md`. Champion weaknesses and regime sensitivities:
-`research/current_champion.md`. Meta-review directives: `research/meta_reviews/`.
+Detail does not belong in this file. Per-cycle reports: `research/results/`. Reviewer audits:
+`research/review_briefs/`. Durable lessons (incl. the 27 empirical-testing lessons and book summaries
+formerly inline here): `research/strategy_research_notes.md`,
+`research/archive/index_narrative_pre_2026-07-28.md`. Champion detail: `research/current_champion.md`.
+Binding directives: `research/STANDING_DIRECTIVES.md`.
