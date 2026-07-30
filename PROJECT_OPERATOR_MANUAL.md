@@ -641,6 +641,23 @@ Consequences an Engineer must plan around:
 - `FREQTRADE_SKIP_DATA_VERIFY=1` invalidates the cycle. A run with the check bypassed is not
   evidence and may not appear in a report, a verdict, or a promotion argument.
 
+## DSR promotion threshold
+
+Quoted verbatim from `research/research_index.md` standing constraints:
+
+> **DSR gate mandatory**: any candidate reports Deflated Sharpe Ratio (`freqtrade_dsr.py`) at honest
+> cumulative `n_trials` and must clear **≥0.95** to be called a real edge. `research_metrics.md` is
+> authoritative; the two counts must always match.
+
+**This manual is now the primary location for that threshold; the `research_index.md` copy is
+secondary.** A research dashboard is not where a permanent standard belongs — it is rewritten every
+cycle, compacted for context budget, and scoped to one program, so a standard living there can be
+edited away by routine bookkeeping. If the two ever disagree, this manual governs and the index is
+the defect.
+
+`n_trials` is per-program and resets at a program boundary (see counters above); the **0.95 bar does
+not**. The perps program starts at `n_trials = 0` and clears the same threshold.
+
 ## Zero-cost pre-gate ladder
 
 **Run before any trial is spent. A hypothesis killed at a pre-gate spends ZERO trials** — `n_trials`
