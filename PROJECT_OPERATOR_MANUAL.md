@@ -93,6 +93,9 @@ belongs in `research/STANDING_DIRECTIVES.md`. Narrative, rationale and history b
 - `research/parked/` — check if it exists.
 - `research/OPS_BACKLOG.md` — logged-but-unassigned `A-XXX` ops items. Open when choosing ops work;
   never required to choose a research hypothesis.
+- `research/strategy_research_notes.md` — the durable-lessons file and the source of the zero-cost
+  pre-gate ladder reproduced in the standards below. Open it when designing a cycle's pre-gates, or
+  when a lesson's full context matters; the ladder itself is already mandatory via this manual.
 - Topic files (`knowledge_base/01_*.md` … `18_*.md`) — these are large (up to 180 KB each). Open at
   most one, only when a specific candidate needs its reasoning.
 
@@ -637,6 +640,49 @@ Consequences an Engineer must plan around:
   route around. Never run `build` to clear it.
 - `FREQTRADE_SKIP_DATA_VERIFY=1` invalidates the cycle. A run with the check bypassed is not
   evidence and may not appear in a report, a verdict, or a promotion argument.
+
+## Zero-cost pre-gate ladder
+
+**Run before any trial is spent. A hypothesis killed at a pre-gate spends ZERO trials** — `n_trials`
+does not advance, and the cycle is a successful negative result, not a failure. Six consecutive
+hypotheses were stopped this way before any DSR trial was spent.
+
+The governing principle, quoted from `research/strategy_research_notes.md` (Standing lessons, item 3):
+
+> **Zero-cost pre-gates before any trial** — demonstrate the object the strategy needs EXISTS
+> (harvestable regime, stationary spread, adverse target days). Record: 6 valid stops, 1 false
+> stop (corrected). Strongest sub-class: a cost-free mathematical upper bound.
+
+The ladder, quoted from the same file (T-035 entry, 2026-07-26):
+
+> reachability → redundancy → lead/lag → episode floor → harm census → TEST concentration
+
+Evaluate in that order and stop at the first failure — the point is to fail cheaply. Per gate:
+
+| # | Gate | What it tests | How it is evaluated |
+|---|---|---|---|
+| 1 | **Reachability** | Does the data actually exist and cover the window? | Coverage % over the intended span. Precedent: F&G "Reachability PASS (99.87% coverage since 2018-02-01, reachable via free public API)". A blocked or short axis stops here. |
+| 2 | **Redundancy** | Is the signal distinct from what the strategy already uses? | Correlation against the incumbent's own signals; **< 0.90** in precedent. F&G: "corr vs rv30 = −0.1382, vs roc30 = 0.7011, both < 0.90". DVOL: "level corr 0.687 < 0.90". |
+| 3 | **Lead/lag** | Does the series lead price/vol, or merely react to it? | Cross-correlation at ±k lags. F&G FAIL: "avg \|pos-lag\| corr 0.0076 / 0.0127 vs avg \|neg-lag\| 0.1405 / 0.0136 — reactive/lagging, not anticipatory." |
+| 4 | **Episode floor** | Are there enough events the strategy is actually in-market for? | Count in-market episodes against a **pre-declared floor**. H-IVGate FAIL: "only 4 in-market spike-onset episodes < 6 required" — the gate already avoided 5 of 9 by mechanism. |
+| 5 | **Harm census** | Are the days the construct would act on genuinely adverse? | Forward returns on affected days vs unconditional. Quoted: "P2 (harm: are the affected days adverse?)". H-IVSizing FAIL: affected days were *better* than unconditional. |
+| 6 | **TEST concentration** | Is the effect one episode, and does it fire in the evaluation window at all? | Share of TEST postdating the last materially-affected day, plus a >0-affected-days check. T-029/T-030 FAIL: ~65% of TEST postdated the last firing. |
+
+Two mandatory sanity checks, quoted from `strategy_research_notes.md` (lesson 20):
+
+> (a) any lead/lag census must ASSERT that the −k and +k sides differ before its verdict — exact
+> k↔−k symmetry between two distinct series is a bug signature; (b) when a diagnostic produces a
+> suspiciously clean result (equal to 4 decimals, perfectly monotonic), treat cleanliness as a bug
+> signal and verify before interpretation.
+
+Gates are **complementary, not substitutes** — "P1 and P2 pre-gates are complementary and
+non-redundant… H-IVSizing passed P1 comfortably but failed P2 decisively." Passing one says nothing
+about another. And per lesson 4, **pre-gate stops get Director reruns**: a stop is a verdict and is
+verified like one — one sign bug nearly closed the last reachable data axis.
+
+Sources: `research/strategy_research_notes.md` (principle, ladder, sanity checks, complementarity);
+numeric precedents from `research/archive/index_narrative_pre_2026-07-28.md` rows 21, 22, 37, which
+the notes file does not restate. Both files remain unchanged; this is a copy, not a move.
 
 ## Independent Reviewer output standard
 
