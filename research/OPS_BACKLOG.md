@@ -112,3 +112,65 @@ them requires history rewriting, which invalidates every commit hash this projec
 
 - Do not download any sub-hourly data as part of evaluating this.
 - Do not rewrite git history.
+
+---
+
+## A-003 — Golden-value regression suite for validator.py
+
+**Status:** LOGGED, NOT ASSIGNED. Do not execute without explicit assignment.
+**Logged:** 2026-07-29 (repair closeout).
+**Class:** OPS / test infrastructure. Zero trials. Does not advance the meta-review counter.
+**BLOCKING:** blocks repair item 5 (`render_report_sections`) **and the first perps cycle (T-038).**
+
+### Problem
+
+`validator.py` is the single source of every performance number this project has ever reported, and
+it has **no tests**. The 2026-07-28 repair changed its cost model, its path handling, its Monte Carlo
+stress term, and added an import-time data gate — all verified only by smoke runs whose "correct"
+answer was whatever the code produced. A smoke run confirms the code does not crash; it cannot
+confirm the Sharpe is right.
+
+This is the same class of gap that let T-019 report a hand-computed 13.0645% where the script value
+was 2.2760%: no independent expected value existed to check against. `scripts/test_data_manifest.py`
+(repair item 4) is the pattern to follow — and note that writing it immediately exposed a real
+`relative_to(REPO_ROOT)` bug that had gone unnoticed because only the default path was ever exercised.
+
+### Scope
+
+A golden-value suite where every expected number is derived **analytically or by hand, independently
+of the implementation**. A test whose expectation is copied from a previous run of the same function
+is worthless — it locks in whatever the bug was.
+
+1. **Analytically-known Sharpe.** Construct return series whose Sharpe is known in closed form
+   (e.g. a constant-return series; a two-value alternating series; a series with known mean and
+   standard deviation). Assert `metrics()` reproduces it, including the `sqrt(365)` annualisation.
+   Include a zero-variance series and assert the documented 0.0 rather than a division error.
+2. **Hand-checkable max drawdown.** A short equity path with a drawdown computable on paper
+   (e.g. 100 → 120 → 60 → 90: max DD = −50%). Assert exactly. Include: no-drawdown monotonic series;
+   drawdown at the final bar; and two separate drawdowns where the *deeper* one must win, not the
+   later one.
+3. **`round_trip_cost()` arithmetic, both fill assumptions.** Assert taker = 2 × (taker + slippage +
+   spread/2) = 18.0 bps and maker = 2 × (maker + adverse_selection) with a set value — computed in
+   the test from first principles, not by calling `per_side_cost()`. Assert the maker path **raises**
+   while `adverse_selection_bps` is unset, that a value without a basis string raises, and that a
+   negative value raises.
+4. **Per-sub-run `execution_mode` propagation.** `validate()` currently threads `execution_mode`
+   through **six** call sites, not five: full window (`validator.py:815`), train/val/test
+   (`:827`–`:829`), walk-forward (`:831`, which re-enters `signal_to_returns` per window at `:483`),
+   and Monte Carlo (`:832`). Assert per sub-run that the cost actually applied is the requested one —
+   e.g. by running the same signal under `taker` and `maker_optimistic` and asserting **each** of
+   `full`, `train`, `val`, `test`, every `wf` window, and `mc` differs in the expected direction.
+   Asserting only the top-level result would pass even if four of the six silently used the default.
+
+### Acceptance criteria
+
+- Every expected value derived independently of `validator.py`, with the derivation in a comment.
+- Runs standalone and under pytest (note: repo `pyproject.toml` sets `--dist`; use `-o addopts=""`).
+- Fails loudly if any sub-run ignores `execution_mode`.
+- No test touches `user_data/data/` or the committed manifest.
+
+### Explicit non-goals
+
+- Do not change `validator.py` behaviour to make a test pass without first establishing, by hand,
+  which of the two is wrong.
+- Do not re-run or re-validate any historical strategy.
