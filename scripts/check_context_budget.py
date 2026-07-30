@@ -65,7 +65,7 @@ ON_DEMAND = [
 
 
 #: Task ID at the start of a brief filename, e.g. "T-035_brief.md" -> 35,
-#: "T-000-PERPS_brief.md" -> 0. Anything not matching has no task ID.
+#: "T-037_PERPS_TRANSITION_brief.md" -> 37. Anything not matching has no task ID.
 TASK_ID_RE = re.compile(r"^T-(\d+)")
 
 
