@@ -1,16 +1,15 @@
 # STANDING DIRECTIVES
 
-**MANDATORY reading for the Research Director and the Independent Reviewer, every cycle, during
-Phase 0.** This file is the accumulated, still-binding directive set from every meta-review. Full
-meta-reviews are ON-DEMAND (`research/meta_reviews/`); their directives live here.
+**MANDATORY for the Research Director and Independent Reviewer, every cycle, during Phase 0.** The
+accumulated still-binding directives from every meta-review. Full meta-reviews are ON-DEMAND
+(`research/meta_reviews/`); their directives live here.
 
-**Every future meta-review APPENDS its directives to this file**, under a new
-`## Directives from Meta-Review #N (<date>)` heading, and does not rewrite earlier ones. A directive
-is retired only by an explicit superseding directive that names it — never by silent deletion. If a
-later directive contradicts an earlier one, the later one governs and must say so.
+**Every future meta-review APPENDS here** under a new `## Directives from Meta-Review #N (<date>)`
+heading and does not rewrite earlier ones. A directive is retired only by an explicit superseding
+directive naming it — never by silent deletion; where they conflict the later governs and must say so.
 
-Content below is **verbatim** from the source meta-review, including its numbering. (Meta-Review #1's
-list skips number 4; that gap is in the source and is preserved, not silently renumbered.)
+Content below is **verbatim** from the source, including its numbering. (Meta-Review #1's list skips
+number 4; that gap is in the source, preserved rather than silently renumbered.)
 
 ---
 

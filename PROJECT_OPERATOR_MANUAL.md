@@ -508,7 +508,8 @@ Evaluate Deflated Sharpe Ratio, Probability of Backtest Overfitting (PBO) when f
 Verify every indicator uses only information available at candle close. Reject any strategy exhibiting data leakage.
 
 ### 9. Realistic Execution
-Account for fees, slippage, spread, and realistic execution assumptions. Never assume perfect fills.
+Fees, slippage, spread and fill assumptions come from `COST_MODEL` — see "Execution and cost model"
+below. Never assume perfect fills.
 
 ### 10. Monte Carlo Robustness
 Stress test using shuffled trade order, removed random trades, increased slippage, increased fees, and randomized execution timing. Report whether profitability survives.
@@ -530,9 +531,9 @@ anywhere must resolve from it via `per_side_cost()` / `round_trip_cost()`.
 | adverse selection | **required** on the maker path, no zero default |
 | **taker all-in** | **9.0 bps/side, 18.0 bps round trip** |
 
-`user_data/config_perp.json` sets `"fee": 0.0009` — the all-in per-side figure, not the exchange
-fee, because freqtrade's `fee` is the engine's only per-side cost lever (it models no slippage and no
-spread). `fee_open`/`fee_close` in a result are therefore all-in; exchange fees are 5/9 of them.
+`user_data/config_perp.json` sets `"fee": 0.0009` — the all-in per-side figure, not the exchange fee,
+because freqtrade's `fee` is its only per-side cost lever (no slippage, no spread modelled).
+`fee_open`/`fee_close` in a result are all-in; exchange fees are 5/9 of them.
 
 **Rule — no backtest may run without explicit costs.** A run that inherits a default fee, or
 hardcodes a cost number anywhere, is void. Before 2026-07-28 the engine silently applied its own
@@ -541,19 +542,17 @@ with zero spread and are **not comparable** — see `user_data/research/ARCHIVE_
 
 **Rule — maker-fill assumptions are unproven.** `fill_assumption = "maker_optimistic"` is a
 hypothesis about execution, not a cost setting. A resting limit order fills only when price comes to
-you, which is adversely correlated with the move the signal wanted; the fills you do not get are
+you — adversely correlated with the move the signal wanted, so the fills you do not get are
 systematically the profitable ones, and neither freqtrade nor this harness models that selection
 effect. **No promotion may rest on a `maker_optimistic` backtest.** It becomes usable only when
-validated against forward dry-run fill statistics — measured fill rate and adverse selection on this
-venue. Until then `adverse_selection_bps` must be set explicitly with a stated basis, and the harness
-refuses the maker path without it.
+validated against forward dry-run fill statistics on this venue. Until then `adverse_selection_bps`
+must be set explicitly with a stated basis; the harness refuses the maker path without it.
 
 **Rule — any backtest showing >100% CAGR is presumed defective.** Not impressive: defective. Treat it
 as a bug report until costs and lookahead are re-verified, and state in the report that you did.
 Check: costs actually applied (not defaulted, not zero); signal lag (`signal_to_returns`'s 2-bar
-convention); indicators computed over the full series before splitting; survivorship in the
-instrument list. A result that survives all four is reported *with* that verification stated; one
-that has not been checked is not reportable at all.
+convention); indicators computed over the full series before splitting; survivorship. A result
+surviving all four is reported *with* that verification; one unchecked is not reportable.
 
 ## Cycle classification, IDs, and counters
 
@@ -625,12 +624,11 @@ may not rebuild `user_data/data/MANIFEST.json`.** A cycle runs against a frozen 
 **A cycle whose git diff touches `user_data/data/` is INVALID** — the Reviewer rejects it on that
 basis alone, without assessing the hypothesis. Not a formality: T-023 and T-025 both wrote fabricated
 candles into the feathers *during* a cycle and produced write-ups before anyone noticed. A cycle that
-can change its own inputs cannot be audited — the data the Reviewer re-runs against is not the data
-the Engineer ran against.
+can change its own inputs cannot be audited.
 
-Data acquisition, extension, repair and re-fetch are **`A-XXX` ops tasks only**. They are assigned
-separately, they change no `n_trials`, and they land in their own commit — data plus rebuilt
-manifest together, with the authenticity evidence stated in the commit message.
+Data acquisition, extension, repair and re-fetch are **`A-XXX` ops tasks only** — assigned
+separately, changing no `n_trials`, landing in their own commit with data plus rebuilt manifest and
+the authenticity evidence in the message.
 
 Consequences an Engineer must plan around:
 
@@ -640,6 +638,22 @@ Consequences an Engineer must plan around:
   route around. Never run `build` to clear it.
 - `FREQTRADE_SKIP_DATA_VERIFY=1` invalidates the cycle. A run with the check bypassed is not
   evidence and may not appear in a report, a verdict, or a promotion argument.
+
+## Research budget
+
+**Default per-cycle limits: 3 strategy variants, 1 optimization run.**
+
+- **Each variant counts as one trial against `n_trials`.** Three variants tested is three trials of
+  multiple-testing debt, and the DSR gate prices it. Variants are not free because they share a
+  cycle.
+- **A cycle killed at a pre-gate spends ZERO trials** — no variant was evaluated, so none is counted.
+- **The Director may assign fewer, never more**, and **must state the number in `NEXT_TASK.md`.** An
+  unstated budget is an unlimited one, which is how a search becomes a sweep.
+- An Engineer reaching the limit without a result reports that and stops. Exceeding the assigned
+  number invalidates the cycle: trials were spent but never priced into `n_trials`.
+
+> **Defaults pending operator confirmation** (2026-07-29). Deliberately tight: this project's own
+> history includes a 61-variant sweep (#8) that produced a Sharpe ceiling and no edge.
 
 ## Promotion comparison
 
@@ -652,11 +666,10 @@ in a promotion argument. This is why every pre-2026-07-28 number is unusable as 
 **Where no champion exists, the comparison is against the pre-registered program benchmark.** The
 perps program has no champion (see `research/review_briefs/T-037_PERPS_TRANSITION_brief.md`).
 
-**Perps program benchmark**: equal-weight buy-and-hold of the 9 instruments in
-`user_data/config_perp.json`, computed under `COST_MODEL` `fill_assumption = "taker"`, with DSR
-evaluated at `n_trials = 1`. It must be **computed and committed before T-038 runs** — logged as
-**A-005 in `research/OPS_BACKLOG.md`, blocking T-038**. Pre-registering it before the first cycle is
-the point: a benchmark chosen after seeing a candidate's results is not a benchmark.
+**Perps benchmark**: equal-weight buy-and-hold of the 9 `user_data/config_perp.json` instruments
+under `COST_MODEL` taker, DSR at `n_trials = 1`. **Computed and committed before T-038 runs** —
+**A-005 in `research/OPS_BACKLOG.md`, blocking T-038**. A benchmark chosen after seeing a candidate's
+results is not a benchmark.
 
 **A candidate that does not beat the benchmark cannot be promoted, regardless of its other metrics.**
 A good Sharpe, a clean walk-forward and a passing DSR do not substitute for beating the thing you
@@ -676,11 +689,10 @@ Quoted verbatim from `research/research_index.md` standing constraints:
 > cumulative `n_trials` and must clear **≥0.95** to be called a real edge. `research_metrics.md` is
 > authoritative; the two counts must always match.
 
-**This manual is now the primary location for that threshold; the `research_index.md` copy is
-secondary.** A research dashboard is not where a permanent standard belongs — it is rewritten every
-cycle, compacted for context budget, and scoped to one program, so a standard living there can be
-edited away by routine bookkeeping. If the two ever disagree, this manual governs and the index is
-the defect.
+**This manual is primary; the `research_index.md` copy is secondary.** A research dashboard is not
+where a permanent standard belongs — it is rewritten every cycle, compacted for budget, and scoped to
+one program, so a standard living there can be edited away by routine bookkeeping. If the two
+disagree, this manual governs and the index is the defect.
 
 `n_trials` is per-program and resets at a program boundary (see counters above); the **0.95 bar does
 not**. The perps program starts at `n_trials = 0` and clears the same threshold.
@@ -705,12 +717,12 @@ Evaluate in that order and stop at the first failure — the point is to fail ch
 
 | # | Gate | What it tests | How it is evaluated |
 |---|---|---|---|
-| 1 | **Reachability** | Does the data actually exist and cover the window? | Coverage % over the intended span. Precedent: F&G "Reachability PASS (99.87% coverage since 2018-02-01, reachable via free public API)". A blocked or short axis stops here. |
-| 2 | **Redundancy** | Is the signal distinct from what the strategy already uses? | Correlation against the incumbent's own signals; **< 0.90** in precedent. F&G: "corr vs rv30 = −0.1382, vs roc30 = 0.7011, both < 0.90". DVOL: "level corr 0.687 < 0.90". |
-| 3 | **Lead/lag** | Does the series lead price/vol, or merely react to it? | Cross-correlation at ±k lags. F&G FAIL: "avg \|pos-lag\| corr 0.0076 / 0.0127 vs avg \|neg-lag\| 0.1405 / 0.0136 — reactive/lagging, not anticipatory." |
-| 4 | **Episode floor** | Are there enough events the strategy is actually in-market for? | Count in-market episodes against a **pre-declared floor**. H-IVGate FAIL: "only 4 in-market spike-onset episodes < 6 required" — the gate already avoided 5 of 9 by mechanism. |
-| 5 | **Harm census** | Are the days the construct would act on genuinely adverse? | Forward returns on affected days vs unconditional. Quoted: "P2 (harm: are the affected days adverse?)". H-IVSizing FAIL: affected days were *better* than unconditional. |
-| 6 | **TEST concentration** | Is the effect one episode, and does it fire in the evaluation window at all? | Share of TEST postdating the last materially-affected day, plus a >0-affected-days check. T-029/T-030 FAIL: ~65% of TEST postdated the last firing. |
+| 1 | **Reachability** | Does the data exist and cover the window? | Coverage % over the span. Precedent PASS: F&G 99.87% since 2018-02-01 via free public API. A blocked or short axis stops here. |
+| 2 | **Redundancy** | Is the signal distinct from what the strategy already uses? | Correlation vs the incumbent's own signals; **< 0.90** in precedent (F&G −0.1382/0.7011; DVOL level 0.687). |
+| 3 | **Lead/lag** | Does the series lead price/vol, or merely react to it? | Cross-correlation at ±k lags. F&G FAIL: avg \|pos-lag\| 0.0076/0.0127 vs avg \|neg-lag\| 0.1405/0.0136 — reactive, not anticipatory. |
+| 4 | **Episode floor** | Are there enough events the strategy is in-market for? | In-market episode count vs a **pre-declared floor**. H-IVGate FAIL: 4 spike-onset episodes < 6 required; the gate already avoided 5 of 9 by mechanism. |
+| 5 | **Harm census** | Are the days the construct would act on genuinely adverse? | Forward returns on affected days vs unconditional — "are the affected days adverse?". H-IVSizing FAIL: affected days were *better*. |
+| 6 | **TEST concentration** | Is the effect one episode, and does it fire in TEST at all? | Share of TEST postdating the last materially-affected day, plus a >0-affected-days check. T-029/T-030 FAIL: ~65%. |
 
 Two mandatory sanity checks, quoted from `strategy_research_notes.md` (lesson 20):
 
@@ -720,9 +732,8 @@ Two mandatory sanity checks, quoted from `strategy_research_notes.md` (lesson 20
 > signal and verify before interpretation.
 
 Gates are **complementary, not substitutes** — "P1 and P2 pre-gates are complementary and
-non-redundant… H-IVSizing passed P1 comfortably but failed P2 decisively." Passing one says nothing
-about another. And per lesson 4, **pre-gate stops get Director reruns**: a stop is a verdict and is
-verified like one — one sign bug nearly closed the last reachable data axis.
+non-redundant… H-IVSizing passed P1 comfortably but failed P2 decisively." Per lesson 4, **pre-gate
+stops get Director reruns**: a stop is a verdict — one sign bug nearly closed the last reachable axis.
 
 Sources: `research/strategy_research_notes.md` (principle, ladder, sanity checks, complementarity);
 numeric precedents from `research/archive/index_narrative_pre_2026-07-28.md` rows 21, 22, 37. Both

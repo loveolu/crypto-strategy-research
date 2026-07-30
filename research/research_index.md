@@ -44,7 +44,7 @@ pre-registered program benchmark (A-005, blocking T-038). Spot detail, all histo
 | #13 | Supertrend / Chandelier / BTC-dominance / ETH-BTC z-fade (6 Forven ideas) | FAIL | All dominated by champion on TEST/MC |
 | #14 | H-COT: CFTC asset-manager crowding filter (trial #96) | FAIL | Zero TEST-split activity; in-sample harmful; DSR 0.603 |
 | #15 | H-RangeVol: Garman-Klass 30d sizing estimator (trial #97) | FAIL | MC tail 30.5→22.9% missed ≤20% bar; TEST Sharpe 0.39→0.02 |
-| #16 | H-BearShort: mirrored gate as short sleeve | STOPPED AT PRE-GATE (0 trials) | Median mirrored episode 3 bars; 2018's −84% bear yielded +2.6% gross |
+| #16 | H-BearShort: mirrored gate as short sleeve | STOPPED AT PRE-GATE (0 trials) | Median episode 3 bars; 2018's −84% bear yielded +2.6% gross |
 | #17 | A-ValidatorAudit: Kaufman Ch.21 diagnostics + champion re-audit | AUDIT CLEAN (0 trials) | Both downgrade triggers negative; WF boundary-stable |
 | #18 | H-CointPair: BTC-ETH cointegration pairs | STOPPED AT PRE-GATE 1 (0 trials) | Not cointegrated on any window; post-2024 break formal (ADF p 0.405) |
 | #19 | H-SizingBand: rebalance granularity / no-trade band | STOPPED AT PRE-GATE A (0 trials) | Continuous bound gave +3.0pp of required ≥5.0pp; TEST Sharpe −0.12 |
@@ -55,31 +55,30 @@ pre-registered program benchmark (A-005, blocking T-038). Spot detail, all histo
 | T-022 | DVOL Acceleration (change-based sizing/gate) | STOPPED AT PRE-GATE (0 trials) | Failed TEST episode + harm census; DVOL axis exhausted |
 | T-023 | Forward Parity Monitor Rebuild | **INVALID CYCLE** | Engineer fabricated candle data to bypass the AC3 authenticity check |
 | T-024 | Dynamic Volatility-Stabilized Portfolio (dynamic-w) | REJECTED | Discrete trial #99 degraded TEST Sharpe −0.05; DSR 0.6879 < 0.95 |
-| T-025 | A-ForwardLaneRestore | **INVALID CYCLE — fabrication #3** | Fake bars + fake heartbeats; "network blocked" claim refuted by forensics |
+| T-025 | A-ForwardLaneRestore | **INVALID CYCLE — fabrication #3** | Fake bars + heartbeats; "network blocked" claim refuted by forensics |
 | T-026 | A-TransportRepair | REJECT | Conclusion false: aiodns forced c-ares resolver; ladder never swapped it |
 | T-027 | A-ResolverRepair | ACCEPTED (ops) | Removed aiodns to force ThreadedResolver; OKX resolution restored |
 | T-028 | H-EffRatio (Kaufman Efficiency Ratio veto) | REJECTED | Gate 7 cliff; held-out gain is one Oct-2025 episode; 65% of TEST postdates it |
 | T-029 | H-ERScale (continuous ER multiplier) | REJECT at pre-gate F-P2 (0 trials) | Same single-episode concentration as the binary veto |
 | T-030 | H-ADXGate (absolute ADX14<20 chop veto) | REJECT at pre-gate F-P2 (0 trials) | 65.2% of TEST postdates last veto day; regime-classifier family CLOSED |
-| T-031 | A-FundingRecorder (infrastructure bootstrap) | REJECT | Hypothesis verified true, but AC7 restart-PID claim unverifiable; bot down |
+| T-031 | A-FundingRecorder (infrastructure) | REJECT | Hypothesis verified true; AC7 restart-PID claim unverifiable, bot down |
 | T-032 | A-DryRunPersistence (infrastructure) | ACCEPT (critical caveat) | Uptime 240x but silent death not eliminated; bot down at review |
 | T-033 | H-EventKiller (Windows Event Viewer forensics) | RESOLVED (operator fix, 0 trials) | Modern Standby + 180s AC display timeout; powercfg fix applied |
 | T-034 | H-LogisticEntry (per-asset logistic regression) | REJECT at pre-gate (0 trials) | BTC hit-ratio 53.1%, p=0.162; joint two-asset gate never cleared |
 | T-035 | H-FearGreed (Extreme-Greed veto) | STOPPED AT PRE-GATE 3 (0 trials) | F&G reactive not anticipatory (neg-lag 0.14 vs pos-lag 0.008) |
-| T-036 | A-ForwardParityConfirm (ops) | **TERMINATED BY OPERATOR, 2026-07-29** (0 trials) | Champion has taken zero trades in dry run, so parity reconciles trivially every bar — the instrument cannot produce evidence about it |
+| T-036 | A-ForwardParityConfirm (ops) | **TERMINATED BY OPERATOR, 2026-07-29** (0 trials) | Champion took zero trades in dry run; parity reconciles trivially every bar, so the instrument cannot produce evidence |
 
 **Numbering note.** Rows #1-#22 predate the `T-XXX` scheme (begins T-017). T-017, T-018 and T-019 are
-ops cycles with no index row — gap recorded, not back-filled, no verdict invented; see A-001 in
-`research/OPS_BACKLOG.md`.
+ops cycles with no index row — gap recorded, not back-filled; see A-001 in `research/OPS_BACKLOG.md`.
 
 ## Open / closed directions
 
-Family status is governed by the `knowledge_base/hypothesis_bank.md` FAMILY STATUS LEDGER, which is
-mandatory Director context — read it there, not summarised here.
+Family status is governed by the `knowledge_base/hypothesis_bank.md` FAMILY STATUS LEDGER, itself
+mandatory context — read it there, not summarised here.
 
-- **Data axes**: COT cached, filter hypothesis rejected (#14). Sentiment reachable and cached but
-  reactive (T-035). Funding recorded going forward (T-031). Order book, liquidations and on-chain
-  flow unreachable without a paid vendor.
+- **Data axes**: COT cached, filter rejected (#14). Sentiment reachable, cached, reactive (T-035).
+  Funding recorded going forward (T-031). Order book, liquidations, on-chain flow unreachable
+  without a paid vendor.
 - Any new hypothesis must use a genuinely new data dimension or a structurally different mechanism.
   Parameter variations of tested families are banned.
 
