@@ -174,3 +174,55 @@ is worthless — it locks in whatever the bug was.
 - Do not change `validator.py` behaviour to make a test pass without first establishing, by hand,
   which of the two is wrong.
 - Do not re-run or re-validate any historical strategy.
+
+---
+
+## A-005 — Compute and commit the perps program benchmark
+
+**Status:** LOGGED, NOT ASSIGNED. Do not execute without explicit assignment.
+**Logged:** 2026-07-29 (manual gap closure 3).
+**Class:** OPS / measurement. Zero trials for the *program*; the benchmark itself is priced at
+`n_trials = 1`. Does not advance the meta-review counter.
+**BLOCKING: blocks T-038.** No perps candidate can be evaluated without it.
+
+### Problem
+
+`PROJECT_OPERATOR_MANUAL.md`, "Promotion comparison": where no champion exists, a candidate is
+compared against the pre-registered program benchmark — and a candidate that does not beat it cannot
+be promoted regardless of its other metrics. The perps program has no champion, and the benchmark
+does not yet exist.
+
+It must be computed and committed **before T-038 runs**. A benchmark computed after a candidate's
+results are known is not a benchmark; it is a number chosen to be beaten.
+
+### Specification (pre-registered — do not vary)
+
+- **Construction**: equal-weight buy-and-hold of the 9 instruments in `user_data/config_perp.json`
+  (BTC, ETH, SOL, BNB, XRP, ADA, AVAX, DOT, LINK — all `/USDT:USDT`).
+- **Costs**: `validator.COST_MODEL` with `fill_assumption = "taker"`. Entry cost applies once per
+  instrument; buy-and-hold has no rebalancing turnover.
+- **Funding**: perps carry a funding-rate P&L term. State explicitly whether funding is included and
+  from which series; if it is excluded, say so and justify it — do not leave it implicit.
+- **DSR**: evaluated at `n_trials = 1`.
+- **Window and splits**: pinned by DATE, honouring the reserved holdout. The benchmark is computed on
+  the same window and split dates any candidate will be judged on, or the comparison is void.
+
+### Deliverables
+
+- A committed script that reproduces the numbers from the committed data, and its output.
+- Full metric set on the same basis the harness reports for a candidate: Sharpe, CAGR, max DD,
+  profit factor, MC tail, DSR — full window, train/val/test, walk-forward.
+- The benchmark's figures recorded in `research/research_index.md` standing constraints.
+
+### Acceptance criteria
+
+- Reproducible from committed data with `scripts/data_manifest.py verify` clean.
+- Costs resolved from `COST_MODEL`; no hardcoded fee anywhere.
+- Funding treatment stated explicitly.
+- Committed BEFORE any T-038 work begins.
+
+### Explicit non-goals
+
+- Do not design, test, or imply a strategy. This measures the do-nothing alternative.
+- Do not tune the benchmark. It is pre-registered; if the specification is wrong, change it here
+  and say so before computing, never after.

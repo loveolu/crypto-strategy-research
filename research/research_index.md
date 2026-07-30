@@ -1,7 +1,6 @@
 # research_index.md — compressed project dashboard
 
-> **Format (per `PROJECT_OPERATOR_MANUAL.md`): one line per completed cycle, no detailed analysis.**
-> Compacted 2026-07-28 from 41,172 bytes; all prior narrative preserved verbatim in
+> **Format: one line per completed cycle, no detailed analysis.** Pre-2026-07-28 narrative is in
 > `research/archive/index_narrative_pre_2026-07-28.md`.
 
 **Cycles since meta-review #1 (2026-07-18): 16 of 25** — not due.
@@ -9,28 +8,22 @@
 ## Standing constraints
 
 - **Dry-run only. No real capital on backtest evidence.** All configs `dry_run: true`, empty keys.
-- **DSR gate mandatory**: any candidate reports Deflated Sharpe Ratio (`freqtrade_dsr.py`) at honest
-  cumulative `n_trials` (currently **100**) and must clear ≥0.95 to be called a real edge.
-  `research_metrics.md` is authoritative; the two counts must always match.
+- **DSR gate ≥0.95** at honest cumulative `n_trials` (spot program ended at **100**; perps starts at
+  0). Standard is in `PROJECT_OPERATOR_MANUAL.md`, "DSR promotion threshold" — that is primary, this
+  is a pointer. `research_metrics.md` is authoritative for the count.
 - Judge on TEST-set / walk-forward numbers only. Full-window Sharpe runs 2-4x inflated here.
 - Asset universe is not restricted to BTC/ETH — they are the default because most liquid/stable.
 - **Costs**: `validator.COST_MODEL` only; pre-2026-07-28 results are not comparable. **Holdout**: all
-  bars after 2026-05-27. Both rules in full: `PROJECT_OPERATOR_MANUAL.md`, "Execution and cost model"
-  and "Reserved holdout".
+  bars after 2026-05-27. Both in `PROJECT_OPERATOR_MANUAL.md`.
 
-## Current best strategy
+## Champion status
 
-**TrendVolTarget** (`research/best_strategy_so_far.py`; live copy `user_data/strategies/TrendVolTarget.py`)
-BTC+ETH 1d; core = close>SMA200 & ROC30>0 & EMA20>EMA50; vol-target sizing 40%/rv30, 25% steps,
-50%/pair cap. Full-window 6.5y +458%, Sharpe 1.26, DD −16.6%. Held-out TEST Sharpe 0.41.
-**DSR 0.624 at n_trials=98.** Honest forward expectation 5-15% CAGR at ~20% DD. Backtesting only.
-Detail: `current_champion.md`. All figures predate the 2026-07-28 cost model.
-
-## Current best portfolio
-
-**80% TrendVolTarget BTC+ETH / 20% TVT 9-asset + 25% portfolio-vol overlay**, monthly rebalanced
-(w*=0.8, trial #98). CAGR +21.1%, Sharpe 1.14, DD −15.9%, TEST Sharpe 0.38,
-MC P(DD<−25%)=16.5% (champion alone 30.5%). Detail: `strategy_portfolio.md`.
+**The perps program has NO champion.** TrendVolTarget and the 80/20 portfolio stance are spot
+artifacts computed at the pre-2026-07-28 cost model; their figures are void as perps evidence and are
+not a promotion baseline. Until one is established on perp data, candidates are compared against the
+pre-registered program benchmark (A-005, blocking T-038). Spot detail, all historical:
+`research/current_champion.md`, `research/strategy_portfolio.md`,
+`research/review_briefs/T-037_PERPS_TRANSITION_brief.md`.
 
 ## Cycles completed
 
@@ -81,18 +74,12 @@ ops cycles with no index row — gap recorded, not back-filled, no verdict inven
 
 ## Open / closed directions
 
-Authoritative family status is `knowledge_base/hypothesis_bank.md` FAMILY STATUS LEDGER. Summary:
+Family status is governed by the `knowledge_base/hypothesis_bank.md` FAMILY STATUS LEDGER, which is
+mandatory Director context — read it there, not summarised here.
 
-- **CLOSED**: mean reversion (all timeframes); short side / symmetric TSMOM; BTC-ETH pairs /
-  relative value / dominance / ratio; sleeve sizing refinement (both directions); DVOL daily-bar
-  champion modifications; regime-classifier overlay (ER, ADX, MESA, HMM).
-- **OPEN**: H-ForwardParity (forward dry-run evidence — highest-EV lane); portfolio/allocation layer
-  above the sleeve; the Frontier Hypotheses section; and the ~63 named cards in the bank carrying no
-  "Already tested by this project" line (per the 2026-07-21 correction — the blanket
-  "all new OHLCV constructs closed" row was retracted as overclaiming).
-- **Data axes**: COT cached but filter hypothesis rejected (#14). Sentiment reachable and cached but
-  reactive (T-035). Funding history now recorded going forward (T-031). Order book, liquidations and
-  on-chain flow remain unreachable without a paid vendor.
+- **Data axes**: COT cached, filter hypothesis rejected (#14). Sentiment reachable and cached but
+  reactive (T-035). Funding recorded going forward (T-031). Order book, liquidations and on-chain
+  flow unreachable without a paid vendor.
 - Any new hypothesis must use a genuinely new data dimension or a structurally different mechanism.
   Parameter variations of tested families are banned.
 

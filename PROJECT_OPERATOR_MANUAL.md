@@ -55,7 +55,7 @@ fails nonzero if the MANDATORY set exceeds 40 KB. Run it after editing any manda
 
 | File | Region |
 |---|---|
-| `PROJECT_OPERATOR_MANUAL.md` | **only** between `DIRECTOR-MANDATORY-BEGIN/END` markers (Validation Requirements + Champion Classification & Progression Pipeline — the standards, validation and promotion sections) |
+| `PROJECT_OPERATOR_MANUAL.md` | **only** between `DIRECTOR-MANDATORY-BEGIN/END` markers — the standards, validation and promotion sections (Validation Requirements through Champion Classification & Progression Pipeline, including the cost model, counters, holdout, pre-gate ladder, DSR threshold, promotion comparison and research budget) |
 | `research/research_index.md` | whole file (compact by design — one line per cycle) |
 | `knowledge_base/hypothesis_bank.md` | **only** between `DIRECTOR-MANDATORY-BEGIN/END` markers (the FAMILY STATUS LEDGER) |
 | `research/STANDING_DIRECTIVES.md` | whole file — the accumulated binding directives from every meta-review |
@@ -641,6 +641,33 @@ Consequences an Engineer must plan around:
 - `FREQTRADE_SKIP_DATA_VERIFY=1` invalidates the cycle. A run with the check bypassed is not
   evidence and may not appear in a report, a verdict, or a promotion argument.
 
+## Promotion comparison
+
+**Like-for-like or void.** A candidate is compared against the incumbent on the **same window, same
+cost model, same fill assumption, and same split dates**. A comparison across different cost models
+or windows is **void** — not weaker evidence, not directionally useful: void, and it may not appear
+in a promotion argument. This is why every pre-2026-07-28 number is unusable as a perps baseline
+(`user_data/research/ARCHIVE_COST_NOTE.md`).
+
+**Where no champion exists, the comparison is against the pre-registered program benchmark.** The
+perps program has no champion (see `research/review_briefs/T-037_PERPS_TRANSITION_brief.md`).
+
+**Perps program benchmark**: equal-weight buy-and-hold of the 9 instruments in
+`user_data/config_perp.json`, computed under `COST_MODEL` `fill_assumption = "taker"`, with DSR
+evaluated at `n_trials = 1`. It must be **computed and committed before T-038 runs** — logged as
+**A-005 in `research/OPS_BACKLOG.md`, blocking T-038**. Pre-registering it before the first cycle is
+the point: a benchmark chosen after seeing a candidate's results is not a benchmark.
+
+**A candidate that does not beat the benchmark cannot be promoted, regardless of its other metrics.**
+A good Sharpe, a clean walk-forward and a passing DSR do not substitute for beating the thing you
+could have held instead.
+
+> **UNRESOLVED — operator decision required.** This section fixes *what* is compared and against
+> *what*, but not the **margin** (how much a candidate must beat the incumbent/benchmark by) or the
+> **primary metric** (TEST Sharpe? DSR? risk-adjusted return? MC tail?). Until both are set, "beats
+> the benchmark" is not mechanically decidable and a Director must not improvise one. Raise it before
+> T-038 is assigned.
+
 ## DSR promotion threshold
 
 Quoted verbatim from `research/research_index.md` standing constraints:
@@ -661,10 +688,10 @@ not**. The perps program starts at `n_trials = 0` and clears the same threshold.
 ## Zero-cost pre-gate ladder
 
 **Run before any trial is spent. A hypothesis killed at a pre-gate spends ZERO trials** — `n_trials`
-does not advance, and the cycle is a successful negative result, not a failure. Six consecutive
-hypotheses were stopped this way before any DSR trial was spent.
+does not advance and the cycle is a successful negative result. Six consecutive hypotheses were
+stopped this way before any DSR trial was spent.
 
-The governing principle, quoted from `research/strategy_research_notes.md` (Standing lessons, item 3):
+Governing principle, quoted from `research/strategy_research_notes.md` (Standing lessons, item 3):
 
 > **Zero-cost pre-gates before any trial** — demonstrate the object the strategy needs EXISTS
 > (harvestable regime, stationary spread, adverse target days). Record: 6 valid stops, 1 false
@@ -698,8 +725,8 @@ about another. And per lesson 4, **pre-gate stops get Director reruns**: a stop 
 verified like one — one sign bug nearly closed the last reachable data axis.
 
 Sources: `research/strategy_research_notes.md` (principle, ladder, sanity checks, complementarity);
-numeric precedents from `research/archive/index_narrative_pre_2026-07-28.md` rows 21, 22, 37, which
-the notes file does not restate. Both files remain unchanged; this is a copy, not a move.
+numeric precedents from `research/archive/index_narrative_pre_2026-07-28.md` rows 21, 22, 37. Both
+files unchanged — this is a copy, not a move.
 
 ## Independent Reviewer output standard
 

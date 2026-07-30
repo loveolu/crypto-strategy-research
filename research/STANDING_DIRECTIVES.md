@@ -9,9 +9,8 @@ meta-reviews are ON-DEMAND (`research/meta_reviews/`); their directives live her
 is retired only by an explicit superseding directive that names it — never by silent deletion. If a
 later directive contradicts an earlier one, the later one governs and must say so.
 
-Content below is reproduced **verbatim** from the source meta-review, including its original
-numbering. (Meta-Review #1's list skips number 4; that gap is in the source and is preserved rather
-than silently renumbered.)
+Content below is **verbatim** from the source meta-review, including its numbering. (Meta-Review #1's
+list skips number 4; that gap is in the source and is preserved, not silently renumbered.)
 
 ---
 
