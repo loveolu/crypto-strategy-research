@@ -663,8 +663,9 @@ Consequences an Engineer must plan around:
 - An Engineer reaching the limit without a result reports that and stops. Exceeding the assigned
   number invalidates the cycle: trials were spent but never priced into `n_trials`.
 
-> **Defaults pending operator confirmation** (2026-07-29). Deliberately tight: this project's own
-> history includes a 61-variant sweep (#8) that produced a Sharpe ceiling and no edge.
+**Confirmed by operator decision, 2026-07-29.** These are the limits, not provisional defaults.
+Deliberately tight: this project's own history includes a 61-variant sweep (#8) that produced a
+Sharpe ceiling and no edge.
 
 ## Promotion comparison
 
