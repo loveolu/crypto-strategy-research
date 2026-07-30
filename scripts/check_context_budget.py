@@ -31,7 +31,11 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 
-DEFAULT_BUDGET_KB = 40
+DEFAULT_BUDGET_KB = 48  # 49,152 bytes. Raised from 40 KB by operator decision 2026-07-29:
+#                        the mandatory set gained ten standards during the repair (cost model,
+#                        counters, holdout, pre-gate ladder, DSR threshold, promotion comparison,
+#                        research budget, data freeze, Reviewer cap, benchmark) and 40 KB left
+#                        38 B of headroom. Raise the cap deliberately; never to dodge a breach.
 BYTES_PER_TOKEN_APPROX = 4  # rough English/markdown approximation, not a tokenizer run
 
 MARKER_BEGIN = "<!-- DIRECTOR-MANDATORY-BEGIN -->"
@@ -60,6 +64,7 @@ ON_DEMAND = [
     "knowledge_base/master_index.md",
     "knowledge_base/archive/closed_families.md",
     "research/archive/index_narrative_pre_2026-07-28.md",
+    "research/archive/index_spot_program.md",
     "research/current_champion.md",
 ]
 

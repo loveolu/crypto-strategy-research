@@ -46,17 +46,19 @@ The following files are the authoritative record of all previous research and mu
 Each agent should load only the files
 required by its role.
 
-### Research Director — context loading (budget: 40 KB mandatory)
+### Research Director — context loading (budget: 48 KB mandatory)
 
 This list is authoritative and is machine-enforced by `scripts/check_context_budget.py`, which
-fails nonzero if the MANDATORY set exceeds 40 KB. Run it after editing any mandatory file.
+fails nonzero if the MANDATORY set exceeds 48 KB. Run it after editing any mandatory file. **Raise
+the cap only as a deliberate operator decision, never to clear a breach** — a breach normally means a
+mandatory file needs compacting or demoting.
 
 **MANDATORY (load every cycle, before selecting a hypothesis):**
 
 | File | Region |
 |---|---|
 | `PROJECT_OPERATOR_MANUAL.md` | **only** between `DIRECTOR-MANDATORY-BEGIN/END` markers — the standards, validation and promotion sections (Validation Requirements through Champion Classification & Progression Pipeline, including the cost model, counters, holdout, pre-gate ladder, DSR threshold, promotion comparison and research budget) |
-| `research/research_index.md` | whole file (compact by design — one line per cycle) |
+| `research/research_index.md` | whole file (compact by design — one line per cycle, current program only) |
 | `knowledge_base/hypothesis_bank.md` | **only** between `DIRECTOR-MANDATORY-BEGIN/END` markers (the FAMILY STATUS LEDGER) |
 | `research/STANDING_DIRECTIVES.md` | whole file — the accumulated binding directives from every meta-review |
 | `research/review_briefs/` (latest only) | whole file — capped at 4 KB by the Reviewer standard below |
@@ -82,6 +84,9 @@ belongs in `research/STANDING_DIRECTIVES.md`. Narrative, rationale and history b
 - `knowledge_base/archive/closed_families.md` — full cards for CLOSED families. The ledger row is
   sufficient to *exclude* a family; open the archive only when arguing a family should reopen.
 - `research/archive/index_narrative_pre_2026-07-28.md` — pre-compaction narrative.
+- `research/archive/index_spot_program.md` — the 38 completed spot-program cycle rows, complete and
+  unaltered. Open when checking whether something was already tried; remember its results are void as
+  perps evidence (`research/review_briefs/T-037_PERPS_TRANSITION_brief.md`).
 - `research/current_champion.md` — champion detail. The index carries the summary; open this when
   orthogonality to the champion is genuinely at issue.
 - `research/review_briefs/` (older than the latest) — the index row carries the verdict and reason;
@@ -143,9 +148,15 @@ A concise dashboard containing:
 
 research_index.md is a compressed memory file.
 
-One line per completed cycle:
+**One line per completed cycle in the CURRENT program:**
 
 Task ID | Hypothesis | Verdict | Primary Reason
+
+**Prior programs are archived intact, not summarised or deleted** (e.g.
+`research/archive/index_spot_program.md`). The index resets at a program boundary for the same reason
+`n_trials` does: results measured on a different instrument under a different cost model are not a
+baseline for the new program, and leaving them in the live index makes them look like one. Task IDs
+do **not** reset — only the table and `n_trials` do.
 
 It should never contain detailed analysis.
 
