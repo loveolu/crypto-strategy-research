@@ -226,3 +226,65 @@ results are known is not a benchmark; it is a number chosen to be beaten.
 - Do not design, test, or imply a strategy. This measures the do-nothing alternative.
 - Do not tune the benchmark. It is pre-registered; if the specification is wrong, change it here
   and say so before computing, never after.
+
+---
+
+## A-004 — Decide whether the untracked review briefs are records or scratch
+
+**Status:** LOGGED, NOT ASSIGNED. Do not execute without explicit assignment.
+**Logged:** 2026-07-29 (manual gap closure 5).
+**Class:** OPS / records. Zero trials. Does not advance the meta-review counter.
+
+### Problem
+
+Six review briefs exist in the working tree but are **not tracked by git**:
+
+| Brief | Bytes | Cited in `research_index.md` |
+|---|---:|---|
+| `T-029_brief.md` | 9,326 | yes |
+| `T-030_brief.md` | 12,437 | yes |
+| `T-031_brief.md` | 8,723 | yes (×2) |
+| `T-032_brief.md` | 11,943 | yes |
+| `T-034_brief.md` | 10,836 | yes |
+| `T-035_brief.md` | 10,219 | yes (×2) |
+
+Every one is cited by `research_index.md` as the evidence behind a recorded verdict, and **none would
+survive a fresh clone.** A reader following those citations on a clean checkout finds nothing. This
+is the same class of problem as an uncommitted manifest: a record that only exists on one machine is
+not a record.
+
+**`research/review_briefs/` is outside the data manifest's coverage** — `scripts/data_manifest.py`
+hashes only `user_data/data/` (verified: the manifest's `root` is `user_data/data` and contains no
+`review_briefs` entry). Nothing detects if these files change or vanish.
+
+They were untracked before the 2026-07-28/29 repair and were deliberately left that way: committing
+another agent's unreviewed work product without deciding what it *is* would be presumptuous, and one
+`git add -A` during the repair swept them in accidentally and had to be undone.
+
+### The decision
+
+**Records** — commit them (`git add -f`, since `user_data/*`-style ignores do not apply here but the
+files are currently untracked by choice). Then either extend the manifest to cover
+`research/review_briefs/`, or state explicitly that briefs are protected by git history alone and
+the manifest is data-only by design.
+
+**Scratch** — then `research_index.md` must stop citing them as evidence, and the cited content must
+be relocated into the cycle reports under `research/results/`, which are the durable artifacts.
+
+**Mixed** is also a legitimate answer, but must be stated per file, not left ambiguous.
+
+Note that whichever way this goes, the 4 KB Reviewer cap applies to future briefs only; these six
+range 8.7–12.4 KB and predate it. Do not rewrite them to fit — they are someone else's verdict
+records, and editing a verdict to satisfy a later formatting rule is not a bookkeeping fix.
+
+### Acceptance criteria
+
+- A stated decision per file, recorded in the commit message.
+- If Records: files tracked, and the manifest question answered explicitly either way.
+- If Scratch: no dangling citations left in `research_index.md`.
+- No brief's *content* altered as part of this task.
+
+### Explicit non-goals
+
+- Do not rewrite, summarise, or truncate any brief to meet the 4 KB cap.
+- Do not re-run or re-audit any cycle.
