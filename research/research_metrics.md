@@ -4,7 +4,12 @@
 > (increment counts, append to the DSR-trend table, refresh indicator-usage tally). This file is
 > aggregate/statistical; narrative belongs in `strategy_iteration_log.md`, current status belongs
 > in `research_index.md`. 
-> Last updated: 2026-07-26, Research Engineer, T-036 / A-ForwardParityConfirm **REJECTED**.
+> Last updated: 2026-07-29, repo repair item 7: **T-036 / A-ForwardParityConfirm TERMINATED BY
+> OPERATOR DECISION.** The champion has taken zero trades in dry run, so the parity instrument
+> reconciles trivially on every bar and cannot produce evidence about it. Supersedes the REJECTED
+> verdict below as the cycle's disposition; the underlying findings there stand. No new task
+> assigned. n_trials stays 100.
+> Previous update: 2026-07-26, Research Engineer, T-036 / A-ForwardParityConfirm **REJECTED**.
 > Persistence sub-claim failed: 3 heartbeat gaps >300s (max 251,069s = 69.7h) caused by DC battery
 > power-plan hibernation (laptop unplugged 2026-07-21 22:31, hibernated 2026-07-22 04:52 to
 > 2026-07-25 02:36). Parity sub-claim not evaluable (stale feather data, monitor hard-fail).

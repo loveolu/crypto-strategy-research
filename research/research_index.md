@@ -73,10 +73,11 @@ MC P(DD<−25%)=16.5% (champion alone 30.5%). Detail: `strategy_portfolio.md`.
 | T-033 | H-EventKiller (Windows Event Viewer forensics) | RESOLVED (operator fix, 0 trials) | Modern Standby + 180s AC display timeout; powercfg fix applied |
 | T-034 | H-LogisticEntry (per-asset logistic regression) | REJECT at pre-gate (0 trials) | BTC hit-ratio 53.1%, p=0.162; joint two-asset gate never cleared |
 | T-035 | H-FearGreed (Extreme-Greed veto) | STOPPED AT PRE-GATE 3 (0 trials) | F&G reactive not anticipatory (neg-lag 0.14 vs pos-lag 0.008) |
+| T-036 | A-ForwardParityConfirm (ops) | **TERMINATED BY OPERATOR, 2026-07-29** (0 trials) | Champion has taken zero trades in dry run, so parity reconciles trivially every bar — the instrument cannot produce evidence about it |
 
-**Numbering note.** Rows #1-#22 predate the `T-XXX` scheme (begins T-017). T-017, T-018, T-019 and
-T-036 are ops cycles with no index row — gap recorded, not back-filled, no verdict invented; see
-A-001 in `research/OPS_BACKLOG.md`.
+**Numbering note.** Rows #1-#22 predate the `T-XXX` scheme (begins T-017). T-017, T-018 and T-019 are
+ops cycles with no index row — gap recorded, not back-filled, no verdict invented; see A-001 in
+`research/OPS_BACKLOG.md`.
 
 ## Open / closed directions
 

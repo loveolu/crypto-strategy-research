@@ -1,4 +1,29 @@
-# NEXT_TASK.md — Active Assignment
+# NEXT_TASK.md — NO ACTIVE ASSIGNMENT
+
+> ## T-036 / A-ForwardParityConfirm — **TERMINATED BY OPERATOR DECISION, 2026-07-29**
+>
+> **There is no active assignment. No new task has been assigned.** Do not execute anything in this
+> file. The assignment below is retained verbatim as the historical record of what was terminated;
+> it is not an instruction.
+>
+> **Reason for termination.** The champion has taken **zero trades** in dry run. A forward-parity
+> instrument compares live-side state against backtest-expected state bar by bar — with no trades on
+> either side, every bar reconciles trivially and the comparison is vacuous. The instrument cannot
+> produce evidence about the champion, however well it is built or however long it runs. This is not
+> a failure of the instrument or of the T-033 power-plan fix; it is that the thing being measured has
+> not occurred. Continuing would spend cycles generating agreement counts that mean nothing.
+>
+> This closes the H-ForwardParity lane as an *evidence* lane for now. Nothing about the champion is
+> confirmed or refuted by the termination, and no verdict is implied about the parity instrument
+> itself, which remains available if the champion ever trades.
+>
+> Terminated during the 2026-07-28/29 repo repair (item 7). No replacement task was assigned; task
+> selection returns to the normal Director process. Ops items are logged in
+> `research/OPS_BACKLOG.md` and are not assignments until a Director assigns one.
+
+---
+
+## HISTORICAL RECORD — the terminated assignment, verbatim
 
 > **Single active assignment.** Written by the Research Director, 2026-07-26 (cycle 17 of 25 since
 > meta-review #1, 2026-07-18 — not due; see `research/research_index.md` line 3). The Research
