@@ -568,6 +568,21 @@ This matters because the project has been misclassifying: **11 of 19 formally-nu
 ops**, several carrying `T-` or even `H-` prefixes (T-033 was Windows power-plan forensics under an
 `H-` name). The counters were measuring activity, not research.
 
+**Task IDs and `n_trials` are two different counters. Do not conflate them at a program boundary.**
+
+| | Task ID (`T-XXX`, `A-XXX`) | `n_trials` |
+|---|---|---|
+| What it is | a global sequence number | a per-program statistical budget |
+| At a program boundary | **never resets** | **resets to 0** |
+| Purpose | unique, orderable identity for artifacts | multiple-testing deflation input to DSR |
+
+The spot program ended at **T-036**; the transition brief is **T-037**; the first perps research
+cycle is **T-038**. `n_trials` restarts at 0 for perps because those 100 trials deflated Sharpes
+measured on a different instrument at a different cost — but the ID sequence continues, because
+**resetting Task IDs per program would produce colliding filenames** in `research/results/` and
+`research/review_briefs/`. A second `T-021_brief.md` would silently overwrite or shadow the first,
+and every citation of the old one would resolve to the wrong document.
+
 **Rule — track the RESEARCH:OPS cycle ratio in `research_metrics.md`.** Update it every cycle.
 **Below 2:1 is a stop-and-reassess signal**: it means the project is maintaining itself rather than
 investigating markets. It is not an automatic halt, but it must be named in the next Director
