@@ -686,11 +686,46 @@ results is not a benchmark.
 A good Sharpe, a clean walk-forward and a passing DSR do not substitute for beating the thing you
 could have held instead.
 
-> **UNRESOLVED — operator decision required.** This section fixes *what* is compared and against
-> *what*, but not the **margin** (how much a candidate must beat the incumbent/benchmark by) or the
-> **primary metric** (TEST Sharpe? DSR? risk-adjusted return? MC tail?). Until both are set, "beats
-> the benchmark" is not mechanically decidable and a Director must not improvise one. Raise it before
-> T-038 is assigned.
+### Promotion rule (operator decision, 2026-07-29)
+
+**Primary metric for the benchmark comparison is TEST-split Sharpe.**
+
+A candidate is **PROMOTED only if ALL five hold**. Failing any one is **REJECT or PARK**. There is
+**no discretion** — a Director or Reviewer may not weigh a strong result on one criterion against a
+failure on another.
+
+1. **DSR ≥ 0.95 at the current `n_trials`.** This is an **absolute gate, not a comparison against the
+   benchmark.** Why it must be absolute: the benchmark is computed at `n_trials = 1` **by
+   construction** — it is pre-registered and never searched over — so its DSR is mechanically high.
+   A candidate emerging from a real search carries genuine multiple-testing debt. Comparing the two
+   DSRs would be unclearable by design: the candidate would be penalised for having been searched for
+   while the benchmark is rewarded for never having been. DSR measures selection luck, not skill
+   relative to holding.
+2. **Candidate TEST-split Sharpe > 0** in absolute terms.
+3. **Candidate TEST-split Sharpe exceeds the benchmark's by at least one standard error of the
+   paired difference**, computed on the overlapping return series.
+4. **Candidate MaxDD ≤ 1.25 × benchmark MaxDD** on the same window.
+5. **Every validation gate in `NEXT_TASK.md` passed.**
+
+**Formula for criterion 3.** Let `r_c` and `r_b` be the candidate and benchmark return series over
+the `N` **overlapping** TEST bars (same dates, same cost model, same fill assumption — per
+"Like-for-like or void" above). Let `S_c`, `S_b` be their **per-period** (not annualised) Sharpe
+ratios and `ρ` the Pearson correlation between `r_c` and `r_b`. The standard error of the difference
+`Δ = S_c − S_b` is the Jobson–Korkie statistic with Memmel's correction:
+
+```
+SE(Δ) = sqrt( (1/N) · [ 2(1 − ρ) + ½(S_c² + S_b²) − ρ·S_c·S_b ] )
+```
+
+**Criterion 3 passes iff `Δ ≥ SE(Δ)`.** Both Sharpes must be per-period when entering the formula;
+annualising both by the same `sqrt(365)` scales `Δ` and `SE(Δ)` identically and does not change the
+verdict, but mixing conventions does. `ρ` is what makes this *paired*: a candidate highly correlated
+with the benchmark needs a smaller raw edge to clear one standard error, which is correct — shared
+exposure is not the candidate's contribution.
+
+`N` is the count of overlapping bars, not the candidate's trade count. If the two series do not
+overlap on identical dates, the comparison is void (criterion 3 cannot be evaluated, so promotion
+fails).
 
 ## DSR promotion threshold
 
