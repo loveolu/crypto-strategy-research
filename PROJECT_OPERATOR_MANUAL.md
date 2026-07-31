@@ -761,10 +761,12 @@ Quoted verbatim from `research/research_index.md` standing constraints:
 > cumulative `n_trials` and must clear **≥0.95** to be called a real edge. `research_metrics.md` is
 > authoritative; the two counts must always match.
 
-**This manual is primary; the `research_index.md` copy is secondary.** A research dashboard is not
-where a permanent standard belongs — it is rewritten every cycle, compacted for budget, and scoped to
-one program, so a standard living there can be edited away by routine bookkeeping. If the two
-disagree, this manual governs and the index is the defect.
+**This manual is primary.** The threshold also appears as the `dsr_threshold` default in
+`freqtrade_dsr.evaluate_freqtrade()` and in `research/research_index.md` standing constraints; **both
+are secondary copies. If any two disagree, this manual governs and the others are the defect** — fix
+them, do not re-derive the standard. A research dashboard is not where a permanent standard belongs
+(it is rewritten every cycle, compacted for budget, and scoped to one program), and a function
+default is not a policy statement.
 
 `n_trials` is per-program and resets at a program boundary (see counters above); the **0.95 bar does
 not**. The perps program starts at `n_trials = 0` and clears the same threshold.
