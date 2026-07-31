@@ -1,0 +1,46 @@
+# TRIAL SHARPE LEDGER — perps program
+#
+# One row per DSR trial. Populated from trial 1 onward, in the same commit as the
+# cycle that spent the trial.
+#
+# PURPOSE. freqtrade_dsr.deflated_sharpe_ratio() computes the selection hurdle sr0
+# from expected_max_sharpe(trial_sharpe_var, n_trials), where trial_sharpe_var is the
+# CROSS-TRIAL variance of per-trial Sharpe estimates. When it is not supplied the
+# module falls back to the Lo (2002) estimator proxy: the variance of THIS strategy's
+# own Sharpe estimate, which scales as ~1/(t-1) in observation count. That makes the
+# hurdle a function of trade frequency rather than of how hard the search was:
+#
+#     n_trials=30,    92 obs -> proxy_var 0.0110 -> sr0 0.2174
+#     n_trials=30,   500 obs -> proxy_var 0.0020 -> sr0 0.0928
+#     n_trials=30,  2000 obs -> proxy_var 0.0005 -> sr0 0.0464
+#     n_trials=30, 10000 obs -> proxy_var 0.0001 -> sr0 0.0207
+#
+# A high-frequency construct would clear a ~10x lower hurdle than a daily one for
+# reasons unrelated to edge quality, while the PSR z-score grows with sqrt(n_obs-1)
+# at the same time. The perps program targets multiple trades per day, so this
+# ledger exists to supply the real cross-trial variance instead.
+#
+# NOT BACKFILLED — DELIBERATELY. The spot program's 100 trials are NOT in this file
+# and must not be added. Their Sharpes were computed under a different cost model
+# (15 bps/side, zero spread, no maker/taker split) on a different instrument; mixing
+# them into a perps cross-trial variance would price perps selection luck using spot
+# economics. See user_data/research/ARCHIVE_COST_NOTE.md and
+# research/review_briefs/T-037_PERPS_TRANSITION_brief.md. The perps ledger starts
+# clean at n_trials = 0.
+#
+# USAGE. validator.trial_sharpe_variance() reads this file and returns the sample
+# variance of sr_hat_per_trade. Below 10 rows the variance is not estimable and the
+# harness falls back to the estimator proxy, emitting a warning onto every Verdict.
+#
+# COLUMNS
+#   trial             cumulative perps n_trials AFTER this trial (1, 2, 3, ...)
+#   task_id           T-XXX that spent it
+#   construct         short name of the variant tested
+#   sr_hat_per_trade  the DSR output field of the same name (per-trade, NOT annualised)
+#   n_obs             observation count the Sharpe was computed on
+#   date              UTC date the trial was run, YYYY-MM-DD
+#
+# One row per VARIANT, not per cycle: the research budget allows 3 variants per cycle
+# and each variant is one trial (PROJECT_OPERATOR_MANUAL.md, "Research budget").
+#
+trial,task_id,construct,sr_hat_per_trade,n_obs,date

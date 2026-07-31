@@ -112,6 +112,118 @@ def data_integrity_snapshot() -> dict:
     }
 
 
+# --------------------------------------------------------------------------- #
+#  DSR CROSS-TRIAL VARIANCE (added 2026-07-30)
+#
+#  freqtrade_dsr.deflated_sharpe_ratio() derives its selection hurdle sr0 from
+#  expected_max_sharpe(trial_sharpe_var, n_trials). trial_sharpe_var is meant to
+#  be the CROSS-TRIAL variance of per-trial Sharpe estimates. It was never passed
+#  in this project's history, so every DSR fell back to the Lo (2002) estimator
+#  proxy — the variance of THIS strategy's own Sharpe estimate, which scales as
+#  ~1/(t-1) in observation count.
+#
+#  That makes the hurdle a function of TRADE FREQUENCY rather than of search
+#  intensity: at n_trials=30, sr0 is 0.2174 at 92 observations but 0.0207 at
+#  10,000. A high-frequency construct clears a ~10x lower bar for reasons
+#  unrelated to edge quality, while the PSR z-score grows with sqrt(n_obs-1) at
+#  the same time. The perps program targets multiple trades per day.
+#
+#  research/trial_sharpe_ledger.csv supplies the real cross-trial variance from
+#  trial 1 onward. It is deliberately NOT backfilled with the spot program's 100
+#  trials — different cost model, different instrument.
+# --------------------------------------------------------------------------- #
+
+TRIAL_LEDGER_PATH = REPO_ROOT / "research" / "trial_sharpe_ledger.csv"
+
+#: Below this many recorded trials the cross-trial variance is not estimable.
+MIN_TRIALS_FOR_CROSS_VARIANCE = 10
+
+PROXY_DSR_WARNING = (
+    "DSR WARNING - trial_var_source='estimator_proxy'. The cross-trial Sharpe "
+    "variance is not estimable ({n} trial(s) in research/trial_sharpe_ledger.csv, "
+    "{need} required), so the selection hurdle falls back to the Lo (2002) "
+    "estimator proxy. That proxy scales as ~1/(n_obs-1), which makes the hurdle a "
+    "function of TRADE FREQUENCY rather than search intensity: a high-frequency "
+    "construct gets a materially lower bar than a daily one for reasons unrelated "
+    "to edge quality. THIS DSR IS NOT COMPARABLE ACROSS TRADE FREQUENCIES and must "
+    "not be used to rank constructs of different holding periods."
+)
+
+
+def read_trial_ledger(path: Optional[Path] = None) -> list[dict]:
+    """Parse the trial ledger. '#' comment lines and blank lines are skipped."""
+    import csv
+    fp = TRIAL_LEDGER_PATH if path is None else path
+    if not fp.exists():
+        return []
+    rows = []
+    with open(fp, newline="", encoding="utf-8") as f:
+        body = [ln for ln in f if ln.strip() and not ln.lstrip().startswith("#")]
+    for rec in csv.DictReader(body):
+        try:
+            rec["sr_hat_per_trade"] = float(rec["sr_hat_per_trade"])
+            rec["n_obs"] = int(rec["n_obs"])
+        except (TypeError, ValueError, KeyError):
+            continue
+        rows.append(rec)
+    return rows
+
+
+def trial_sharpe_variance(path: Optional[Path] = None) -> dict:
+    """Cross-trial variance of recorded per-trade Sharpes.
+
+    Returns {"variance": float|None, "n_trials_recorded": int, "source": str}.
+    `variance` is None when fewer than MIN_TRIALS_FOR_CROSS_VARIANCE rows exist —
+    pass it straight to deflated_sharpe_ratio(trial_sharpe_var=...), which then
+    falls back to the estimator proxy.
+    """
+    rows = read_trial_ledger(path)
+    n = len(rows)
+    if n < MIN_TRIALS_FOR_CROSS_VARIANCE:
+        return {"variance": None, "n_trials_recorded": n, "source": "estimator_proxy"}
+    vals = np.array([r["sr_hat_per_trade"] for r in rows], dtype=float)
+    return {"variance": float(vals.var(ddof=1)), "n_trials_recorded": n, "source": "trials"}
+
+
+def _load_dsr_module():
+    """Import freqtrade_dsr.py from the repo root by path."""
+    import importlib.util
+    fp = REPO_ROOT / "freqtrade_dsr.py"
+    if not fp.exists():
+        raise RuntimeError(f"freqtrade_dsr.py not found at {fp}")
+    spec = importlib.util.spec_from_file_location("freqtrade_dsr", fp)
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    return mod
+
+
+def deflated_sharpe(returns, n_trials: int, ledger_path: Optional[Path] = None) -> dict:
+    """DSR with the cross-trial variance supplied from the ledger when estimable.
+
+    This is the ONLY entry point research code should use for DSR. Calling
+    freqtrade_dsr.deflated_sharpe_ratio() directly silently takes the estimator
+    proxy and produces a frequency-dependent hurdle.
+    """
+    dsr_mod = _load_dsr_module()
+    tv = trial_sharpe_variance(ledger_path)
+    res = dsr_mod.deflated_sharpe_ratio(list(returns), n_trials,
+                                        trial_sharpe_var=tv["variance"])
+    res["trial_var_source"] = tv["source"] if tv["variance"] is not None else res.get(
+        "trial_var_source", "estimator_proxy")
+    res["n_trials_recorded"] = tv["n_trials_recorded"]
+    res["trial_sharpe_var"] = tv["variance"]
+    return res
+
+
+def dsr_warnings(dsr_result: dict) -> list[str]:
+    """Warnings that must accompany a DSR figure in any report."""
+    if dsr_result.get("trial_var_source") == "estimator_proxy":
+        return [PROXY_DSR_WARNING.format(
+            n=dsr_result.get("n_trials_recorded", 0),
+            need=MIN_TRIALS_FOR_CROSS_VARIANCE)]
+    return []
+
+
 def data_integrity_warnings() -> list[str]:
     """Warnings that must appear in any report built on this run."""
     if DATA_INTEGRITY.get("bypassed"):
@@ -781,6 +893,10 @@ class Verdict:
     # SHA-256 manifest check at the time this run imported the harness. A Verdict
     # whose data_manifest["verified"] is False was computed on an unverified tree.
     data_manifest: dict = field(default_factory=dict)
+    # DSR provenance (added 2026-07-30). Populated when validate() is given
+    # n_trials. Always carries trial_var_source so a report can never quote a DSR
+    # without saying whether its hurdle came from the ledger or the estimator proxy.
+    dsr: dict = field(default_factory=dict)
 
 
 def cost_model_snapshot(execution_mode: Optional[str] = None,
@@ -798,7 +914,8 @@ def cost_model_snapshot(execution_mode: Optional[str] = None,
 def validate(name: str, df: pd.DataFrame, signal_fn: Callable[[pd.DataFrame], pd.Series],
              bars_per_year: int = ANNUALIZATION_DAILY,
              family: Optional[list] = None,
-             execution_mode: Optional[str] = None) -> Verdict:
+             execution_mode: Optional[str] = None,
+             n_trials: Optional[int] = None) -> Verdict:
     """Run the full pipeline. signal_fn(df) -> pd.Series of {-1, 0, 1} indexed by df.index.
 
     family (optional): list of {"name", "full_sharpe", "test_sharpe"} dicts for the
@@ -809,6 +926,12 @@ def validate(name: str, df: pd.DataFrame, signal_fn: Callable[[pd.DataFrame], pd
     execution_mode (optional): "taker" or "maker_optimistic"; defaults to
     COST_MODEL["fill_assumption"]. Recorded on the Verdict along with the resulting
     cost figures and any warnings they carry.
+
+    n_trials (optional): cumulative trial count for this program. When given, the
+    Deflated Sharpe Ratio is computed on the full-window net returns using the
+    cross-trial variance from research/trial_sharpe_ledger.csv, and recorded on
+    Verdict.dsr. If the ledger holds fewer than MIN_TRIALS_FOR_CROSS_VARIANCE rows
+    the hurdle falls back to the estimator proxy and a warning is attached.
     """
     t0 = time.time()
     sig = signal_fn(df)
@@ -852,6 +975,12 @@ def validate(name: str, df: pd.DataFrame, signal_fn: Callable[[pd.DataFrame], pd
 
     passed = not reasons
     fam_ctx = family_context(name, m_full["sharpe"], m_te["sharpe"], family) if family else {}
+
+    dsr_res: dict = {}
+    dsr_warn: list[str] = []
+    if n_trials is not None:
+        dsr_res = deflated_sharpe(rets["ret_net"].dropna().tolist(), n_trials)
+        dsr_warn = dsr_warnings(dsr_res)
     return Verdict(
         name=name,
         passed=passed,
@@ -863,8 +992,9 @@ def validate(name: str, df: pd.DataFrame, signal_fn: Callable[[pd.DataFrame], pd
         mc=mc,
         family_context=fam_ctx,
         cost_model=cost_model_snapshot(execution_mode),
-        warnings=data_integrity_warnings() + cost_model_warnings(execution_mode),
+        warnings=data_integrity_warnings() + dsr_warn + cost_model_warnings(execution_mode),
         data_manifest=data_integrity_snapshot(),
+        dsr=dsr_res,
     )
 
 
@@ -884,6 +1014,13 @@ def print_verdict(v: Verdict):
         state = "VERIFIED" if dm.get("verified") else ("BYPASSED" if dm.get("bypassed") else "UNVERIFIED")
         print(f"Data: {state} ({dm.get('files_checked', 0)} files, "
               f"manifest {dm.get('manifest_built_utc')})")
+    if v.dsr:
+        d = v.dsr
+        print(f"DSR: {d.get('dsr')}  sr0 {d.get('sr0_benchmark')}  "
+              f"sr_hat/trade {d.get('sr_hat_per_trade')}  n_obs {d.get('n_obs')}  "
+              f"n_trials {d.get('n_trials')}  "
+              f"trial_var_source={d.get('trial_var_source')} "
+              f"(ledger rows {d.get('n_trials_recorded')})")
     if v.cost_model:
         print(f"Costs: {v.cost_model.get('summary', '')}")
     for w in v.warnings:
