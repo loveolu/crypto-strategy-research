@@ -641,6 +641,31 @@ Data acquisition, extension, repair and re-fetch are **`A-XXX` ops tasks only** 
 separately, changing no `n_trials`, landing in their own commit with data plus rebuilt manifest and
 the authenticity evidence in the message.
 
+### Carve-out — fetching a NEW external data axis
+
+The immutability rule above covers **`user_data/data/`** — the manifest-covered market data tree.
+Extending, topping up, or rebuilding anything there is `A-XXX` ops work.
+
+**Fetching a NEW external data axis the project does not hold is legitimate research** and is
+permitted inside a cycle when `NEXT_TASK.md` assigns it. Without this carve-out the reachability
+pre-gate — step 1 of the zero-cost ladder — would be unexecutable, and an Engineer would have to
+BLOCK on a hypothesis the ladder is designed to test cheaply. T-035 did exactly this for the Crypto
+Fear & Greed Index, and the Reviewer specifically credited the raw-response-saved-verbatim handling
+as satisfying auditability.
+
+Permitted subject to **all** of:
+
+- writes go to `user_data/research/data/<axis_name>/`, **never** to `user_data/data/`;
+- the **raw, unmodified response is saved to disk BEFORE any processing**, and committed;
+- the report prints the **first and last raw records** so a Reviewer can byte-match them against the
+  saved file;
+- the **endpoint URL, fetch timestamp, and record count** are recorded;
+- **`requests` is used, not `aiohttp`** — documented `aiodns`/`AsyncResolver` defect, T-026/T-027.
+
+**Fetching an axis not assigned in `NEXT_TASK.md` is a scope violation.** **Patching, interpolating,
+or regenerating a series after saving the raw response is fabrication** — the saved raw file is the
+evidence, and anything that cannot be reproduced from it did not come from the exchange or API.
+
 Consequences an Engineer must plan around:
 
 - If a cycle needs data that does not exist yet, the cycle is **blocked**, not improvised. Report it
