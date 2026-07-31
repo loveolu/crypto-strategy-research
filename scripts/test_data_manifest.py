@@ -20,6 +20,8 @@ history, plus the ones that would let them recur:
   unreadable manifest       -> fails closed
   bypass env var            -> passes but is flagged, never silent
   excluded names            -> manifest does not hash itself
+  FRESH CLONE               -> verifies (catches manifest entries never git-added,
+                               which working-tree verification cannot detect)
 """
 from __future__ import annotations
 
@@ -27,6 +29,7 @@ import importlib.util
 import json
 import os
 import shutil
+import subprocess
 import sys
 import tempfile
 from pathlib import Path
@@ -228,6 +231,46 @@ def test_rebuild_after_legitimate_change_clears_the_failure():
         assert json.loads(t.manifest.read_text(encoding="utf-8"))["note"].startswith("legitimate")
     finally:
         t.close()
+
+
+def test_fresh_clone_verifies():
+    """A CLONE of this repo must verify, not just the working tree.
+
+    This is the regression that actually bit: MANIFEST.json listed 52 files while
+    only 44 were tracked in git. Eight feathers were caught by .gitignore
+    (`user_data/*`) and never force-added. `verify` passed locally — the manifest
+    hashes matched the working-tree bytes — so the gap was invisible from inside
+    the repo. On a fresh clone it reported 8 MISSING, exited 1, and made
+    validator.py raise on import.
+
+    Verifying the working tree cannot detect this by construction. Only cloning
+    can. Confirmed against history: at 900635b0d this fails with 8 MISSING; at
+    07e2b5bde it passes.
+    """
+    repo = Path(__file__).resolve().parents[1]
+    if not (repo / ".git").exists():
+        print("    (skipped: not a git checkout)")
+        return
+    if shutil.which("git") is None:
+        print("    (skipped: git not on PATH)")
+        return
+
+    dest = Path(tempfile.mkdtemp(prefix="dm_clone_")) / "clone"
+    try:
+        clone = subprocess.run(["git", "clone", "--quiet", str(repo), str(dest)],
+                               capture_output=True, text=True)
+        assert clone.returncode == 0, f"git clone failed: {clone.stderr}"
+
+        script = dest / "scripts" / "data_manifest.py"
+        assert script.exists(), "data_manifest.py missing from the clone"
+
+        res = subprocess.run([sys.executable, str(script), "verify"],
+                             cwd=str(dest), capture_output=True, text=True)
+        assert res.returncode == 0, (
+            "fresh clone FAILED data-manifest verification — the repo is not "
+            f"reproducible.\nexit={res.returncode}\n{res.stdout}\n{res.stderr}")
+    finally:
+        shutil.rmtree(dest.parent, ignore_errors=True)
 
 
 TESTS = [v for k, v in sorted(globals().items()) if k.startswith("test_") and callable(v)]

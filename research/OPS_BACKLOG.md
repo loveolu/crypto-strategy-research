@@ -321,3 +321,55 @@ records, and editing a verdict to satisfy a later formatting rule is not a bookk
 
 - Do not rewrite, summarise, or truncate any brief to meet the 4 KB cap.
 - Do not re-run or re-audit any cycle.
+
+---
+
+## A-006 — Determine whether phase21_ivgate.py's DSR print path ever executed
+
+**Status:** LOGGED, NOT ASSIGNED. Do not execute without explicit assignment.
+**Logged:** 2026-07-31 (validation-harness repair, item 0).
+**Class:** OPS / forensics. Zero trials. Does not advance the meta-review counter.
+
+### Problem
+
+`user_data/research/phase21_ivgate.py:756-757` applies `:.4f` formatting to values returned by
+`deflated_sharpe_ratio()`, which returns a **dict**, not a float:
+
+```python
+753  N_TRIALS_NEW = N_TRIALS_BASE + 1  # 99
+754  dsr_veto     = deflated_sharpe_ratio(ret_veto,  n_trials=N_TRIALS_NEW)
+755  dsr_champ_99 = deflated_sharpe_ratio(ret_champ, n_trials=N_TRIALS_NEW)
+756  print(f'    IV-veto DSR  at n_trials={N_TRIALS_NEW}: {dsr_veto:.4f}')
+757  print(f'    Champion DSR at n_trials={N_TRIALS_NEW}: {dsr_champ_99:.4f} (same-window baseline)')
+```
+
+`f"{dict:.4f}"` raises `TypeError: unsupported format string passed to dict.__format__`. As written
+these lines cannot execute successfully.
+
+**This matters because T-021's verdict rests on this script.** Either the block never ran — in which
+case the DSR figures attributed to this cycle came from somewhere else, and that somewhere must be
+identified — or it did run and the script differed from what is committed, in which case the
+committed artifact is not the one that produced the record. Both readings have consequences for the
+cycle's auditability.
+
+Note the sibling call sites are correct: `phase19_sizingband.py:291-292` and
+`phase20_tailalloc.py:312-313` subscript the dict (`dsr_t['dsr']`) before formatting. Only phase21
+formats the dict directly, which suggests an edit that was never re-run.
+
+### Scope
+
+1. Determine whether lines 750-758 were ever reached: check the cycle's saved output
+   (`user_data/research/SESSION_2026-07-11_IVGATE.md`, `research/results/`), and whether any DSR
+   figure attributed to T-021/H-IVGate appears anywhere in the record.
+2. If DSR figures exist for the cycle, establish which code produced them.
+3. Record the finding. **Do not "fix" the line** — the phase scripts are frozen reproduction records
+   (`user_data/research/ARCHIVE_COST_NOTE.md`, rule 1). If the committed script cannot reproduce the
+   recorded numbers, that is the finding, not a bug to patch away.
+4. If the record turns out to rest on numbers no committed script can produce, escalate: that is a
+   provenance failure of the same class as T-019, not a formatting typo.
+
+### Explicit non-goals
+
+- Do not edit `phase21_ivgate.py`.
+- Do not re-run the cycle or recompute its DSR.
+- Do not revise T-021's recorded verdict as part of this task.
