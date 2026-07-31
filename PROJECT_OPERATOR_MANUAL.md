@@ -811,6 +811,36 @@ Sources: `research/strategy_research_notes.md` (principle, ladder, sanity checks
 numeric precedents from `research/archive/index_narrative_pre_2026-07-28.md` rows 21, 22, 37. Both
 files unchanged — this is a copy, not a move.
 
+## Falsification conditions must be transcribed literally
+
+**A falsification condition is transcribed into code literally, not paraphrased.**
+**"at least one of" is `or`. "both" is `and`.** Substituting one for the other is a **spec deviation
+even when the verdict is unchanged** — the code no longer tests the hypothesis that was
+pre-registered, and the next case where only one leg fires will be decided by the substitution rather
+than by the data.
+
+This has now failed in two consecutive cycles, both times harmlessly *on that data*:
+
+- **T-035**: `NEXT_TASK.md` step 3 said *"for at least one of the two forward series"* (`or`);
+  `phase_feargreed.py:116` coded `and`. Both series independently satisfied the reject condition, so
+  the verdict held.
+- **T-034**: `NEXT_TASK.md` step 2 was phrased in the singular; the script coded a joint two-asset
+  `and`, which shelved a genuinely significant ETH result (56.7%, p=0.0029) by design.
+
+"It didn't change the answer" is what both cycles could say, and it is not a defence — it is luck.
+
+**Where a condition is genuinely ambiguous, the Engineer BLOCKS and quotes the sentence.** Singular
+phrasing applied to a multi-asset hypothesis is the archetype: *"the hit ratio must be significant"*
+across two assets does not say whether one leg or both must clear. Do not choose an interpretation,
+do not pick the conservative one, do not note it and proceed. Block, quote the exact sentence, and
+let the Director disambiguate — a blocked cycle costs a day, an unstated interpretation costs the
+result's meaning.
+
+**Reviewer duty: check every falsification condition against its corresponding code line.** Record
+any `and`/`or` mismatch as a spec deviation, and state explicitly whether it was outcome-changing.
+Both are required — an outcome-changing mismatch invalidates the cycle, a non-outcome-changing one is
+still a deviation and is still reported.
+
 ## Independent Reviewer output standard
 
 **A review brief must not exceed 4 KB (4,096 bytes).** The latest brief is MANDATORY Director
