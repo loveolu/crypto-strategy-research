@@ -162,12 +162,27 @@ is worthless — it locks in whatever the bug was.
    `full`, `train`, `val`, `test`, every `wf` window, and `mc` differs in the expected direction.
    Asserting only the top-level result would pass even if four of the six silently used the default.
 
+5. **DSR trial-variance sourcing** (added 2026-07-30). Two assertions:
+   - **`trial_var_source` must not be `"estimator_proxy"` once the ledger holds ≥ 10 trials.**
+     Build a temp ledger with 10+ rows, call `validator.deflated_sharpe()` against it, and assert
+     the source is `"trials"`. This is the regression that matters: the proxy fallback is silent,
+     and a DSR quoted from it is not comparable across trade frequencies
+     (`research/trial_sharpe_ledger.csv` header explains why). Assert the converse too — at 9 rows
+     the source IS the proxy and `PROXY_DSR_WARNING` appears in `Verdict.warnings`.
+   - **A hand-checkable `expected_max_sharpe(trial_sharpe_var, n_trials)` value** for a known pair,
+     computed by hand from the closed form and written in a comment — not copied from a run of the
+     function. Assert `expected_max_sharpe` is monotone increasing in both arguments, and that it
+     is INDEPENDENT of observation count (the whole point of the ledger: the proxy path moves
+     sr0 from 0.2174 at 92 obs to 0.0207 at 10,000, the ledger path does not move at all).
+
 ### Acceptance criteria
 
 - Every expected value derived independently of `validator.py`, with the derivation in a comment.
 - Runs standalone and under pytest (note: repo `pyproject.toml` sets `--dist`; use `-o addopts=""`).
 - Fails loudly if any sub-run ignores `execution_mode`.
-- No test touches `user_data/data/` or the committed manifest.
+- Fails loudly if `trial_var_source` is `"estimator_proxy"` with a ≥10-row ledger.
+- No test touches `user_data/data/`, the committed manifest, or the real
+  `research/trial_sharpe_ledger.csv` — use temp ledgers.
 
 ### Explicit non-goals
 
