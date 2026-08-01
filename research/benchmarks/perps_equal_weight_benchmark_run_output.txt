@@ -53,14 +53,16 @@ test       +66.28%  +241.82%   +2.3560  +0.123321   +4.3451   -25.02%   151
     criterion 4 — that uses the realized TEST MaxDD above.
 
 ------------------------------------------------------------------------------
-CRITERION 3 — validator.sharpe_difference_se(), worked on this artifact
+CRITERION 3 — a 1.10x Sharpe RATIO; the SE is reported but does NOT gate
 ------------------------------------------------------------------------------
-  self:
-    Sa +0.123321  Sb +0.123321  rho +1.000000  N 151
-    delta +0.000000  SE 0.000000  -> criterion_3_pass True
-  drift_variant_vs_benchmark:
-    Sa +0.122344  Sb +0.123321  rho +0.986648  N 151
-    delta -0.000977  SE 0.013349  -> criterion_3_pass False
+  rule: candidate TEST per-period Sharpe >= 1.10 x benchmark's
+  benchmark TEST per-period Sharpe : +0.123321
+  candidate must reach             : +0.135653 per-period (+2.5916 annualised)
+  paired standard error, MANDATORY reporting on every candidate, gates nothing:
+    self: Sa +0.123321  Sb +0.123321  rho +1.000000  N 151
+      delta +0.000000  SE 0.000000  t undefined
+    drift_variant_vs_benchmark: Sa +0.122344  Sb +0.123321  rho +0.986648  N 151
+      delta -0.000977  SE 0.013348  t -0.0732
 
 ------------------------------------------------------------------------------
 DRIFT VARIANT (never rebalanced) — diagnostic only, NOT the benchmark

@@ -645,41 +645,46 @@ def sharpe_difference_se(returns_a, returns_b,
                          bars_per_year: int = ANNUALIZATION_DAILY) -> dict:
     """Standard error of the PAIRED Sharpe difference (Jobson-Korkie / Memmel).
 
-    Promotion criterion 3 (PROJECT_OPERATOR_MANUAL.md, "Promotion rule"): the
-    candidate's TEST Sharpe must exceed the benchmark's by at least one standard
-    error of the paired difference. Formula, transcribed literally from the
-    manual:
+    REPORTING ONLY — THIS DOES NOT GATE. Promotion criterion 3 became a 1.10x
+    Sharpe RATIO on 2026-08-01. The paired standard error and the implied
+    t-statistic are MANDATORY reporting on every candidate, but they decide
+    nothing. See PROJECT_OPERATOR_MANUAL.md, "Promotion rule", criterion 3 and
+    the note recording why the standard-error gate was removed: at N = 151 TEST
+    bars one SE is ~2.22 annualised, comparable to the benchmark's entire
+    annualised Sharpe of 2.36, so the gate demanded an annualised TEST Sharpe of
+    3.06 (rho=0.9) to 4.57 (rho=0.0) and was unclearable by arithmetic rather
+    than by any property of a candidate.
 
-        SE(D) = sqrt( (1/N) * [ 2(1-rho) + 0.5(Sa^2 + Sb^2) - rho*Sa*Sb ] )
+    Deliberately exposes NO pass/fail field. A `criterion_3_pass` would let a
+    caller believe it had evaluated criterion 3 when it had evaluated the
+    superseded gate.
 
-    and criterion 3 passes iff D = Sa - Sb >= SE(D).
+    Canonical Jobson-Korkie with Memmel's (2003) correction:
+
+        SE(D) = sqrt( (1/N) * [ 2(1-rho) + 0.5(Sa^2 + Sb^2)
+                                - (Sa*Sb/2)*(1 + rho^2) ] )
+        t     = D / SE(D),  where D = Sa - Sb
+
+    The manual carried `-rho*Sa*Sb` in that last term until 2026-08-01; both
+    forms agree at rho = 1 and whenever either Sharpe is 0, and differ elsewhere
+    by ~0.4% of SE at this project's per-period Sharpe magnitudes. Corrected to
+    canonical by operator decision; no recorded result changed, because by the
+    same decision the SE no longer gates anything.
 
     `returns_a` is the CANDIDATE, `returns_b` the BENCHMARK. Raw per-period
     return series only — the rounded annualised Sharpe from metrics() cannot be
     used, because the formula needs rho between the two series and rho is not
-    recoverable from summary statistics. That pairing is the point: a candidate
-    highly correlated with the benchmark needs a smaller raw edge to clear one
-    standard error, which is correct, because shared exposure is not the
-    candidate's contribution.
+    recoverable from summary statistics.
 
     CONVENTIONS, both deliberate:
 
     * Sharpe uses the SAMPLE standard deviation (ddof=1), matching metrics().
-      Every TEST-split Sharpe this project publishes comes from metrics(); a
-      criterion that silently used the population sd would be judging a slightly
-      different statistic from the one in the report.
-    * Sharpes enter PER-PERIOD, never annualised. `delta_annualised` and
-      `se_annualised` are reported for readability only. Scaling both by the same
-      sqrt(bars_per_year) cannot change the verdict; mixing conventions can, so
-      `criterion_3_pass` is computed once, from the per-period pair.
-
-    NOTE ON THE FORMULA, recorded rather than silently "fixed": the canonical
-    Memmel (2003) correction carries `-(Sa*Sb/2)*(1+rho^2)` where the manual
-    writes `-rho*Sa*Sb`. They agree at rho=1 and differ elsewhere; at this
-    project's per-period Sharpe magnitudes (|S| ~ 0.1) the gap is ~0.4% of SE,
-    far below the resolution at which criterion 3 decides anything. The MANUAL
-    GOVERNS and is implemented literally. Changing it is an operator decision,
-    not a code fix.
+      Every TEST-split Sharpe this project publishes comes from metrics(); using
+      the population sd would report a slightly different statistic from the one
+      the criterion-3 ratio is applied to.
+    * Sharpes enter PER-PERIOD. `delta_annualised` / `se_annualised` are
+      readability mirrors; `t_stat` is invariant to the choice because it is a
+      ratio of two identically-scaled quantities.
 
     Raises rather than guessing when the inputs cannot support the comparison:
     different lengths, non-identical indexes ("Like-for-like or void" requires
@@ -718,10 +723,18 @@ def sharpe_difference_se(returns_a, returns_b,
     s_b = float(b.mean() / sd_b)
     rho = float(np.corrcoef(a, b)[0, 1])
 
-    bracket = 2.0 * (1.0 - rho) + 0.5 * (s_a ** 2 + s_b ** 2) - rho * s_a * s_b
-    # Numerically, exactly-correlated identical series give a bracket of -0 or a
-    # tiny negative from floating point. Clamp at zero rather than returning nan.
-    se = float(np.sqrt(max(bracket, 0.0) / n))
+    bracket = (2.0 * (1.0 - rho) + 0.5 * (s_a ** 2 + s_b ** 2)
+               - 0.5 * s_a * s_b * (1.0 + rho ** 2))
+    # For identical series the bracket is exactly 0 mathematically, but np.corrcoef
+    # returns rho = 1 - 1e-16 and the cancellation leaves ~1e-16 of float noise.
+    # Left alone that yields a spurious SE ~1e-9 and a t-statistic of 0/1e-9 that
+    # looks like a real number. Clamp anything below a RELATIVE tolerance on the
+    # bracket's own terms; a genuinely small SE stays far above this.
+    scale = (2.0 * abs(1.0 - rho) + 0.5 * (s_a ** 2 + s_b ** 2)
+             + 0.5 * abs(s_a * s_b) * (1.0 + rho ** 2))
+    if bracket < 1e-10 * max(scale, 1e-300):
+        bracket = 0.0
+    se = float(np.sqrt(bracket / n))
     delta = s_a - s_b
     k = float(np.sqrt(bars_per_year))
 
@@ -730,16 +743,19 @@ def sharpe_difference_se(returns_a, returns_b,
         "sharpe_b": s_b,
         "delta": delta,
         "se": se,
+        # delta/se is undefined at se == 0 (identical series); None, not inf/nan.
+        "t_stat": (delta / se) if se > 0 else None,
         "rho": rho,
         "n_obs": int(n),
-        "criterion_3_pass": bool(delta >= se),
         "sharpe_a_annualised": s_a * k,
         "sharpe_b_annualised": s_b * k,
         "delta_annualised": delta * k,
         "se_annualised": se * k,
         "bars_per_year": int(bars_per_year),
-        "formula": "SE = sqrt((1/N)[2(1-rho) + 0.5(Sa^2+Sb^2) - rho*Sa*Sb])",
+        "formula": ("Jobson-Korkie w/ Memmel (2003): "
+                    "SE = sqrt((1/N)[2(1-rho) + 0.5(Sa^2+Sb^2) - (Sa*Sb/2)(1+rho^2)])"),
         "sharpe_basis": "per-period, sample sd (ddof=1), matching metrics()",
+        "gating": "REPORTING ONLY - criterion 3 is a 1.10x Sharpe ratio, not this SE",
     }
 
 

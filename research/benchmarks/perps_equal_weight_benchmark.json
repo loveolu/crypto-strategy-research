@@ -441,38 +441,47 @@
     "basis": "per_bar",
     "dsr_full_window_diagnostic": 0.98815
   },
-  "criterion_3_worked_examples": {
-    "self": {
-      "sharpe_a": 0.12332120518705939,
-      "sharpe_b": 0.12332120518705939,
-      "delta": 0.0,
-      "se": 0.0,
-      "rho": 1.0,
-      "n_obs": 151,
-      "criterion_3_pass": true,
-      "sharpe_a_annualised": 2.3560483169510578,
-      "sharpe_b_annualised": 2.3560483169510578,
-      "delta_annualised": 0.0,
-      "se_annualised": 0.0,
-      "bars_per_year": 365,
-      "formula": "SE = sqrt((1/N)[2(1-rho) + 0.5(Sa^2+Sb^2) - rho*Sa*Sb])",
-      "sharpe_basis": "per-period, sample sd (ddof=1), matching metrics()"
-    },
-    "drift_variant_vs_benchmark": {
-      "sharpe_a": 0.12234390141737937,
-      "sharpe_b": 0.12332120518705939,
-      "delta": -0.000977303769680013,
-      "se": 0.013348529955099359,
-      "rho": 0.9866481270987548,
-      "n_obs": 151,
-      "criterion_3_pass": false,
-      "sharpe_a_annualised": 2.3373769546479415,
-      "sharpe_b_annualised": 2.3560483169510578,
-      "delta_annualised": -0.018671362303116203,
-      "se_annualised": 0.2550233067117542,
-      "bars_per_year": 365,
-      "formula": "SE = sqrt((1/N)[2(1-rho) + 0.5(Sa^2+Sb^2) - rho*Sa*Sb])",
-      "sharpe_basis": "per-period, sample sd (ddof=1), matching metrics()"
+  "criterion_3": {
+    "rule": "candidate TEST per-period Sharpe >= 1.10 x benchmark's",
+    "benchmark_test_sharpe_per_period": 0.123321,
+    "required_candidate_sharpe_per_period": 0.135653,
+    "required_candidate_sharpe_annualised": 2.5916,
+    "se_is_reporting_only": true,
+    "se_examples": {
+      "self": {
+        "sharpe_a": 0.12332120518705939,
+        "sharpe_b": 0.12332120518705939,
+        "delta": 0.0,
+        "se": 0.0,
+        "t_stat": null,
+        "rho": 1.0,
+        "n_obs": 151,
+        "sharpe_a_annualised": 2.3560483169510578,
+        "sharpe_b_annualised": 2.3560483169510578,
+        "delta_annualised": 0.0,
+        "se_annualised": 0.0,
+        "bars_per_year": 365,
+        "formula": "Jobson-Korkie w/ Memmel (2003): SE = sqrt((1/N)[2(1-rho) + 0.5(Sa^2+Sb^2) - (Sa*Sb/2)(1+rho^2)])",
+        "sharpe_basis": "per-period, sample sd (ddof=1), matching metrics()",
+        "gating": "REPORTING ONLY - criterion 3 is a 1.10x Sharpe ratio, not this SE"
+      },
+      "drift_variant_vs_benchmark": {
+        "sharpe_a": 0.12234390141737937,
+        "sharpe_b": 0.12332120518705939,
+        "delta": -0.000977303769680013,
+        "se": 0.013348196344751494,
+        "t_stat": -0.07321616677179674,
+        "rho": 0.9866481270987548,
+        "n_obs": 151,
+        "sharpe_a_annualised": 2.3373769546479415,
+        "sharpe_b_annualised": 2.3560483169510578,
+        "delta_annualised": -0.018671362303116203,
+        "se_annualised": 0.25501693309500756,
+        "bars_per_year": 365,
+        "formula": "Jobson-Korkie w/ Memmel (2003): SE = sqrt((1/N)[2(1-rho) + 0.5(Sa^2+Sb^2) - (Sa*Sb/2)(1+rho^2)])",
+        "sharpe_basis": "per-period, sample sd (ddof=1), matching metrics()",
+        "gating": "REPORTING ONLY - criterion 3 is a 1.10x Sharpe ratio, not this SE"
+      }
     }
   },
   "drift_variant_diagnostic": {

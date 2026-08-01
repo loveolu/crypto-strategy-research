@@ -24,24 +24,19 @@
 
 ## Champion status
 
-**The perps program has NO champion.** TrendVolTarget and the 80/20 portfolio stance are spot
-artifacts computed at the pre-2026-07-28 cost model; their figures are void as perps evidence and are
-not a promotion baseline. Until one is established on perp data, candidates are compared against the
-pre-registered program benchmark. Spot detail, all historical:
-`research/current_champion.md`, `research/strategy_portfolio.md`,
+**The perps program has NO champion.** TrendVolTarget and the 80/20 stance are spot artifacts at the
+pre-2026-07-28 cost model — void as perps evidence, not a promotion baseline. Until one exists on
+perp data, candidates are compared against the pre-registered benchmark below. Historical spot
+detail: `research/current_champion.md`, `research/strategy_portfolio.md`,
 `research/review_briefs/T-037_PERPS_TRANSITION_brief.md`.
 
-## Perps program benchmark (A-005, 2026-08-01) — a candidate must beat this to be promoted
+## Perps program benchmark (A-005, 2026-08-01)
 
-Equal-weight long basket, 9 `config_perp.json` perps, 1d, taker, **monthly rebalanced**,
-**2022-12-23…2025-09-19**. **TEST Sharpe +0.123321 per-period / +2.3560 ann(√365) — POSITIVE, so
-criterion 3 binds, not criterion 2 · TEST MaxDD −25.02% (criterion-4 cap −31.27%) · N=151 ·
-DSR 0.93914 @ n_trials=1** (sr0=0 — high by construction, not a quality signal). Full window
-+503.52% / Sharpe 1.3553 / MaxDD −51.33%; WF positive in **1 of 4** windows. Funding EXCLUDED (no
-held series overlaps; longs pay, so exclusion flatters) and basket survivorship-biased — both bias
-the bar *upward*. Spent no trial. Criterion-3 series:
-`research/benchmarks/perps_equal_weight_benchmark_TEST_returns.csv`; pair it via
-`validator.sharpe_difference_se(candidate, benchmark)`. Detail:
+Committed; T-038 unblocked. **`PROJECT_OPERATOR_MANUAL.md` "Promotion comparison" is primary for its
+figures and for the 7-criterion promotion rule** — this is a pointer, not a second copy. Equal-weight
+monthly-rebalanced long basket, 9 perps, 1d, taker, 2022-12-23…2025-09-19; full window +503.52% /
+Sharpe 1.3553 / MaxDD −51.33%; WF positive in **1 of 4** windows. Funding excluded and basket
+survivorship-biased — both bias the bar upward. Spent no trial. Record:
 `research/benchmarks/perps_equal_weight_benchmark.md`, `research/results/A-005_report.md`.
 
 ## Cycles completed

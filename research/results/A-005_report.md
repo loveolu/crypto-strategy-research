@@ -85,60 +85,82 @@ the repository implemented it** — no `jobson`, no `memmel`, no paired standard
 Criterion 3 was unevaluable, and since the promotion rule says failing any one criterion is
 REJECT/PARK with no discretion, **no candidate could ever have been promoted.**
 
+> **Superseded 2026-08-01**: criterion 3 is now a **1.10× Sharpe ratio**, and the paired SE is
+> mandatory *reporting* that does not gate. The function below is still required on every candidate;
+> it simply no longer decides. §3b records the formula correction, and the manual records why the SE
+> gate was removed. The diagnostic that prompted it: at N = 151 the SE gate demanded an annualised
+> TEST Sharpe of 3.06–4.57 (+112% to +208% over TEST) — unclearable by arithmetic.
+
 **Added**: `validator.sharpe_difference_se(returns_a, returns_b, bars_per_year)` — the only change to
 `validator.py`. Takes raw per-period return series (the rounded annualised Sharpe from `metrics()`
 cannot be used: the formula needs ρ between the two series, which no summary statistic carries).
 Returns `sharpe_a`, `sharpe_b`, `delta`, `se`, `rho`, `n_obs`, `criterion_3_pass`, plus annualised
 mirrors.
 
-Formula transcribed literally from the manual:
-`SE = sqrt((1/N)[2(1−ρ) + ½(Sa² + Sb²) − ρ·Sa·Sb])`, pass iff `Δ ≥ SE`.
+Canonical Jobson–Korkie with Memmel (2003):
+`SE = sqrt((1/N)[2(1−ρ) + ½(Sa² + Sb²) − (Sa·Sb/2)(1+ρ²)])`, `t = Δ/SE`.
 
-Three decisions recorded rather than made silently:
+Decisions recorded rather than made silently:
 
 - **`ddof = 1`** (sample sd), matching `validator.metrics()`. Every TEST Sharpe this project
-  publishes comes from `metrics()`; a criterion that used the population sd would judge a slightly
-  different statistic from the one in the report.
-- **The verdict is computed once, from the per-period pair.** Annualised fields are reported for
-  readability only. Scaling both sides by the same `sqrt(365)` cannot change the verdict; mixing
-  conventions can.
-- **Formula discrepancy, flagged not fixed.** Canonical Memmel (2003) carries `−(Sa·Sb/2)(1+ρ²)`
-  where the manual writes `−ρ·Sa·Sb`. They agree at ρ = 1 and differ elsewhere; at this project's
-  per-period Sharpe magnitudes (|S| ≈ 0.1) the gap is ~0.4% of SE, far below the resolution at which
-  criterion 3 decides anything. **The manual governs and is implemented literally.** Changing it is
-  an operator decision, not a code fix.
+  publishes comes from `metrics()`; using the population sd would report a slightly different
+  statistic from the one criterion 3's ratio is applied to.
+- **Per-period Sharpes.** Annualised fields are readability mirrors; `t_stat` is invariant because
+  it is a ratio of two identically-scaled quantities.
+- **No pass/fail field is exposed.** A `criterion_3_pass` would let a caller believe it had
+  evaluated criterion 3 when it had evaluated the superseded SE gate.
+- **Zero SE is snapped to exactly 0.** For identical series the bracket is 0 mathematically, but
+  `np.corrcoef` returns ρ = 1 − 1e-16 and cancellation left SE ≈ 9.4e-10 with a t of 0/9.4e-10 that
+  looked like a real number. Clamped on a relative tolerance; `t_stat` is `None` at SE = 0.
 
 It **raises** rather than guessing on: mismatched lengths, non-identical pandas indexes
 ("Like-for-like or void" requires date-identical overlap, and a silent reindex is how a void
 comparison slips through), fewer than 3 bars, NaN/inf, or a constant series.
 
-**TDD, as instructed.** Ten tests were written first in `scripts/test_validator.py` and **confirmed
-failing against absent code** — all ten `AttributeError: module 'validator_under_test' has no
-attribute 'sharpe_difference_se'`, with the 34 pre-existing tests passing. Then implemented.
-Final: **44/44 pass**, standalone and under `pytest -o addopts=""`.
+**TDD, as instructed.** Ten tests written first and **confirmed failing against absent code** — all
+ten `AttributeError: module 'validator_under_test' has no attribute 'sharpe_difference_se'`, with the
+34 pre-existing tests passing — then implemented. **47/47 pass** after the 2026-08-01 formula
+correction, standalone and under `pytest -o addopts=""`.
 
-Coverage: positive SE on correlated series; identical series → Δ = 0 **and** SE = 0; a hand-computed
-closed-form value derived in the test's own docstring (not copied from a run — A-003's rule);
-1/√N scaling; Δ antisymmetric and SE symmetric; the worse-Sharpe direction never passes; annualisation
-verdict-invariance; and the four raise-paths.
+Coverage: positive SE on correlated series; identical series → Δ = 0 **and** SE exactly 0;
+hand-computed closed forms derived in the tests' own docstrings (never copied from a run — A-003's
+rule); **a discriminator test that fails against the superseded formula**; 1/√N scaling; Δ
+antisymmetric / SE symmetric; `t = Δ/SE` and `t < 0` in the worse-Sharpe direction; annualisation
+invariance; absence of any gate field; and the four raise-paths.
 
-**Degenerate edge case, recorded**: a series against itself gives Δ = 0, SE = 0, and `Δ ≥ SE` is
-satisfied. It cannot arise for a real candidate (SE = 0 requires ρ = 1 *and* equal Sharpes) and the
-manual's inequality is transcribed as written; flagged rather than silently tightened to `>`.
+### 3b. Formula correction (2026-08-01)
+
+The manual carried `−ρ·Sa·Sb` where canonical Memmel (2003) has `−(Sa·Sb/2)(1+ρ²)`. **Both the manual
+and `sharpe_difference_se()` are now canonical.**
+
+The discriminator test uses ρ = −1 with both Sharpes nonzero, where the forms differ most: canonical
+gives SE **exactly 1.0**, the superseded form 1.1726039399558574. It was confirmed failing with
+*exactly* that superseded value before the fix. The pre-existing hand-computed case could not have
+caught this — it has Sb = 0, where both forms coincide.
+
+**Nothing reported changed.** On the only real comparison in the artifacts, SE moved 0.013349 →
+0.013348 (0.008%, smaller than the ~0.4% general estimate because ρ = 0.9866 is near where the forms
+agree). Benchmark Sharpe, MaxDD, DSR and every metric are byte-identical. And by the same operator
+decision the SE no longer gates anything.
 
 ## 4. The question the operator asked
 
 **Is the benchmark's own TEST Sharpe positive?** **Yes: +0.123321 per-period (+2.3560 annualised).**
 
 So **criterion 3 is the binding constraint, not criterion 2.** A candidate must not merely be
-profitable on TEST — it must beat a benchmark that was itself strongly profitable there (+66.28% over
-151 bars; the TEST window was a crypto rally). Had the benchmark's TEST Sharpe been negative,
-criterion 2 (candidate TEST Sharpe > 0 absolute) would have become binding instead, since any
-positive-Sharpe candidate clears a negative benchmark almost automatically. That is not the situation.
+profitable on TEST — it must reach **≥ 0.135653 per-period (+2.5916 annualised)**, 1.10× a benchmark
+that was itself strongly profitable there (+66.28% over 151 bars; the TEST window was a crypto
+rally). Had the benchmark's TEST Sharpe been negative, criterion 2 (candidate TEST Sharpe > 0
+absolute) would have become binding instead, since any positive-Sharpe candidate clears a negative
+benchmark almost automatically. That is not the situation.
 
-Worked example proving the wiring: the drift variant (ρ = 0.9866 with the benchmark, Sharpe
-+0.122344 vs +0.123321) gives Δ = −0.000977 against SE = 0.013349 → `criterion_3_pass False`, as it
-must.
+**Note for a future program boundary**: a ratio rule is degenerate against a non-positive benchmark
+Sharpe (1.10 × a negative number is *easier* to beat). It is well-defined here because the benchmark
+Sharpe is positive, and criterion 2 covers the candidate side. Recorded as a known edge case, not a
+proposed change.
+
+Worked example proving the wiring: the drift variant (ρ = 0.9866, Sharpe +0.122344 vs +0.123321)
+gives Δ = −0.000977, SE = 0.013348, t = −0.0732 — and fails the ratio gate, as it must.
 
 ## 5. Bookkeeping
 

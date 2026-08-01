@@ -232,34 +232,45 @@ import time inside `validator.py`, before any number is computed.
 
 ## 8. How to use this for criterion 3
 
+**Criterion 3 is a 1.10× Sharpe RATIO** (`PROJECT_OPERATOR_MANUAL.md`, "Promotion rule", finalised
+2026-08-01). Against this benchmark a candidate must reach **≥ 0.135653 per-period (+2.5916
+annualised)** on the same TEST window.
+
 ```python
 import pandas as pd, validator as V
 
 bench = pd.read_csv("research/benchmarks/perps_equal_weight_benchmark_TEST_returns.csv",
                     comment="#", index_col=0, parse_dates=True)["ret_net"]
-# candidate TEST returns must be on IDENTICAL dates, or the comparison is void
+
+# criterion 3 — the gate
+passes = candidate_test_sharpe_per_period >= 1.10 * 0.123321
+
+# the paired SE and t — MANDATORY reporting on every candidate, but they do NOT gate.
+# candidate TEST returns must be on IDENTICAL dates, or the comparison is void.
 res = V.sharpe_difference_se(candidate_test_returns, bench, bars_per_year=365)
-res["criterion_3_pass"]     # delta >= se
+res["se"], res["t_stat"], res["rho"], res["n_obs"]
 ```
 
 `sharpe_difference_se()` **raises** rather than guessing on mismatched lengths or non-identical
-indexes — a silent reindex is exactly how a void comparison would slip through.
+indexes — a silent reindex is exactly how a void comparison would slip through — and deliberately
+exposes **no pass/fail field**, so it cannot be mistaken for the gate.
+
+**Why the SE does not gate.** At N = 151 one SE is ≈ 2.22 annualised, comparable to the benchmark's
+entire annualised Sharpe of 2.36. The superseded SE gate therefore demanded an annualised TEST
+Sharpe of 3.06 (ρ = 0.9) to 4.57 (ρ = 0.0) — **+112% to +208% over the TEST window** against the
+benchmark's +66.28%. Unclearable by arithmetic, not by any property of a candidate. Full reasoning is
+recorded in the manual so it is not reintroduced unknowingly.
 
 **Worked examples, run against this artifact** (so the wiring is demonstrated, not asserted):
 
-| comparison | Sa | Sb | ρ | N | Δ | SE | pass |
-|---|---:|---:|---:|---:|---:|---:|---|
-| benchmark vs itself | +0.123321 | +0.123321 | +1.000000 | 151 | 0.000000 | 0.000000 | True |
-| drift variant vs benchmark | +0.122344 | +0.123321 | +0.986648 | 151 | −0.000977 | 0.013349 | **False** |
+| comparison | Sa | Sb | ρ | N | Δ | SE | t |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| benchmark vs itself | +0.123321 | +0.123321 | +1.000000 | 151 | 0.000000 | 0.000000 | undefined |
+| drift variant vs benchmark | +0.122344 | +0.123321 | +0.986648 | 151 | −0.000977 | 0.013348 | −0.0732 |
 
-**Degenerate edge case, recorded not patched**: a series compared against itself gives Δ = 0 and
-SE = 0, and the manual's rule `Δ ≥ SE` is then satisfied. This cannot arise for a real candidate
-(SE = 0 requires ρ = 1 *and* identical Sharpes, i.e. the identical series), and the formula is
-transcribed literally from the manual as required. Flagged here rather than silently changed to a
-strict inequality — that would be a standards change, which is an operator decision.
-
-The second row is the informative one: the drift variant is 98.7% correlated with the benchmark and
-its Sharpe is *lower*, so it fails criterion 3 — as it must.
+The self-comparison correctly **fails criterion 3** under the ratio rule: 1.00 × is not 1.10 ×. The
+drift variant is 98.7% correlated with the benchmark and its Sharpe is *lower*, so it fails too — as
+it must.
 
 ## 9. Warnings that must accompany these numbers
 

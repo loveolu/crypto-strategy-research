@@ -596,16 +596,17 @@ def test_identical_series_give_zero_difference():
     res = V.sharpe_difference_se(a, a)
     assert abs(res["delta"]) < 1e-12, f"identical series must give delta 0, got {res['delta']}"
     assert abs(res["rho"] - 1.0) < 1e-12
-    # rho=1 and Sa=Sb collapses the bracket to 2(1-1) + Sa^2 - Sa^2 = 0 exactly.
-    assert abs(res["se"]) < 1e-9, f"identical series must give SE 0, got {res['se']}"
+    # rho=1 and Sa=Sb collapses the bracket to 2(1-1) + Sa^2 - Sa^2 = 0 EXACTLY.
+    # Asserted exactly, not to a tolerance: a residual ~1e-9 here is float noise
+    # surviving cancellation, and it produces a t-statistic that looks real.
+    assert res["se"] == 0.0, f"identical series must give SE exactly 0, got {res['se']}"
 
 
 def test_se_matches_hand_computed_formula():
     """Hand-evaluated closed form, independent of the implementation.
 
     Sharpe uses SAMPLE sd (ddof=1) to match validator.metrics(), which is where
-    every TEST-split Sharpe this project publishes comes from. Criterion 3 must
-    consume the same statistic the report quotes, or the two disagree.
+    every TEST-split Sharpe this project publishes comes from.
 
     a alternates +3%/-1%, b alternates +1%/-1%, N = 4:
         a: mean 0.01, deviations +/-0.02, sample sd = sqrt(0.0016/3)
@@ -613,9 +614,12 @@ def test_se_matches_hand_computed_formula():
            Sa^2 = 0.0625 * 3 = 0.1875 exactly
         b: mean 0.00 -> Sb = 0.0
         rho = +1 exactly (b's deviations are 0.5x a's, perfectly proportional)
-    Bracket = 2(1-1) + 0.5*(0.1875 + 0) - 1*Sa*0 = 0.09375
+    Bracket = 2(1-1) + 0.5*(0.1875 + 0) - (Sa*0/2)(1+1) = 0.09375
     SE      = sqrt(0.09375 / 4) = sqrt(0.0234375) = 0.15309310892394862
-    delta   = 0.4330127018922193 - 0.0
+
+    NOTE: Sb = 0 here, so the canonical Memmel term -(Sa*Sb/2)(1+rho^2) and the
+    superseded -rho*Sa*Sb both vanish and this case CANNOT distinguish them.
+    test_se_uses_canonical_memmel_not_the_superseded_form is the discriminator.
     """
     a = np.array([0.03, -0.01, 0.03, -0.01])
     b = np.array([0.01, -0.01, 0.01, -0.01])
@@ -625,6 +629,36 @@ def test_se_matches_hand_computed_formula():
     assert abs(res["rho"] - 1.0) < 1e-12, res["rho"]
     assert abs(res["delta"] - 0.4330127018922193) < 1e-12, res["delta"]
     assert abs(res["se"] - 0.15309310892394862) < 1e-12, res["se"]
+
+
+def test_se_uses_canonical_memmel_not_the_superseded_form():
+    """Discriminates canonical Memmel from the form the manual carried until
+    2026-08-01. Both Sharpes nonzero and rho = -1, where they differ most.
+
+        a = [+2%, 0, +2%, 0]  -> mean 0.01, deviations +/-0.01,
+                                 sample sd = sqrt(4*1e-4/3) = 0.01*2/sqrt(3)
+                                 Sa = 0.5*sqrt(3) = 0.8660254037844387, Sa^2 = 0.75
+        b = [0, +2%, 0, +2%]  -> identical statistics, Sb = Sa, Sb^2 = 0.75
+        rho = -1 exactly (b's deviations are a's negated)
+
+    CANONICAL  -(Sa*Sb/2)(1+rho^2):
+        2(1-(-1)) + 0.5(0.75+0.75) - (0.75/2)(1+1) = 4 + 0.75 - 0.75 = 4.0
+        SE = sqrt(4.0/4) = 1.0 exactly
+    SUPERSEDED -rho*Sa*Sb:
+        2(2) + 0.75 - (-1)(0.75) = 5.5  ->  SE = sqrt(5.5/4) = 1.1726039399558574
+
+    delta = 0 (equal Sharpes).
+    """
+    a = np.array([0.02, 0.00, 0.02, 0.00])
+    b = np.array([0.00, 0.02, 0.00, 0.02])
+    res = V.sharpe_difference_se(a, b)
+    assert abs(res["sharpe_a"] - 0.8660254037844387) < 1e-12, res["sharpe_a"]
+    assert abs(res["sharpe_b"] - 0.8660254037844387) < 1e-12, res["sharpe_b"]
+    assert abs(res["rho"] + 1.0) < 1e-12, res["rho"]
+    assert abs(res["delta"]) < 1e-15, res["delta"]
+    assert abs(res["se"] - 1.0) < 1e-12, (
+        f"expected canonical Memmel SE 1.0, got {res['se']}. The superseded "
+        f"-rho*Sa*Sb form would give 1.1726039399558574.")
 
 
 def test_se_shrinks_with_sample_size():
@@ -647,18 +681,37 @@ def test_delta_is_antisymmetric_and_se_is_symmetric():
     assert abs(ab["se"] - ba["se"]) < 1e-12
 
 
-def test_criterion3_verdict_is_reported():
-    """The function must state the pass/fail, not leave it to the caller.
+def test_returns_no_gate_field():
+    """The SE must NOT carry a pass/fail. It is reported, it does not gate.
 
-    Criterion 3 passes iff delta >= SE. Leaving that comparison to each caller is
-    how a promotion rule gets applied inconsistently.
+    Criterion 3 became a 1.10x Sharpe RATIO on 2026-08-01; the paired standard
+    error is mandatory reporting but decides nothing (PROJECT_OPERATOR_MANUAL.md,
+    "Promotion rule", criterion 3 and the note on why the SE gate was removed).
+    A field named criterion_3_pass would let a caller believe it had evaluated
+    criterion 3 when it had evaluated the superseded gate.
     """
     a, b = _corr_pair()
     res = V.sharpe_difference_se(a, b)
-    assert res["criterion_3_pass"] == (res["delta"] >= res["se"])
+    for k in res:
+        assert "criterion" not in k and "pass" not in k, (
+            f"sharpe_difference_se must expose no gate field; found {k!r}")
+
+
+def test_t_stat_is_delta_over_se():
+    """The implied t-statistic is mandatory reporting on every candidate."""
+    a, b = _corr_pair()
+    res = V.sharpe_difference_se(a, b)
+    assert abs(res["t_stat"] - res["delta"] / res["se"]) < 1e-12
     flipped = V.sharpe_difference_se(b, a)
-    assert flipped["criterion_3_pass"] is False, (
-        "a series with the WORSE Sharpe must never pass criterion 3")
+    assert flipped["t_stat"] < 0, "the worse-Sharpe direction must give t < 0"
+
+
+def test_t_stat_is_none_when_se_is_zero():
+    """delta/se is undefined at SE = 0; report None rather than inf or nan."""
+    a, _ = _corr_pair()
+    res = V.sharpe_difference_se(a, a)
+    assert res["se"] == 0.0
+    assert res["t_stat"] is None
 
 
 def test_mismatched_lengths_raise():
@@ -682,7 +735,8 @@ def test_annualised_fields_do_not_change_the_verdict():
     k = np.sqrt(365)
     assert abs(res["delta_annualised"] - res["delta"] * k) < 1e-12
     assert abs(res["se_annualised"] - res["se"] * k) < 1e-12
-    assert res["criterion_3_pass"] == (res["delta_annualised"] >= res["se_annualised"])
+    # t is a ratio of two identically-scaled quantities, so it is invariant.
+    assert abs(res["t_stat"] - res["delta_annualised"] / res["se_annualised"]) < 1e-12
 
 
 def test_zero_variance_series_raises_rather_than_returning_nonsense():

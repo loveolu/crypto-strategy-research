@@ -631,19 +631,32 @@ def main() -> dict:
     dsr["dsr_full_window_diagnostic"] = V.deflated_sharpe(
         bars["ret_net"].dropna().tolist(), N_TRIALS).get("dsr")
 
-    # Criterion 3, exercised on the real artifact so a Reviewer sees the wiring
-    # work rather than taking it on trust. Self-comparison must give delta 0.
-    _, _, dte = V.split_by_dates(drift_bars, *SPLIT_DATES)
+    _, _, dte0 = V.split_by_dates(drift_bars, *SPLIT_DATES)
+
+    # Criterion 3 is a 1.10x Sharpe RATIO (PROJECT_OPERATOR_MANUAL.md, "Promotion
+    # rule", finalised 2026-08-01). The paired standard error is MANDATORY
+    # reporting on every candidate but does NOT gate — the SE gate was removed
+    # because at N=151 it was unclearable by arithmetic. Both are exercised here
+    # on the real artifact so a Reviewer sees the wiring rather than trusting it.
+    bench_te = m_te["sharpe_per_period"]
     c3 = {
-        "self": V.sharpe_difference_se(te_bars["ret_net"], te_bars["ret_net"],
-                                       bars_per_year=BARS_PER_YEAR),
-        "drift_variant_vs_benchmark": V.sharpe_difference_se(
-            slice_bars(dte)["ret_net"], te_bars["ret_net"], bars_per_year=BARS_PER_YEAR),
+        "rule": "candidate TEST per-period Sharpe >= 1.10 x benchmark's",
+        "benchmark_test_sharpe_per_period": bench_te,
+        "required_candidate_sharpe_per_period": round(1.10 * bench_te, 6),
+        "required_candidate_sharpe_annualised": round(
+            1.10 * bench_te * float(np.sqrt(BARS_PER_YEAR)), 4),
+        "se_is_reporting_only": True,
+        "se_examples": {
+            "self": V.sharpe_difference_se(te_bars["ret_net"], te_bars["ret_net"],
+                                           bars_per_year=BARS_PER_YEAR),
+            "drift_variant_vs_benchmark": V.sharpe_difference_se(
+                slice_bars(dte0)["ret_net"], te_bars["ret_net"],
+                bars_per_year=BARS_PER_YEAR),
+        },
     }
 
     drift_full = window_metrics(drift_bars, trades)
-    _, _, drift_te = V.split_by_dates(drift_bars, *SPLIT_DATES)
-    drift_te_m = window_metrics(slice_bars(drift_te), trades, trade_stats=False)
+    drift_te_m = window_metrics(slice_bars(dte0), trades, trade_stats=False)
 
     test_csv = OUT_DIR / f"{STEM}_TEST_returns.csv"
     full_csv = OUT_DIR / f"{STEM}_FULL_returns.csv"
@@ -681,7 +694,7 @@ def main() -> dict:
         "mc_trade_level_harness": mc,
         "mc_bar_level_diagnostic": mc_bar,
         "dsr": dsr,
-        "criterion_3_worked_examples": c3,
+        "criterion_3": c3,
         "drift_variant_diagnostic": {
             "note": ("never-rebalanced buy-and-hold, the construction used in the "
                      "superseded first A-005 commit; reported for reconciliation only"),
@@ -774,13 +787,20 @@ def _print(r: dict) -> None:
     print("    permuted-order MaxDD also overstates dispersion and must NOT feed")
     print("    criterion 4 — that uses the realized TEST MaxDD above.")
 
-    print(f"\n{'-'*78}\nCRITERION 3 — validator.sharpe_difference_se(), worked on this artifact\n{'-'*78}")
-    for k, c in r["criterion_3_worked_examples"].items():
-        print(f"  {k}:")
-        print(f"    Sa {c['sharpe_a']:+.6f}  Sb {c['sharpe_b']:+.6f}  rho {c['rho']:+.6f}  "
-              f"N {c['n_obs']}")
-        print(f"    delta {c['delta']:+.6f}  SE {c['se']:.6f}  -> criterion_3_pass "
-              f"{c['criterion_3_pass']}")
+    c3 = r["criterion_3"]
+    print(f"\n{'-'*78}\nCRITERION 3 — a 1.10x Sharpe RATIO; the SE is reported but does NOT gate"
+          f"\n{'-'*78}")
+    print(f"  rule: {c3['rule']}")
+    print(f"  benchmark TEST per-period Sharpe : {c3['benchmark_test_sharpe_per_period']:+.6f}")
+    print(f"  candidate must reach             : "
+          f"{c3['required_candidate_sharpe_per_period']:+.6f} per-period "
+          f"({c3['required_candidate_sharpe_annualised']:+.4f} annualised)")
+    print("  paired standard error, MANDATORY reporting on every candidate, gates nothing:")
+    for k, c in c3["se_examples"].items():
+        t = "undefined" if c["t_stat"] is None else f"{c['t_stat']:+.4f}"
+        print(f"    {k}: Sa {c['sharpe_a']:+.6f}  Sb {c['sharpe_b']:+.6f}  "
+              f"rho {c['rho']:+.6f}  N {c['n_obs']}")
+        print(f"      delta {c['delta']:+.6f}  SE {c['se']:.6f}  t {t}")
 
     d = r["drift_variant_diagnostic"]
     print(f"\n{'-'*78}\nDRIFT VARIANT (never rebalanced) — diagnostic only, NOT the benchmark\n{'-'*78}")

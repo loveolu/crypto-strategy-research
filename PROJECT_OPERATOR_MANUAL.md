@@ -461,48 +461,16 @@ Use rolling windows. Never optimize and evaluate using the same period.
 Reserve unseen data. Hyperopt must never access this data. Final evaluation must be performed exclusively on unseen data.
 
 ### 3. Market Regime Testing
-Evaluate separately on:
-* strong bull markets
-* weak bull markets
-* strong bear markets
-* weak bear markets
-* sideways markets
-* high volatility
-* low volatility
-* recovery periods
-* crash periods
+Evaluate separately on: strong/weak bull, strong/weak bear, sideways, high volatility, low
+volatility, recovery, crash. If historical data allows, evaluate every calendar year individually.
 
-If historical data allows, evaluate every calendar year individually.
-
-Produce yearly metrics including:
-* Return
-* CAGR
-* Sharpe
-* Deflated Sharpe
-* Sortino
-* Calmar
-* Profit Factor
-* Max Drawdown
-* Win Rate
-* Number of Trades
-* Average Trade
-* Expectancy
-
-Also produce combined metrics.
+Produce yearly **and** combined metrics: Return, CAGR, Sharpe, Deflated Sharpe, Sortino, Calmar,
+Profit Factor, Max Drawdown, Win Rate, Number of Trades, Average Trade, Expectancy.
 
 ### 4. Regime Classification
-Determine the current market regime before generating signals.
-
-Possible regimes include:
-* Strong bullish trend
-* Weak bullish trend
-* Strong bearish trend
-* Weak bearish trend
-* Sideways
-* Volatility expansion
-* Volatility compression
-* Recovery
-* Momentum exhaustion
+Determine the current market regime before generating signals. Possible regimes: strong/weak bullish
+trend, strong/weak bearish trend, sideways, volatility expansion, volatility compression, recovery,
+momentum exhaustion.
 
 If evidence shows different strategies perform best in different regimes, build a regime classifier that activates the most appropriate strategy rather than forcing one strategy to trade all markets. The classifier must itself be validated.
 
@@ -578,8 +546,7 @@ An `A-XXX` task:
 - is logged in `research/OPS_BACKLOG.md` and assigned from there.
 
 This matters because the project has been misclassifying: **11 of 19 formally-numbered cycles were
-ops**, several carrying `T-` or even `H-` prefixes (T-033 was Windows power-plan forensics under an
-`H-` name). The counters were measuring activity, not research.
+ops**, several under `T-`/`H-` prefixes. The counters were measuring activity, not research.
 
 **Task IDs and `n_trials` are two different counters. Do not conflate them at a program boundary.**
 
@@ -619,27 +586,13 @@ silently apply the wrong date to whichever program was not being thought about.
 because trimming would remove the bars silently and report the result as if the series had always
 ended there. The caller must exclude them explicitly.
 
-### Why 2025-09-19 for perps (resolved by operator decision, 2026-08-01)
-
-Two readings were in the manual and they disagreed. The resolution and its reasoning:
-
-- **Reading A — "all bars after 2026-05-27" — reserves ZERO bars on every perp series**, because all
-  nine end on exactly that date. A program with no holdout has no out-of-sample evaluation at all.
-- **Reading B — per-series 20% of calendar span — produces nine DIFFERENT boundaries**, from
-  2025-02-13 to 2025-09-19. The same calendar day would be holdout for one instrument and training
-  data for another, making any cross-sectional or basket construct incoherent.
-- **2025-09-19 is the LATEST of reading B's per-series boundaries** (BNB, the shortest series).
-  Adopting it as a single common date gives all nine instruments one shared window, which is what
-  makes cross-sectional work coherent.
-
-  **Correction to the stated rationale, recorded rather than silently applied.** The decision as
-  written said this "guarantees every instrument reserves at least its full 20%". It does not.
-  Because 2025-09-19 is the *latest* of the candidate boundaries it reserves the FEWEST bars: 250 per
-  instrument, which is exactly 20% for BNB and proportionally less for every longer series — BTC
-  10.7%, SOL 12.8%, the rest 12.1%; 12.5% across the pooled 17,932 bars. Reserving ≥20% everywhere
-  would require the EARLIEST boundary (2025-02-13). The decision stands on its stated primary
-  grounds — a single shared window, and a nonzero holdout where reading A gives none — but the
-  "at least 20%" clause is not accurate and is not relied upon.
+**Why 2025-09-19 for perps** (operator decision 2026-08-01; full reasoning in the
+`validator.HOLDOUT_BOUNDARIES` comment block). "After 2026-05-27" reserves ZERO perp bars — all nine
+series end that day — and per-series 20% gives nine *different* boundaries, incoherent for any
+basket. 2025-09-19 is the latest of those and gives all nine one shared window. **Correction on
+record**: it does *not* reserve ≥20% everywhere — being the latest candidate it reserves the fewest
+(250 bars: exactly 20% for BNB, BTC 10.7%, 12.5% pooled). The decision stands on its primary grounds
+— one shared window, and a nonzero holdout — not on the inaccurate "at least 20%" clause.
 
 **THE BOUNDARY IS FIXED. It may not be moved after any perps result has been measured against it.**
 Moving it afterwards converts held-out bars into in-sample ones retroactively and voids every result
@@ -714,9 +667,8 @@ Consequences an Engineer must plan around:
 - An Engineer reaching the limit without a result reports that and stops. Exceeding the assigned
   number invalidates the cycle: trials were spent but never priced into `n_trials`.
 
-**Confirmed by operator decision, 2026-07-29.** These are the limits, not provisional defaults.
-Deliberately tight: this project's own history includes a 61-variant sweep (#8) that produced a
-Sharpe ceiling and no edge.
+**Confirmed by operator decision, 2026-07-29** — limits, not provisional defaults. Deliberately
+tight: this project's history includes a 61-variant sweep (#8) that found a ceiling and no edge.
 
 ## Promotion comparison
 
@@ -729,55 +681,82 @@ in a promotion argument. This is why every pre-2026-07-28 number is unusable as 
 **Where no champion exists, the comparison is against the pre-registered program benchmark.** The
 perps program has no champion (see `research/review_briefs/T-037_PERPS_TRANSITION_brief.md`).
 
-**Perps benchmark**: equal-weight buy-and-hold of the 9 `user_data/config_perp.json` instruments
-under `COST_MODEL` taker, DSR at `n_trials = 1`. **Computed and committed before T-038 runs** —
-**A-005 in `research/OPS_BACKLOG.md`, blocking T-038**. A benchmark chosen after seeing a candidate's
-results is not a benchmark.
+**Perps benchmark — COMMITTED 2026-08-01 (A-005); no longer pending, T-038 unblocked.** Equal-weight
+**monthly-rebalanced** long basket of the 9 `user_data/config_perp.json` instruments, 1d,
+`COST_MODEL` taker, funding excluded (no held series overlaps the window; longs pay funding, so the
+exclusion flatters the benchmark). **Window 2022-12-23…2025-09-19, splits 2024-11-22 / 2025-04-21 /
+2025-09-19. TEST Sharpe 0.123321 per-period (+2.3560 ann. √365), TEST MaxDD −25.02%, N = 151, DSR
+0.93914 at `n_trials = 1` (sr0 = 0.0).** Record + paired series:
+`research/benchmarks/perps_equal_weight_benchmark.md` / `..._TEST_returns.csv`. Benchmark **and**
+split triple are **frozen**; a candidate on different split dates is void, not weaker evidence.
 
 **A candidate that does not beat the benchmark cannot be promoted, regardless of its other metrics.**
 A good Sharpe, a clean walk-forward and a passing DSR do not substitute for beating the thing you
 could have held instead.
 
-### Promotion rule (operator decision, 2026-07-29)
+### Promotion rule — FINAL (operator decision, 2026-08-01; supersedes 2026-07-29)
 
-**Primary metric for the benchmark comparison is TEST-split Sharpe.**
+**Primary metric for the benchmark comparison is TEST-split Sharpe.** A candidate is **PROMOTED only
+if ALL SEVEN hold**. Failing any one is **REJECT or PARK**. There is **no discretion** — a Director
+or Reviewer may not weigh a strong result on one criterion against a failure on another.
 
-A candidate is **PROMOTED only if ALL five hold**. Failing any one is **REJECT or PARK**. There is
-**no discretion** — a Director or Reviewer may not weigh a strong result on one criterion against a
-failure on another.
-
-1. **DSR ≥ 0.95 at the current `n_trials`.** This is an **absolute gate, not a comparison against the
-   benchmark.** Why it must be absolute: the benchmark is computed at `n_trials = 1` **by
-   construction** — it is pre-registered and never searched over — so its DSR is mechanically high.
-   A candidate emerging from a real search carries genuine multiple-testing debt. Comparing the two
-   DSRs would be unclearable by design: the candidate would be penalised for having been searched for
-   while the benchmark is rewarded for never having been. DSR measures selection luck, not skill
-   relative to holding.
+1. **DSR ≥ 0.95 on the TEST split at the current `n_trials`.** **Absolute gate, not a comparison
+   against the benchmark**, which is computed at `n_trials = 1` by construction (sr0 = 0.0, DSR
+   0.93914). A DSR-vs-DSR comparison would be unclearable by design: the candidate is penalised for
+   having been searched for while the benchmark is rewarded for never having been. DSR measures
+   selection luck, not skill relative to holding.
 2. **Candidate TEST-split Sharpe > 0** in absolute terms.
-3. **Candidate TEST-split Sharpe exceeds the benchmark's by at least one standard error of the
-   paired difference**, computed on the overlapping return series.
-4. **Candidate MaxDD ≤ 1.25 × benchmark MaxDD** on the same window.
+3. **Candidate TEST-split Sharpe ≥ 1.10 × the benchmark's** — same window, cost model and fill
+   assumption; against the committed benchmark, **≥ 0.135653 per-period (+2.5916 annualised)**.
+   Compare per-period Sharpes; annualising both sides leaves the ratio unchanged, mixing conventions
+   does not. **The paired-difference SE and t-statistic from `validator.sharpe_difference_se()` MUST
+   be computed and reported on every candidate but do NOT gate.** A series compared against itself
+   gives Δ = 0 and **does not pass** — 1.00 × is not 1.10 ×.
+4. **Candidate REALIZED MaxDD ≤ 1.25 × the benchmark's realized TEST MaxDD** — benchmark −25.02%, so
+   the cap is **−31.27%**. **Realized only, never the Monte Carlo MaxDD distribution**, which is
+   computed on permuted order and overstates dispersion (`validator.monte_carlo` says so itself).
 5. **Every validation gate in `NEXT_TASK.md` passed.**
+6. **Monte Carlo gate is PASS, not INSUFFICIENT.** A construct whose survival depends on which seeds
+   were drawn has not demonstrated survival; **INSUFFICIENT maps to PARK** (see "Monte Carlo gate").
+7. **DSR `trial_var_source` is not `"estimator_proxy"`.** Below 10 rows in
+   `research/trial_sharpe_ledger.csv` the hurdle falls back to the Lo (2002) proxy, which scales as
+   ~1/(n_obs−1) and is not comparable across trade counts. **Until the ledger is populated the
+   maximum available verdict is PARK.**
 
-**Formula for criterion 3.** Let `r_c` and `r_b` be the candidate and benchmark return series over
-the `N` **overlapping** TEST bars (same dates, same cost model, same fill assumption — per
-"Like-for-like or void" above). Let `S_c`, `S_b` be their **per-period** (not annualised) Sharpe
-ratios and `ρ` the Pearson correlation between `r_c` and `r_b`. The standard error of the difference
-`Δ = S_c − S_b` is the Jobson–Korkie statistic with Memmel's correction:
+**Why criterion 3 is a ratio and NOT a standard-error gate — do not reintroduce the SE gate without
+reading this.** The 2026-07-29 draft required the candidate's TEST Sharpe to beat the benchmark's by
+≥ 1 SE of the paired difference. Against the actual benchmark that demands an annualised TEST Sharpe
+of **3.06 (ρ = 0.9) to 4.57 (ρ = 0.0)** — **+112% to +208% over the 151-bar TEST window**, versus the
+benchmark's +66.28%. It is unclearable, and **the cause is arithmetic, not a property of any
+candidate**: SE scales as 1/√N, so at N = 151 one SE is **≈ 2.22 annualised, comparable to the
+benchmark's entire annualised Sharpe of 2.36**. A gate whose threshold is the size of the quantity
+being measured cannot discriminate. **Statistical separation from the benchmark is a forward-evidence
+question; 151 bars cannot establish it** — hence reported, not gating. Reinstating it needs a
+materially longer TEST window or an explicit operator decision recorded here.
+
+**Formula for the reported SE.** `r_c`, `r_b` over the `N` **overlapping** TEST bars (identical
+dates — per "Like-for-like or void"; `N` is bars, not trades); `S_c`, `S_b` **per-period** Sharpes,
+`ρ` their correlation. Jobson–Korkie with Memmel's (2003) correction:
 
 ```
-SE(Δ) = sqrt( (1/N) · [ 2(1 − ρ) + ½(S_c² + S_b²) − ρ·S_c·S_b ] )
+SE(Δ) = sqrt( (1/N) · [ 2(1 − ρ) + ½(S_c² + S_b²) − (S_c·S_b/2)(1 + ρ²) ] ),   t = Δ / SE(Δ)
 ```
 
-**Criterion 3 passes iff `Δ ≥ SE(Δ)`.** Both Sharpes must be per-period when entering the formula;
-annualising both by the same `sqrt(365)` scales `Δ` and `SE(Δ)` identically and does not change the
-verdict, but mixing conventions does. `ρ` is what makes this *paired*: a candidate highly correlated
-with the benchmark needs a smaller raw edge to clear one standard error, which is correct — shared
-exposure is not the candidate's contribution.
+**Corrected 2026-08-01**: this manual previously wrote that last term as `−ρ·S_c·S_b`, which is not
+Memmel's correction. The forms agree at `ρ = 1` and whenever either Sharpe is zero, and differ
+elsewhere by ~0.4% of SE here. `validator.sharpe_difference_se()` was updated to match; **no recorded
+result changed**, since by the same decision the SE no longer gates. Series that do not overlap on
+identical dates make the comparison void and promotion fails.
 
-`N` is the count of overlapping bars, not the candidate's trade count. If the two series do not
-overlap on identical dates, the comparison is void (criterion 3 cannot be evaluated, so promotion
-fails).
+**Calibration for Directors — the bars are high on purpose.**
+
+- **TrendVolTarget, the spot program's champion and strongest of ~100 trials, scores DSR 0.02891 on
+  TEST at `n_trials = 100`** (`research/measurements/2026-07-30_champion_remeasurement.md`). The 0.95
+  bar is retained **knowingly**: most constructs will not approach it, and that is the gate working.
+- **The benchmark's TEST window (2025-04-22 … 2025-09-19) is the 74.5th percentile of rolling 151-bar
+  windows and second-best of six non-overlapping blocks — a good window, not an extraordinary one.**
+  The unusual split is **val**, containing 2025H1, the only negative calendar half-year in the
+  series. Splits were reviewed against this evidence and **retained**.
 
 ## DSR promotion threshold
 
@@ -787,12 +766,11 @@ Quoted verbatim from `research/research_index.md` standing constraints:
 > cumulative `n_trials` and must clear **≥0.95** to be called a real edge. `research_metrics.md` is
 > authoritative; the two counts must always match.
 
-**This manual is primary.** The threshold also appears as the `dsr_threshold` default in
-`freqtrade_dsr.evaluate_freqtrade()` and in `research/research_index.md` standing constraints; **both
-are secondary copies. If any two disagree, this manual governs and the others are the defect** — fix
-them, do not re-derive the standard. A research dashboard is not where a permanent standard belongs
-(it is rewritten every cycle, compacted for budget, and scoped to one program), and a function
-default is not a policy statement.
+**This manual is primary.** The threshold also appears as `freqtrade_dsr.evaluate_freqtrade()`'s
+`dsr_threshold` default and in `research/research_index.md` standing constraints; **both are
+secondary copies. If any two disagree, this manual governs and the others are the defect** — fix
+them, do not re-derive the standard. A dashboard rewritten every cycle and a function default are
+not where a permanent standard belongs.
 
 `n_trials` is per-program and resets at a program boundary (see counters above); the **0.95 bar does
 not**. The perps program starts at `n_trials = 0` and clears the same threshold.
@@ -847,15 +825,10 @@ even when the verdict is unchanged** — the code no longer tests the hypothesis
 pre-registered, and the next case where only one leg fires will be decided by the substitution rather
 than by the data.
 
-This has now failed in two consecutive cycles, both times harmlessly *on that data*:
-
-- **T-035**: `NEXT_TASK.md` step 3 said *"for at least one of the two forward series"* (`or`);
-  `phase_feargreed.py:116` coded `and`. Both series independently satisfied the reject condition, so
-  the verdict held.
-- **T-034**: `NEXT_TASK.md` step 2 was phrased in the singular; the script coded a joint two-asset
-  `and`, which shelved a genuinely significant ETH result (56.7%, p=0.0029) by design.
-
-"It didn't change the answer" is what both cycles could say, and it is not a defence — it is luck.
+This failed in two consecutive cycles, both times harmlessly *on that data*: **T-035** (spec said
+"at least one of", `phase_feargreed.py:116` coded `and`; both series satisfied the condition anyway)
+and **T-034** (singular phrasing, code used a joint two-asset `and`, shelving a significant ETH
+result — 56.7%, p=0.0029 — by design). "It didn't change the answer" is not a defence; it is luck.
 
 **Where a condition is genuinely ambiguous, the Engineer BLOCKS and quotes the sentence.** Singular
 phrasing applied to a multi-asset hypothesis is the archetype: *"the hit ratio must be significant"*
@@ -890,8 +863,7 @@ not a near-PASS; it is the absence of a result.
 answer you want, and it invalidates the cycle. If a construct comes back INSUFFICIENT, it parks; the
 re-run is a new, pre-registered cycle.
 
-The per-seed values are printed and carried on `Verdict.warnings`, so an INSUFFICIENT cannot be
-reported as anything else.
+Per-seed values are carried on `Verdict.warnings`, so INSUFFICIENT cannot be reported otherwise.
 
 ## Independent Reviewer output standard
 
@@ -911,13 +883,7 @@ Enforced by `scripts/check_context_budget.py`, which counts the highest-Task-ID 
 
 ## Champion Classification & Progression Pipeline
 
-**Classification Hierarchy**
-Research Candidate
-↓
-Research Champion
-↓
-Production Candidate
-↓
+**Classification Hierarchy**: Research Candidate → Research Champion → Production Candidate →
 Production Champion
 
 **Definitions**
@@ -925,56 +891,10 @@ Production Champion
 *   **Production Candidate:** Requires multiple successful Meta Reviews, extensive challenger testing, competition mode completion, cross-regime robustness, parameter stability, extensive Monte Carlo validation, and satisfactory validation metrics.
 *   **Production Champion:** Requires successful paper trading, successful production validation, and continued robustness requirements. Only Production Champions are eligible for live deployment.
 
-**Progression Pipeline**
-Research Champion
-
-↓
-
-additional experiments
-
-↓
-
-multiple successful Meta Reviews
-
-↓
-
-Competition Mode
-
-↓
-
-Champion Improvement
-
-↓
-
-Champion Challenging
-
-↓
-
-cross-regime validation
-
-↓
-
-additional robustness testing
-
-↓
-
-Production Candidate
-
-↓
-
-paper trading
-
-↓
-
-production validation
-
-↓
-
-Production Champion
-
-↓
-
-live deployment
+**Progression Pipeline**: Research Champion → additional experiments → multiple successful Meta
+Reviews → Competition Mode → Champion Improvement → Champion Challenging → cross-regime validation
+→ additional robustness testing → **Production Candidate** → paper trading → production validation
+→ **Production Champion** → live deployment
 
 ⸻
 
