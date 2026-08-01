@@ -373,3 +373,64 @@ formats the dict directly, which suggests an edit that was never re-run.
 - Do not edit `phase21_ivgate.py`.
 - Do not re-run the cycle or recompute its DSR.
 - Do not revise T-021's recorded verdict as part of this task.
+
+---
+
+## A-007 — Give the live harness callers explicit split_dates
+
+**Status:** LOGGED, NOT ASSIGNED. Do not execute without explicit assignment.
+**Logged:** 2026-07-31 (validation-harness repair, item 3).
+**Class:** OPS / harness maintenance. Zero trials. Does not advance the meta-review counter.
+
+### Problem
+
+Item 3 added a reserved-holdout guard to `validate()` and `walk_forward()`, and deprecated the
+fractional `split_70_15_15()`. That changed the behaviour of files which are **live harness callers,
+not frozen reproduction artifacts** — so the frozen-script exemption in
+`user_data/research/ARCHIVE_COST_NOTE.md` rule 1 does **not** cover them.
+
+**Now raise `HoldoutViolation`** on any series extending past `RESERVED_HOLDOUT_AFTER`:
+
+| File | Calls |
+|---|---|
+| `user_data/research/batch3.py` | `validate()` |
+| `user_data/research/batch4.py` | `validate()`, `split_70_15_15()` |
+| `user_data/research/batch5.py` | `validate()` |
+| `user_data/research/run_batch.py` | `validate()` |
+
+**Now emit the `split_70_15_15()` deprecation warning:** `user_data/research/batch4.py`,
+`user_data/research/multi_asset.py`.
+
+On today's BTC 1d feather (52 bars past the boundary) every one of these raises.
+
+### Scope
+
+1. Give each `validate()` call an explicit `split_dates=(train_end, val_end, test_end)` tuple whose
+   `test_end` is on or before the reserved-holdout boundary.
+2. Migrate `split_70_15_15()` uses in `batch4.py` and `multi_asset.py` to `split_by_dates()`.
+3. Decide the dates ONCE and use the same triple everywhere. Different split dates across callers
+   makes their results mutually incomparable, which is the defect that
+   "Like-for-like or void" (`PROJECT_OPERATOR_MANUAL.md`, "Promotion comparison") exists to prevent.
+4. State the chosen dates in the commit message and in `research/research_index.md` standing
+   constraints, so a later reader can tell which window any of these produced.
+
+### Explicit non-goals — read before starting
+
+- **Passing `enforce_holdout=False` is NOT an acceptable fix.** It silences the guard instead of
+  fixing the caller, makes every metric in-sample, and marks the run as not-evidence. The guard is
+  reporting a real condition: these scripts genuinely were evaluating on reserved holdout. Disabling
+  it re-creates the defect and hides it. Any change that adds `enforce_holdout=False` to these files
+  must be rejected in review.
+- Do not re-point the frozen `phase*.py` scripts at anything. They are covered by the
+  frozen-reproduction rule and are out of scope here.
+- Do not re-run any historical batch and record its output as a current result. These scripts
+  produced archived numbers under a different cost model, a degenerate Monte Carlo, and truncated
+  warmup (`ARCHIVE_COST_NOTE.md` §1-4, §4b, §4c). Fixing the call signature does not make their
+  output current.
+
+### Acceptance criteria
+
+- All four `validate()` callers run without `HoldoutViolation` on the current feathers.
+- No `enforce_holdout=False` anywhere in the repository.
+- No remaining `split_70_15_15()` calls outside `phase*.py`.
+- The chosen split dates recorded in one place and identical across callers.
