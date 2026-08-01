@@ -66,11 +66,32 @@ which the cap moves; a breach with narrative still in the region is not.
 
 | File | Region |
 |---|---|
-| `PROJECT_OPERATOR_MANUAL.md` | **only** between `DIRECTOR-MANDATORY-BEGIN/END` markers — the standards, validation and promotion sections (Validation Requirements through Champion Classification & Progression Pipeline, including the cost model, counters, holdout, pre-gate ladder, DSR threshold, promotion comparison and research budget) |
+| `PROJECT_OPERATOR_MANUAL.md` | **only** between `DIRECTOR-MANDATORY-BEGIN/END` markers — see the section list below |
 | `research/research_index.md` | whole file (compact by design — one line per cycle, current program only) |
 | `knowledge_base/hypothesis_bank.md` | **only** between `DIRECTOR-MANDATORY-BEGIN/END` markers (the FAMILY STATUS LEDGER) |
 | `research/STANDING_DIRECTIVES.md` | whole file — the accumulated binding directives from every meta-review |
 | `research/review_briefs/` (latest only) | whole file — capped at 4 KB by the Reviewer standard below |
+
+**The DIRECTOR-MANDATORY region contains exactly these thirteen sections.** The list is
+exhaustive on purpose: an earlier version named only eight, and three of the five it omitted
+(Monte Carlo gate, Independent Reviewer output standard, Falsification conditions) are precisely
+the standards the role prompts in `prompts/` were later found to have got wrong. An incomplete
+index of a mandatory region is how a standard gets missed by everyone downstream. **Anyone adding
+or removing a section inside the markers must update this list in the same edit.**
+
+1. Validation Requirements
+2. Execution and cost model
+3. Cycle classification, IDs, and counters
+4. Reserved holdout
+5. **Data acquisition is not research** (incl. the new-external-axis carve-out)
+6. Research budget (incl. the program trial cap and terminal condition)
+7. Promotion comparison (incl. the seven-criterion Promotion rule and the perps benchmark)
+8. DSR promotion threshold
+9. Zero-cost pre-gate ladder
+10. **Falsification conditions must be transcribed literally**
+11. **Monte Carlo gate**
+12. **Independent Reviewer output standard**
+13. Champion Classification & Progression Pipeline
 
 **"Latest" means highest ID, never most recent mtime.** The latest review brief is the one with the
 highest Task ID parsed from its filename (`T-035_brief.md` → 35); the latest meta-review is the
@@ -217,7 +238,11 @@ A detailed synthesis document containing:
 * observations
 * research conclusions
 
-### best_strategy_so_far.py
+### research/best_strategy_so_far.py
+
+**Full path, not the bare filename.** The file is under `research/`, per this manual's
+file-locations note at the top. The bare name here previously led `prompts/director.md` to
+reference a non-existent repo-root `best_strategy_so_far.py`.
 
 Maintain the current best validated strategy.
 
