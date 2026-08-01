@@ -602,38 +602,102 @@ def walk_forward(df: pd.DataFrame, signal_fn, windows: int = 4,
     return results
 
 
+#: Default seed set for monte_carlo(). Five seeds so the gated statistic's
+#: sensitivity to seed choice is measured rather than assumed.
+MC_SEEDS = (42, 43, 44, 45, 46)
+
+_MC_NAN_KEYS = ("mc_p5_sharpe", "mc_p50_sharpe", "mc_p95_sharpe",
+                "mc_p5_return", "mc_p50_return", "mc_p95_return",
+                "mc_p50_maxdd", "mc_p95_maxdd", "mc_worst_maxdd",
+                "mc_seed_spread_p5_sharpe")
+
+
 def monte_carlo(returns: pd.DataFrame, trades: pd.DataFrame, n_sims: int = 200,
                 extra_cost: Optional[float] = None,
-                execution_mode: Optional[str] = None) -> dict:
-    """Shuffle trade order + apply an execution-stress cost. Returns distribution of
-    Sharpe and final equity.
+                execution_mode: Optional[str] = None,
+                seeds: tuple = MC_SEEDS,
+                bars_per_year: int = ANNUALIZATION_DAILY) -> dict:
+    """Monte Carlo robustness of a trade log, under an execution-stress cost.
+
+    Two resampling schemes, each matched to what the statistic is sensitive to.
+    This distinction is the whole point of the function:
+
+      * **Bootstrap (with replacement)** -> Sharpe and terminal return.
+        Both are permutation-INVARIANT: mean, std and prod(1+x) do not depend on
+        trade order. Resampling by permutation therefore produced N identical
+        sims and a "5th percentile" that was the point estimate wearing a
+        percentile label (measured spread 3.9e-16 across 500 sims). Sampling with
+        replacement varies the composition of the trade set, which is the
+        uncertainty actually being asked about: "how good was this run's luck in
+        WHICH trades occurred?"
+
+      * **Permutation (without replacement)** -> maximum drawdown.
+        MaxDD is order-DEPENDENT — the same trades in a different sequence give a
+        different worst peak-to-trough. Permutation is the correct tool here and
+        genuinely disperses, so it is kept for this statistic alone. The question
+        is "how good was this run's luck in the ORDER trades arrived?"
 
     `extra_cost` is charged once per trade ON TOP of the costs already baked into
     trades["pnl"] by signal_to_returns(). When omitted it resolves from COST_MODEL
-    as one additional full round trip — i.e. the stress scenario is "every trade
-    executed twice as expensively as modelled".
+    as one additional full round trip.
+
+    `n_sims` is simulations PER SEED; the reported percentiles pool all
+    len(seeds) * n_sims simulations. `mc_seed_spread_p5_sharpe` is the range of
+    the gated statistic across individual seeds — if that is large relative to
+    the statistic, the gate's verdict is a seed artifact and must not be trusted.
     """
     if len(trades) < 30:
-        return {"mc_p5_sharpe": np.nan, "mc_p50_sharpe": np.nan, "mc_p5_return": np.nan}
+        out = {k: np.nan for k in _MC_NAN_KEYS}
+        out.update({"mc_n_sims": 0, "mc_sims_per_seed": int(n_sims),
+                    "mc_seeds": list(seeds), "mc_note": "fewer than 30 trades"})
+        return out
+
     if extra_cost is None:
         extra_cost = round_trip_cost(execution_mode)
-    pnl = trades["pnl"].values - extra_cost  # per-trade extra execution stress
-    sharpes = []
-    finals = []
-    rng = np.random.default_rng(42)
-    for _ in range(n_sims):
-        shuffled = rng.permutation(pnl)
-        eq = np.cumprod(1 + shuffled)
-        rets = pd.Series(shuffled)
-        s = rets.mean() / rets.std() * np.sqrt(len(shuffled) / (len(returns) / ANNUALIZATION_DAILY)) if rets.std() > 0 else 0
-        sharpes.append(s)
-        finals.append(eq[-1] - 1)
+    pnl = np.asarray(trades["pnl"].values, dtype=float) - extra_cost
+    n = len(pnl)
+    years = max(len(returns) / bars_per_year, 1e-9)
+    ann = np.sqrt(n / years)          # trades per year -> annualisation factor
+
+    all_sharpes, all_finals, all_dds, per_seed_p5 = [], [], [], []
+
+    for seed in seeds:
+        rng = np.random.default_rng(seed)
+        seed_sharpes = []
+        for _ in range(n_sims):
+            # --- bootstrap WITH replacement: Sharpe + terminal return ---------
+            boot = rng.choice(pnl, size=n, replace=True)
+            sd = boot.std(ddof=1)
+            s = float(boot.mean() / sd * ann) if sd > 0 else 0.0
+            seed_sharpes.append(s)
+            all_finals.append(float(np.cumprod(1.0 + boot)[-1] - 1.0))
+
+            # --- permutation WITHOUT replacement: MaxDD -----------------------
+            perm = rng.permutation(pnl)
+            eq = np.cumprod(1.0 + perm)
+            all_dds.append(float((eq / np.maximum.accumulate(eq) - 1.0).min()))
+
+        all_sharpes.extend(seed_sharpes)
+        per_seed_p5.append(float(np.percentile(seed_sharpes, 5)))
+
+    spread = float(max(per_seed_p5) - min(per_seed_p5))
     return {
-        "mc_p5_sharpe": float(np.percentile(sharpes, 5)),
-        "mc_p50_sharpe": float(np.percentile(sharpes, 50)),
-        "mc_p95_sharpe": float(np.percentile(sharpes, 95)),
-        "mc_p5_return": float(np.percentile(finals, 5)),
-        "mc_p50_return": float(np.percentile(finals, 50)),
+        "mc_p5_sharpe": float(np.percentile(all_sharpes, 5)),
+        "mc_p50_sharpe": float(np.percentile(all_sharpes, 50)),
+        "mc_p95_sharpe": float(np.percentile(all_sharpes, 95)),
+        "mc_p5_return": float(np.percentile(all_finals, 5)),
+        "mc_p50_return": float(np.percentile(all_finals, 50)),
+        "mc_p95_return": float(np.percentile(all_finals, 95)),
+        # MaxDD percentiles are on a negative scale: p95 is the WORST tail.
+        "mc_p50_maxdd": float(np.percentile(all_dds, 50)),
+        "mc_p95_maxdd": float(np.percentile(all_dds, 5)),
+        "mc_worst_maxdd": float(np.min(all_dds)),
+        "mc_seeds": list(seeds),
+        "mc_sims_per_seed": int(n_sims),
+        "mc_n_sims": int(n_sims * len(seeds)),
+        "mc_p5_sharpe_per_seed": [round(x, 4) for x in per_seed_p5],
+        "mc_seed_spread_p5_sharpe": spread,
+        "mc_resampling": "bootstrap(sharpe,return) + permutation(maxdd)",
     }
 
 
@@ -915,7 +979,8 @@ def validate(name: str, df: pd.DataFrame, signal_fn: Callable[[pd.DataFrame], pd
              bars_per_year: int = ANNUALIZATION_DAILY,
              family: Optional[list] = None,
              execution_mode: Optional[str] = None,
-             n_trials: Optional[int] = None) -> Verdict:
+             n_trials: Optional[int] = None,
+             n_sims: int = 200) -> Verdict:
     """Run the full pipeline. signal_fn(df) -> pd.Series of {-1, 0, 1} indexed by df.index.
 
     family (optional): list of {"name", "full_sharpe", "test_sharpe"} dicts for the
@@ -952,7 +1017,7 @@ def validate(name: str, df: pd.DataFrame, signal_fn: Callable[[pd.DataFrame], pd
     rets_te = signal_to_returns(df_te, sig_te, execution_mode=execution_mode); trs_te = extract_trades(rets_te); m_te = metrics(rets_te, trs_te, bars_per_year)
 
     wf = walk_forward(df, signal_fn, execution_mode=execution_mode)
-    mc = monte_carlo(rets, trs, execution_mode=execution_mode)
+    mc = monte_carlo(rets, trs, n_sims=n_sims, execution_mode=execution_mode)
 
     reasons = []
     if m_full["years"] < 5: reasons.append(f"only {m_full['years']:.1f}y data (need 5+)")
@@ -1038,8 +1103,19 @@ def print_verdict(v: Verdict):
         for w in v.wf:
             print(f"  W{w['window']}: ret {w['total_return']*100:+5.1f}%  Sharpe {w['sharpe']:5.2f}  trades {w['n_trades']}")
     if v.mc:
-        print(f"Monte Carlo (200 sims, +1 extra round trip of cost): p5 Sharpe {v.mc.get('mc_p5_sharpe', float('nan')):.2f}  "
-              f"p50 Sharpe {v.mc.get('mc_p50_sharpe', float('nan')):.2f}  p5 ret {v.mc.get('mc_p5_return', float('nan'))*100:+.1f}%")
+        _seeds = v.mc.get('mc_seeds', [])
+        _seed_note = (f"{len(_seeds)} seeds, p5-Sharpe spread {v.mc.get('mc_seed_spread_p5_sharpe', float('nan')):.3f}"
+                      if len(_seeds) > 1 else "SINGLE SEED — cross-seed spread UNMEASURED")
+        print(f"Monte Carlo ({v.mc.get('mc_n_sims', 0)} sims, {_seed_note}, +1 extra round trip of cost)")
+        print(f"  resampling: {v.mc.get('mc_resampling', 'n/a')}")
+        print(f"  Sharpe p5 {v.mc.get('mc_p5_sharpe', float('nan')):.2f}  "
+              f"p50 {v.mc.get('mc_p50_sharpe', float('nan')):.2f}  "
+              f"p95 {v.mc.get('mc_p95_sharpe', float('nan')):.2f}")
+        print(f"  Return p5 {v.mc.get('mc_p5_return', float('nan'))*100:+.1f}%  "
+              f"p50 {v.mc.get('mc_p50_return', float('nan'))*100:+.1f}%")
+        print(f"  MaxDD  p50 {v.mc.get('mc_p50_maxdd', float('nan'))*100:.1f}%  "
+              f"p95(worst tail) {v.mc.get('mc_p95_maxdd', float('nan'))*100:.1f}%  "
+              f"worst {v.mc.get('mc_worst_maxdd', float('nan'))*100:.1f}%")
     if v.family_context:
         ts = v.family_context.get("test_sharpe", {})
         if ts:
