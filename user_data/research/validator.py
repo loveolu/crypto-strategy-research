@@ -579,7 +579,8 @@ def split_70_15_15(df: pd.DataFrame):
 
 
 def walk_forward(df: pd.DataFrame, signal_fn, windows: int = 4,
-                 execution_mode: Optional[str] = None) -> list[dict]:
+                 execution_mode: Optional[str] = None,
+                 signal: Optional[pd.Series] = None) -> list[dict]:
     """Anchored walk-forward: 4 OOS windows. Each window: prior 60%+ is IS, next 10% is OOS."""
     n = len(df)
     results = []
@@ -591,8 +592,11 @@ def walk_forward(df: pd.DataFrame, signal_fn, windows: int = 4,
         oos_df = df.iloc[is_end:oos_end]
         if len(oos_df) < 30:
             continue
-        sig = signal_fn(oos_df)
-        rets = signal_to_returns(oos_df, sig, execution_mode=execution_mode)
+        # Same warmup rule as validate(): slice a precomputed full-series signal
+        # when one is supplied. Recomputing per window restarts every indicator's
+        # warmup inside a window that is typically ~10% of the series.
+        sig_w = signal.reindex(oos_df.index) if signal is not None else signal_fn(oos_df)
+        rets = signal_to_returns(oos_df, sig_w, execution_mode=execution_mode)
         trs = extract_trades(rets)
         m = metrics(rets, trs)
         m["window"] = k
@@ -1061,15 +1065,22 @@ def validate(name: str, df: pd.DataFrame, signal_fn: Callable[[pd.DataFrame], pd
     concentration = yearly_pnl_dollar_concentration(rets)
 
     # 70/15/15
+    # Signals are computed ONCE on the full series (above, `sig`) and then SLICED.
+    # Calling signal_fn on each slice restarts every indicator's warmup inside the
+    # window: an SMA200 handed a 180-bar TEST slice is NaN for the whole slice and
+    # reports 0 trades / Sharpe 0.0000 regardless of merit. TEST-split Sharpe is the
+    # primary promotion metric, so that is not a rounding issue - it is a fabricated
+    # verdict. Slicing the signal keeps the warmup that the earlier data provides,
+    # which is also what live trading would have.
     df_tr, df_vl, df_te = split_70_15_15(df)
-    sig_tr = signal_fn(df_tr)
-    sig_vl = signal_fn(df_vl)
-    sig_te = signal_fn(df_te)
+    sig_tr = sig.reindex(df_tr.index)
+    sig_vl = sig.reindex(df_vl.index)
+    sig_te = sig.reindex(df_te.index)
     rets_tr = signal_to_returns(df_tr, sig_tr, execution_mode=execution_mode); trs_tr = extract_trades(rets_tr); m_tr = metrics(rets_tr, trs_tr, bars_per_year)
     rets_vl = signal_to_returns(df_vl, sig_vl, execution_mode=execution_mode); trs_vl = extract_trades(rets_vl); m_vl = metrics(rets_vl, trs_vl, bars_per_year)
     rets_te = signal_to_returns(df_te, sig_te, execution_mode=execution_mode); trs_te = extract_trades(rets_te); m_te = metrics(rets_te, trs_te, bars_per_year)
 
-    wf = walk_forward(df, signal_fn, execution_mode=execution_mode)
+    wf = walk_forward(df, signal_fn, execution_mode=execution_mode, signal=sig)
     mc = monte_carlo(rets, trs, n_sims=n_sims, execution_mode=execution_mode)
 
     reasons = []

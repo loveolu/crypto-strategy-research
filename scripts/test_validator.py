@@ -181,6 +181,84 @@ def test_mc_small_sample_still_short_circuits():
     assert np.isnan(mc["mc_p5_sharpe"])
 
 
+# --------------------------------------------------------------------------- #
+#  ITEM 2 — signal_fn must be computed ONCE on the full series, not per split
+# --------------------------------------------------------------------------- #
+
+def _warmup_ohlcv(n_bars: int = 1200, seed: int = 11) -> pd.DataFrame:
+    """Trending-ish OHLCV long enough for a 200-bar indicator to matter."""
+    rng = np.random.default_rng(seed)
+    close = 100 * np.exp(np.cumsum(rng.normal(0.0008, 0.02, n_bars)))
+    idx = pd.date_range("2019-01-01", periods=n_bars, freq="D", tz="UTC")
+    return pd.DataFrame({
+        "open": close, "high": close * 1.01, "low": close * 0.99,
+        "close": close, "volume": 1000.0,
+    }, index=idx)
+
+
+def _long_warmup_signal(d: pd.DataFrame) -> pd.Series:
+    """SMA200 regime filter — needs 200 bars of history before it says anything."""
+    return (d["close"] > d["close"].rolling(200).mean()).astype(float).fillna(0.0)
+
+
+def test_warmup_placement_materially_changes_metrics():
+    """Fixture guard: the two approaches MUST differ, or this file proves nothing.
+
+    Slicing before computing restarts a 200-bar indicator inside a 180-bar TEST
+    window, so the signal is NaN for the entire slice: 0 trades, Sharpe 0.0000,
+    regardless of merit. Computing once and slicing keeps the warmup the earlier
+    data already provides — which is also what live trading would have.
+
+    This asserts the defect is real and the fixture exercises it. The assertion
+    that validator.py takes the CORRECT branch is
+    test_validate_computes_signal_once_on_full_series.
+    """
+    df = _warmup_ohlcv()
+    _, _, df_te = V.split_70_15_15(df)
+    assert len(df_te) < 200, "fixture no longer exercises warmup truncation"
+
+    sig_full = _long_warmup_signal(df)
+    rets_a = V.signal_to_returns(df_te, sig_full.reindex(df_te.index))
+    m_a = V.metrics(rets_a, V.extract_trades(rets_a))
+
+    sig_sliced = _long_warmup_signal(df_te)
+    rets_b = V.signal_to_returns(df_te, sig_sliced)
+    m_b = V.metrics(rets_b, V.extract_trades(rets_b))
+
+    assert m_b["n_trades"] == 0 and m_b["sharpe"] == 0.0, (
+        "slice-first should be structurally empty on this fixture, got "
+        f"{m_b['n_trades']} trades / Sharpe {m_b['sharpe']}")
+    assert m_a["n_trades"] > 0, "compute-once should produce trades"
+
+
+def test_validate_computes_signal_once_on_full_series():
+    """validate()'s TEST metrics must match the compute-once-then-slice result."""
+    df = _warmup_ohlcv()
+    v = V.validate("warmup_check", df, _long_warmup_signal, n_trials=1, n_sims=50)
+
+    _, _, df_te = V.split_70_15_15(df)
+    sig_full = _long_warmup_signal(df)
+    rets = V.signal_to_returns(df_te, sig_full.reindex(df_te.index))
+    expected = V.metrics(rets, V.extract_trades(rets))
+
+    assert v.test["n_trades"] == expected["n_trades"], (
+        f"validate() TEST trades {v.test['n_trades']} != compute-once {expected['n_trades']}")
+    assert abs(v.test["sharpe"] - expected["sharpe"]) < 1e-9, (
+        f"validate() TEST Sharpe {v.test['sharpe']} != compute-once {expected['sharpe']}")
+
+
+def test_walk_forward_windows_are_warmup_invariant():
+    """Same defect inside walk_forward: each OOS window restarted the indicator."""
+    df = _warmup_ohlcv()
+    sig_full = _long_warmup_signal(df)
+    wf = V.walk_forward(df, _long_warmup_signal, signal=sig_full)
+    assert wf, "walk_forward produced no windows"
+    total = sum(w["n_trades"] for w in wf)
+    assert total > 0, (
+        "every walk-forward window is empty — the indicator is being restarted "
+        "per window and never clears its warmup")
+
+
 TESTS = [v for k, v in sorted(globals().items()) if k.startswith("test_") and callable(v)]
 
 
