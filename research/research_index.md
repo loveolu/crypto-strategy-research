@@ -33,13 +33,16 @@ pre-registered program benchmark. Spot detail, all historical:
 
 ## Perps program benchmark (A-005, 2026-08-01) — a candidate must beat this to be promoted
 
-Equal-weight buy-and-hold, 9 `config_perp.json` perps, 1d, taker, **2022-12-23…2025-09-19**.
-**TEST Sharpe +0.122344 per-period / +2.3374 ann(√365) · TEST MaxDD −23.22% (criterion-4 cap
-−29.03%) · N=151 · DSR 0.93713 @ n_trials=1** (sr0=0 — high by construction, not a quality signal).
-Full window +504.34% / Sharpe 1.3370 / MaxDD −50.21%; WF positive in **1 of 4** windows. Funding
-EXCLUDED and basket survivorship-biased — both bias the bar *upward*, i.e. harder to beat. Spent no
-trial. Criterion-3 return series: `research/benchmarks/perps_benchmark_TEST_returns.csv`.
-Detail and caveats: `research/results/A-005_report.md`.
+Equal-weight long basket, 9 `config_perp.json` perps, 1d, taker, **monthly rebalanced**,
+**2022-12-23…2025-09-19**. **TEST Sharpe +0.123321 per-period / +2.3560 ann(√365) — POSITIVE, so
+criterion 3 binds, not criterion 2 · TEST MaxDD −25.02% (criterion-4 cap −31.27%) · N=151 ·
+DSR 0.93914 @ n_trials=1** (sr0=0 — high by construction, not a quality signal). Full window
++503.52% / Sharpe 1.3553 / MaxDD −51.33%; WF positive in **1 of 4** windows. Funding EXCLUDED (no
+held series overlaps; longs pay, so exclusion flatters) and basket survivorship-biased — both bias
+the bar *upward*. Spent no trial. Criterion-3 series:
+`research/benchmarks/perps_equal_weight_benchmark_TEST_returns.csv`; pair it via
+`validator.sharpe_difference_se(candidate, benchmark)`. Detail:
+`research/benchmarks/perps_equal_weight_benchmark.md`, `research/results/A-005_report.md`.
 
 ## Cycles completed
 

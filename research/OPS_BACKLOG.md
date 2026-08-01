@@ -194,10 +194,22 @@ is worthless — it locks in whatever the bug was.
 
 ## A-005 — Compute and commit the perps program benchmark
 
-**Status:** ✅ **COMPLETE, 2026-08-01.** Executed as specified; specification not varied. **T-038 is
-unblocked.** Zero trials — perps `n_trials` stays 0; meta-review counter unchanged.
-Report: `research/results/A-005_report.md`. Script: `user_data/research/perps_benchmark.py`.
-Artifacts: `research/benchmarks/`. Headline recorded in `research/research_index.md`.
+**Status:** ✅ **COMPLETE, 2026-08-01.** **T-038 is unblocked.** Zero trials — perps `n_trials` stays
+0; not appended to the trial ledger; meta-review counter unchanged.
+Report: `research/results/A-005_report.md`. Benchmark record:
+`research/benchmarks/perps_equal_weight_benchmark.md`. Script:
+`user_data/research/perps_benchmark.py`. Headline in `research/research_index.md`.
+
+**One deviation from the specification below, by operator instruction 2026-08-01: the basket is
+MONTHLY REBALANCED, not buy-and-hold.** An unrebalanced basket stops being equal-weight almost
+immediately (over this window SOL 20.2x vs DOT 0.97x leaves it ~46% SOL / ~2% DOT) and pays no
+turnover, both of which flatter the benchmark. The drift variant is retained as a labelled
+diagnostic and reconciles exactly. The "Entry cost applies once per instrument; buy-and-hold has no
+rebalancing turnover" line below is superseded on that point only.
+
+**Also delivered under this task**: `validator.sharpe_difference_se()` — promotion criterion 3 had
+**no implementation anywhere in the repository**, so no candidate could ever have been promoted.
+
 Do not re-execute — the benchmark is pre-registered and re-running it after a candidate exists is
 exactly what the "not a number chosen to be beaten" rule forbids.
 **Logged:** 2026-07-29 (manual gap closure 3).

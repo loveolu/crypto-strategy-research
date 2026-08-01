@@ -558,6 +558,162 @@ def test_validate_requires_n_trials():
         "n_trials still has a default, so DSR can be silently skipped")
 
 
+# --------------------------------------------------------------------------- #
+#  PROMOTION CRITERION 3 — sharpe_difference_se()
+#
+#  PROJECT_OPERATOR_MANUAL.md, "Promotion rule" criterion 3: the candidate's
+#  TEST Sharpe must exceed the benchmark's by at least one standard error of the
+#  PAIRED difference (Jobson-Korkie with Memmel's correction). No implementation
+#  existed anywhere in the repo, so criterion 3 was unevaluable and no candidate
+#  could ever have been promoted.
+#
+#  Expected values below are derived BY HAND from the manual's formula, never
+#  copied from a run of the function (A-003's rule: a test whose expectation comes
+#  from the implementation locks in whatever the bug was).
+#
+#      SE = sqrt( (1/N) * [ 2(1-rho) + 0.5(Sa^2 + Sb^2) - rho*Sa*Sb ] )
+# --------------------------------------------------------------------------- #
+
+def _corr_pair(n=500, rho_target=0.8, seed=11):
+    """Two correlated return series with genuinely different means."""
+    rng = np.random.default_rng(seed)
+    z1 = rng.normal(0, 1, n)
+    z2 = rho_target * z1 + np.sqrt(1 - rho_target ** 2) * rng.normal(0, 1, n)
+    a = 0.0012 + 0.02 * z1
+    b = 0.0004 + 0.02 * z2
+    return a, b
+
+
+def test_sharpe_difference_se_is_positive_on_correlated_series():
+    a, b = _corr_pair()
+    res = V.sharpe_difference_se(a, b)
+    assert res["se"] > 0, f"SE must be strictly positive, got {res['se']}"
+    assert np.isfinite(res["se"])
+
+
+def test_identical_series_give_zero_difference():
+    a, _ = _corr_pair()
+    res = V.sharpe_difference_se(a, a)
+    assert abs(res["delta"]) < 1e-12, f"identical series must give delta 0, got {res['delta']}"
+    assert abs(res["rho"] - 1.0) < 1e-12
+    # rho=1 and Sa=Sb collapses the bracket to 2(1-1) + Sa^2 - Sa^2 = 0 exactly.
+    assert abs(res["se"]) < 1e-9, f"identical series must give SE 0, got {res['se']}"
+
+
+def test_se_matches_hand_computed_formula():
+    """Hand-evaluated closed form, independent of the implementation.
+
+    Sharpe uses SAMPLE sd (ddof=1) to match validator.metrics(), which is where
+    every TEST-split Sharpe this project publishes comes from. Criterion 3 must
+    consume the same statistic the report quotes, or the two disagree.
+
+    a alternates +3%/-1%, b alternates +1%/-1%, N = 4:
+        a: mean 0.01, deviations +/-0.02, sample sd = sqrt(0.0016/3)
+           Sa = 0.01 / (0.04/sqrt(3)) = 0.25*sqrt(3) = 0.4330127018922193
+           Sa^2 = 0.0625 * 3 = 0.1875 exactly
+        b: mean 0.00 -> Sb = 0.0
+        rho = +1 exactly (b's deviations are 0.5x a's, perfectly proportional)
+    Bracket = 2(1-1) + 0.5*(0.1875 + 0) - 1*Sa*0 = 0.09375
+    SE      = sqrt(0.09375 / 4) = sqrt(0.0234375) = 0.15309310892394862
+    delta   = 0.4330127018922193 - 0.0
+    """
+    a = np.array([0.03, -0.01, 0.03, -0.01])
+    b = np.array([0.01, -0.01, 0.01, -0.01])
+    res = V.sharpe_difference_se(a, b)
+    assert abs(res["sharpe_a"] - 0.4330127018922193) < 1e-12, res["sharpe_a"]
+    assert abs(res["sharpe_b"] - 0.0) < 1e-12, res["sharpe_b"]
+    assert abs(res["rho"] - 1.0) < 1e-12, res["rho"]
+    assert abs(res["delta"] - 0.4330127018922193) < 1e-12, res["delta"]
+    assert abs(res["se"] - 0.15309310892394862) < 1e-12, res["se"]
+
+
+def test_se_shrinks_with_sample_size():
+    """SE scales as 1/sqrt(N): quadrupling N must halve it.
+
+    Relative tolerance, not exact: with ddof=1 the tiled series' sample sd shifts
+    by sqrt(4(n-1)/(4n-1)) ~ 0.1%, which perturbs Sa/Sb and hence the bracket by
+    ~1e-5 relative. 1e-4 still fails loudly on a wrong power of N (a 2x error).
+    """
+    a, b = _corr_pair(n=400)
+    small = V.sharpe_difference_se(a, b)["se"]
+    big = V.sharpe_difference_se(np.tile(a, 4), np.tile(b, 4))["se"]
+    assert abs(big - small / 2.0) < 1e-4 * small, f"{big} vs {small / 2.0}"
+
+
+def test_delta_is_antisymmetric_and_se_is_symmetric():
+    a, b = _corr_pair()
+    ab, ba = V.sharpe_difference_se(a, b), V.sharpe_difference_se(b, a)
+    assert abs(ab["delta"] + ba["delta"]) < 1e-12
+    assert abs(ab["se"] - ba["se"]) < 1e-12
+
+
+def test_criterion3_verdict_is_reported():
+    """The function must state the pass/fail, not leave it to the caller.
+
+    Criterion 3 passes iff delta >= SE. Leaving that comparison to each caller is
+    how a promotion rule gets applied inconsistently.
+    """
+    a, b = _corr_pair()
+    res = V.sharpe_difference_se(a, b)
+    assert res["criterion_3_pass"] == (res["delta"] >= res["se"])
+    flipped = V.sharpe_difference_se(b, a)
+    assert flipped["criterion_3_pass"] is False, (
+        "a series with the WORSE Sharpe must never pass criterion 3")
+
+
+def test_mismatched_lengths_raise():
+    a, b = _corr_pair(n=200)
+    try:
+        V.sharpe_difference_se(a, b[:100])
+    except ValueError as exc:
+        assert "same length" in str(exc).lower() or "overlap" in str(exc).lower()
+    else:
+        raise AssertionError("mismatched lengths must raise, not silently truncate")
+
+
+def test_annualised_fields_do_not_change_the_verdict():
+    """Annualising scales delta and SE identically, so the verdict is invariant.
+
+    The manual: "annualising both by the same sqrt(365) scales delta and SE(delta)
+    identically and does not change the verdict, but mixing conventions does."
+    """
+    a, b = _corr_pair()
+    res = V.sharpe_difference_se(a, b, bars_per_year=365)
+    k = np.sqrt(365)
+    assert abs(res["delta_annualised"] - res["delta"] * k) < 1e-12
+    assert abs(res["se_annualised"] - res["se"] * k) < 1e-12
+    assert res["criterion_3_pass"] == (res["delta_annualised"] >= res["se_annualised"])
+
+
+def test_zero_variance_series_raises_rather_than_returning_nonsense():
+    a, _ = _corr_pair()
+    try:
+        V.sharpe_difference_se(a, np.zeros(len(a)))
+    except ValueError as exc:
+        assert "variance" in str(exc).lower() or "constant" in str(exc).lower()
+    else:
+        raise AssertionError("a zero-variance series has no Sharpe; must raise")
+
+
+def test_accepts_pandas_series_and_aligns_on_nothing_implicitly():
+    """Pandas input is accepted, but alignment is the CALLER's job.
+
+    Two Series with different date indexes must raise rather than silently
+    align/NaN-fill — "Like-for-like or void" requires date-identical overlap and
+    a silent reindex is exactly how a void comparison would slip through.
+    """
+    a, b = _corr_pair(n=300)
+    idx = pd.date_range("2025-01-01", periods=300, freq="D", tz="UTC")
+    sa = pd.Series(a, index=idx)
+    sb = pd.Series(b, index=idx.shift(5))
+    try:
+        V.sharpe_difference_se(sa, sb)
+    except ValueError as exc:
+        assert "index" in str(exc).lower() or "date" in str(exc).lower()
+    else:
+        raise AssertionError("non-identical indexes must raise")
+
+
 TESTS = [v for k, v in sorted(globals().items()) if k.startswith("test_") and callable(v)]
 
 

@@ -4,12 +4,17 @@
 > (increment counts, append to the DSR-trend table, refresh indicator-usage tally). This file is
 > aggregate/statistical; narrative belongs in `strategy_iteration_log.md`, current status belongs
 > in `research_index.md`. 
-> Last updated: 2026-08-01, **A-005 / perps program benchmark — COMPLETE**. Equal-weight
-> buy-and-hold of the 9 `config_perp.json` perps computed and committed on the frozen split triple
-> (train_end 2024-11-22 / val_end 2025-04-21 / test_end 2025-09-19): TEST Sharpe +0.122344
-> per-period (+2.3374 annualised), TEST MaxDD −23.22%, DSR 0.93713 at n_trials=1. Funding excluded
-> (no series overlaps the window). **T-038 unblocked.** OPS cycle, zero trials — **perps n_trials
-> stays 0**; meta-review counter unchanged. See `research/results/A-005_report.md`.
+> Last updated: 2026-08-01, **A-005 / perps program benchmark + criterion 3 — COMPLETE**.
+> Equal-weight **monthly-rebalanced** long basket of the 9 `config_perp.json` perps, committed on the
+> frozen split triple (train_end 2024-11-22 / val_end 2025-04-21 / test_end 2025-09-19): TEST Sharpe
+> **+0.123321 per-period** (+2.3560 annualised, **positive** — so criterion 3 binds rather than
+> criterion 2), TEST MaxDD −25.02%, DSR 0.93914 at n_trials=1. Funding excluded (earliest datum held
+> 2026-02-26 vs window end 2025-09-19 — zero overlap; longs pay funding, so the exclusion flatters
+> the benchmark). Also implemented `validator.sharpe_difference_se()` — promotion **criterion 3 had
+> no implementation anywhere in the repo**, so no candidate could ever have been promoted; added
+> test-first, 44/44 pass. **T-038 unblocked.** OPS cycle, zero trials — **perps n_trials stays 0**;
+> meta-review counter unchanged. See `research/results/A-005_report.md` and
+> `research/benchmarks/perps_equal_weight_benchmark.md`.
 > Previous update: 2026-07-29, repo repair item 7: **T-036 / A-ForwardParityConfirm TERMINATED BY
 > OPERATOR DECISION.** The champion has taken zero trades in dry run, so the parity instrument
 > reconciles trivially on every bar and cannot produce evidence about it. Supersedes the REJECTED

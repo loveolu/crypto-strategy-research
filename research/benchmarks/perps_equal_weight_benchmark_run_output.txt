@@ -1,0 +1,171 @@
+
+==============================================================================
+PERPS PROGRAM BENCHMARK (A-005)
+equal-weight LONG basket of 9 OKX USDT perps, monthly (last trading bar of each calendar month)
+==============================================================================
+Instruments : BTC, ETH, SOL, BNB, XRP, ADA, AVAX, DOT, LINK  (1d)
+Window      : 2022-12-23 .. 2025-09-19  (1002 bars)  holdout after 2025-09-19
+Splits      : date_pinned  train<=2024-11-22 (701)  val<=2025-04-21 (150)  test<=2025-09-19 (151)
+Data        : VERIFIED (52 files, manifest 2026-07-29T07:58:59Z)
+Costs       : okx_usdt_perp / regular (non-VIP, no fee discounts) / fill=taker: maker 2.0bps, taker 5.0bps, slippage 3.0bps/side, spread 2.0bps, adverse selection unset -> 9.00bps/side, 18.00bps round trip
+Turnover    : 33 monthly rebalances, mean turnover 0.1005 of notional; total cost paid 0.388% of notional over the window
+
+------------------------------------------------------------------------------
+HEADLINE — the numbers the promotion rule consumes
+------------------------------------------------------------------------------
+  TEST Sharpe (per-period) : +0.123321   <- criterion 3 input
+  TEST Sharpe (annualised) : +2.3560   [sqrt(365) — daily bars, crypto trades 365 days/year]
+  TEST Sharpe SIGN         : POSITIVE
+  TEST MaxDD               : -25.02%   -> criterion-4 cap -31.27%
+  TEST bars (N)            : 151
+  DSR (TEST, n_trials=1)   : 0.93914   sr0 0.0   trial_var_source=estimator_proxy
+
+------------------------------------------------------------------------------
+FULL METRIC SET
+------------------------------------------------------------------------------
+window      return      CAGR    Sharpe    per-per   Sortino     MaxDD  bars
+full      +503.52%   +92.48%   +1.3553  +0.070938   +2.0601   -51.33%  1002
+train     +393.32%  +129.56%   +1.7184  +0.089945   +2.7270   -43.08%   701
+val        -26.42%   -52.61%   -0.4792  -0.025081   -0.6621   -51.33%   150
+test       +66.28%  +241.82%   +2.3560  +0.123321   +4.3451   -25.02%   151
+
+  PF 2.405, win rate 53.6%, 306 instrument-month positions (full window only; blanked on sub-windows)
+  years 2.75   max single-year share of $ profit 0.4572
+  yearly: 2022:-5.1%  2023:+189.5%  2024:+83.8%  2025:+19.5%
+
+  walk-forward (validator.walk_forward window arithmetic, 4 anchored OOS windows):
+    W1  2024-05-07 .. 2024-08-14  ret  -18.89%  Sharpe -0.9609  MaxDD  -33.58%
+    W2  2024-08-15 .. 2024-11-22  ret  +89.10%  Sharpe +4.1688  MaxDD  -19.31%
+    W3  2024-11-23 .. 2025-03-02  ret   -0.85%  Sharpe +0.3636  MaxDD  -38.26%
+    W4  2025-03-03 .. 2025-06-10  ret   -9.09%  Sharpe -0.0920  MaxDD  -27.78%
+    positive in 1/4 windows
+
+  Monte Carlo — harness trade-level gate: PASS   per-seed p5 Sharpe [1.8068, 1.7008, 1.8765, 1.7741, 1.7521]
+    1000 sims, Sharpe p5 +1.7567 p50 +2.4785; MaxDD p95(worst tail) -94.23%
+  Monte Carlo — bar-level diagnostic: PASS   per-seed p5 [0.289, 0.4389, 0.3675, 0.5303, 0.2412]
+    CAVEAT on the trade-level figures: validator.monte_carlo() assumes ONE
+    position at a time. This basket holds nine sleeves in PARALLEL at 1/9
+    weight, so treating each instrument-month as a sequential full-notional
+    trade inflates both the annualisation factor and the compounded MaxDD.
+    The bar-level diagnostic is the faithful one for a basket; both gate the
+    same way, so the conclusion does not turn on the distinction.
+    permuted-order MaxDD also overstates dispersion and must NOT feed
+    criterion 4 — that uses the realized TEST MaxDD above.
+
+------------------------------------------------------------------------------
+CRITERION 3 — validator.sharpe_difference_se(), worked on this artifact
+------------------------------------------------------------------------------
+  self:
+    Sa +0.123321  Sb +0.123321  rho +1.000000  N 151
+    delta +0.000000  SE 0.000000  -> criterion_3_pass True
+  drift_variant_vs_benchmark:
+    Sa +0.122344  Sb +0.123321  rho +0.986648  N 151
+    delta -0.000977  SE 0.013349  -> criterion_3_pass False
+
+------------------------------------------------------------------------------
+DRIFT VARIANT (never rebalanced) — diagnostic only, NOT the benchmark
+------------------------------------------------------------------------------
+  full  return +504.34%  Sharpe +1.3370  MaxDD -50.21%
+  test  return +62.21%  Sharpe +2.3374 (per-period +0.122344)  MaxDD -23.22%
+  closed-form check: 6.043410410539 vs 6.043410410539  (abs err 1.155e-14) PASS
+
+------------------------------------------------------------------------------
+FUNDING
+------------------------------------------------------------------------------
+FUNDING IS EXCLUDED, and the exclusion is forced by data availability, not chosen.
+
+SIGN CONVENTION (stated even though the term is excluded, because the next task
+to revisit this must not have to re-derive it). OKX USDT perps settle funding
+every 8 hours, three times a day. When the funding rate is POSITIVE the market is
+in contango and LONGS PAY SHORTS. This benchmark is long-only, so its funding
+P&L would be:
+
+    funding_pnl(t) = - rate(t) * position_notional(t)      [summed over settlements]
+
+i.e. a positive rate is a COST to this benchmark. Including funding would
+therefore LOWER the benchmark's return; excluding it FLATTERS the benchmark and
+makes every future candidate look worse by comparison, not better.
+
+WHAT IS HELD. The project holds two independent funding datasets, and NEITHER
+overlaps the benchmark window (2022-12-23 .. 2025-09-19):
+
+  1. user_data/data/okx/futures/<PAIR>-1h-funding_rate.feather — all nine
+     instruments, 266-273 settlements each, covering 2026-02-26 .. 2026-05-28.
+  2. user_data/research/data/funding/<PAIR>-USDT-SWAP.csv — the T-031 recorder's
+     output, 292 settlements each, covering 2026-04-14 .. 2026-07-20. Nine files,
+     but the set is not the whitelist: it holds UNI and lacks XRP.
+
+The earliest funding datum the project has is 2026-02-26. The benchmark window
+ends 2025-09-19. The gap is over five months and there is ZERO overlap on any
+instrument. OKX's public funding endpoint is retention-limited (~97 days,
+measured in T-031), so the missing history cannot be recovered from the venue.
+Acquiring it is an A-XXX data task, and A-005 may not touch user_data/data/.
+
+WHAT WAS DONE. Funding is excluded from the benchmark entirely, and no proxy,
+interpolation or backfill was invented for it — extrapolating a 2026 funding rate
+onto 2023 would be a fabricated series, which is the failure mode this project
+has already had three times.
+
+MAGNITUDE, so the size of the omission is known rather than merely acknowledged:
+on the only window the project holds, the equal-weight mean rate annualises to
+roughly +0.7%/yr paid by longs (per-instrument table printed below; DOT is a
+-9.3%/yr outlier, the other eight are -0.4% to +3.3%). If that magnitude carried
+over to the benchmark window, the benchmark's ~+50%/yr would be overstated by
+under one percentage point a year - immaterial to the verdict, but the estimate
+rests on a non-overlapping window and is therefore indicative only.
+
+DIRECTION: the exclusion makes the benchmark HARDER to beat. It is conservative
+with respect to promotion.
+
+  earliest funding datum held: 2026-02-26   benchmark window ends 2025-09-19   ->  NO OVERLAP
+    BTC   n= 273  2026-02-26..2026-05-28  ann  +1.47%  positive 60.8%
+    ETH   n= 266  2026-02-28..2026-05-28  ann  +2.42%  positive 64.3%
+    SOL   n= 266  2026-02-28..2026-05-28  ann  -0.43%  positive 49.6%
+    BNB   n= 267  2026-02-28..2026-05-28  ann  +3.29%  positive 68.2%
+    XRP   n= 267  2026-02-28..2026-05-28  ann  +1.90%  positive 61.1%
+    ADA   n= 267  2026-02-28..2026-05-28  ann  +1.94%  positive 66.7%
+    AVAX  n= 267  2026-02-28..2026-05-28  ann  +2.16%  positive 66.7%
+    DOT   n= 267  2026-02-28..2026-05-28  ann  -9.27%  positive 55.1%
+    LINK  n= 268  2026-02-28..2026-05-28  ann  +3.01%  positive 69.4%
+  equal-weight annualised funding paid by longs: +0.720%/yr (indicative only)
+
+------------------------------------------------------------------------------
+SURVIVORSHIP
+------------------------------------------------------------------------------
+THE BASKET IS SURVIVORSHIP-BIASED, and the bias cannot be removed here.
+
+The nine instruments are config_perp.json's whitelist, selected in 2026 as the
+perps with complete cached history (that file's own comment: "verified
+2026-07-28"). All nine were still listed and liquid in 2026. A basket chosen in
+2026 and then backtested from 2022 never holds the perps that delisted, died, or
+went illiquid in between.
+
+Removing the bias needs a point-in-time OKX perp listing history the project does
+not hold; obtaining one is an A-XXX data task, not something a benchmark
+computation may improvise.
+
+Direction: upward. Like the funding exclusion, it makes this benchmark HARDER to
+beat, so it is conservative with respect to promotion.
+
+------------------------------------------------------------------------------
+>100% CAGR DEFECT PRESUMPTION — mandatory verification
+------------------------------------------------------------------------------
+  Triggered on: test, train
+  - costs_applied: VERIFIED. per_side_cost('taker') from validator.COST_MODEL = 9.0 bps. Entry charges exactly that once; each of the 33 monthly rebalances charges it on realised turnover (mean 0.1005 of notional). Total cost over the window = 0.388% of notional. Nothing hardcoded, no default inherited.
+  - signal_lag: NOT APPLICABLE — there is no signal. Position is constant long from bar 0 and rebalance dates are calendar-determined, not data-determined. Returns are close-to-close; no bar uses information from a later bar.
+  - indicator_warmup: NOT APPLICABLE — no indicators, no state to warm up. Splits are pure slices of one continuous series.
+  - survivorship: PRESENT AND NOT REMOVED — see survivorship note. Upward bias, i.e. it makes the benchmark harder to beat.
+  => Not a cost, lag or warmup defect. (a) 2023-2025 crypto bull on an unhedged long basket; (b) short-window annualisation — the TEST CAGR +241.82% annualises a 151-bar +66.28% move and is not a sustainable rate; (c) real, unremoved upward survivorship bias. The drift variant's terminal equity is independently reproduced in closed form.
+
+------------------------------------------------------------------------------
+WARNINGS — reproduce verbatim in any report quoting these numbers
+------------------------------------------------------------------------------
+  !! DSR WARNING - trial_var_source='estimator_proxy'. The cross-trial Sharpe variance is not estimable (0 trial(s) in research/trial_sharpe_ledger.csv, 10 required), so the selection hurdle falls back to the Lo (2002) estimator proxy. That proxy scales as ~1/(n_obs-1), which makes the hurdle a function of TRADE FREQUENCY rather than search intensity: a high-frequency construct gets a materially lower bar than a daily one for reasons unrelated to edge quality. THIS DSR IS NOT COMPARABLE ACROSS TRADE FREQUENCIES and must not be used to rank constructs of different holding periods.
+
+  !! COST MODEL NOTE - slippage (3.0 bps/side) and spread (2.0 bps) are estimates, not calibrated against realized fills. Fee rates are published OKX regular (non-VIP, no fee discounts) rates for okx_usdt_perp as of 2026-07-28.
+
+
+Wrote:
+  research/benchmarks/perps_equal_weight_benchmark.json
+  research/benchmarks/perps_equal_weight_benchmark_TEST_returns.csv
+  research/benchmarks/perps_equal_weight_benchmark_FULL_returns.csv

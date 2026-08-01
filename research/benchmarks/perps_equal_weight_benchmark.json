@@ -1,0 +1,540 @@
+{
+  "task": "A-005",
+  "artifact": "perps program benchmark \u2014 equal-weight monthly-rebalanced long basket",
+  "generated_by": "user_data/research/perps_benchmark.py",
+  "machine_readable_companion": "research/benchmarks/perps_equal_weight_benchmark.json (this file)",
+  "human_readable": "research/benchmarks/perps_equal_weight_benchmark.md",
+  "program": "perps",
+  "instruments": [
+    "BTC/USDT:USDT",
+    "ETH/USDT:USDT",
+    "SOL/USDT:USDT",
+    "BNB/USDT:USDT",
+    "XRP/USDT:USDT",
+    "ADA/USDT:USDT",
+    "AVAX/USDT:USDT",
+    "DOT/USDT:USDT",
+    "LINK/USDT:USDT"
+  ],
+  "timeframe": "1d",
+  "rebalance_rule": "monthly (last trading bar of each calendar month)",
+  "turnover": {
+    "rebalance": "monthly (last trading bar of each calendar month)",
+    "n_rebalances": 33,
+    "n_positions": 306,
+    "total_cost_fraction": 0.003884850495165627,
+    "mean_rebalance_turnover": 0.10050001667224334,
+    "entry_cost_bps": 9.0
+  },
+  "window": {
+    "start": "2022-12-23",
+    "end": "2025-09-19",
+    "holdout_boundary": "2025-09-19",
+    "start_rationale": "first bar on which all nine instruments exist (BNB inception)",
+    "n_bars": 1002,
+    "train_bars": 701,
+    "val_bars": 150,
+    "test_bars": 151
+  },
+  "split_dates": {
+    "train_end": "2024-11-22",
+    "val_end": "2025-04-21",
+    "test_end": "2025-09-19",
+    "mode": "date_pinned",
+    "method": "70/15/15 of the benchmark window, then frozen as dates"
+  },
+  "cost_model": {
+    "venue": "okx_usdt_perp",
+    "fee_tier": "regular (non-VIP, no fee discounts)",
+    "maker": 0.0002,
+    "taker": 0.0005,
+    "slippage_bps": 3.0,
+    "spread_bps": 2.0,
+    "fill_assumption": "taker",
+    "rates_as_of": "2026-07-28",
+    "slippage_spread_basis": "estimate - not calibrated against realized fills",
+    "adverse_selection_bps": null,
+    "adverse_selection_basis": null,
+    "per_side_cost": 0.0009,
+    "round_trip_cost": 0.0018,
+    "summary": "okx_usdt_perp / regular (non-VIP, no fee discounts) / fill=taker: maker 2.0bps, taker 5.0bps, slippage 3.0bps/side, spread 2.0bps, adverse selection unset -> 9.00bps/side, 18.00bps round trip"
+  },
+  "n_trials": 1,
+  "funding": {
+    "included_in_benchmark": false,
+    "reason": "no held funding series overlaps the benchmark window",
+    "sign_convention": "OKX settles every 8h; positive rate = contango = LONGS PAY. funding_pnl = -rate * notional for this long-only basket, so excluding it FLATTERS the benchmark.",
+    "earliest_funding_datum_held": "2026-02-26",
+    "latest_funding_datum_held": "2026-07-20",
+    "equal_weight_annualised_pct_paid_by_longs": 0.72,
+    "feather_series": {
+      "BTC": {
+        "source": "feather",
+        "n_settlements": 273,
+        "first": "2026-02-26",
+        "last": "2026-05-28",
+        "mean_rate": 1.346e-05,
+        "annualised_pct_paid_by_longs": 1.474,
+        "share_positive": 0.6081
+      },
+      "ETH": {
+        "source": "feather",
+        "n_settlements": 266,
+        "first": "2026-02-28",
+        "last": "2026-05-28",
+        "mean_rate": 2.215e-05,
+        "annualised_pct_paid_by_longs": 2.425,
+        "share_positive": 0.6429
+      },
+      "SOL": {
+        "source": "feather",
+        "n_settlements": 266,
+        "first": "2026-02-28",
+        "last": "2026-05-28",
+        "mean_rate": -3.969e-06,
+        "annualised_pct_paid_by_longs": -0.435,
+        "share_positive": 0.4962
+      },
+      "BNB": {
+        "source": "feather",
+        "n_settlements": 267,
+        "first": "2026-02-28",
+        "last": "2026-05-28",
+        "mean_rate": 3.0037e-05,
+        "annualised_pct_paid_by_longs": 3.289,
+        "share_positive": 0.6816
+      },
+      "XRP": {
+        "source": "feather",
+        "n_settlements": 267,
+        "first": "2026-02-28",
+        "last": "2026-05-28",
+        "mean_rate": 1.7369e-05,
+        "annualised_pct_paid_by_longs": 1.902,
+        "share_positive": 0.6105
+      },
+      "ADA": {
+        "source": "feather",
+        "n_settlements": 267,
+        "first": "2026-02-28",
+        "last": "2026-05-28",
+        "mean_rate": 1.7683e-05,
+        "annualised_pct_paid_by_longs": 1.936,
+        "share_positive": 0.6667
+      },
+      "AVAX": {
+        "source": "feather",
+        "n_settlements": 267,
+        "first": "2026-02-28",
+        "last": "2026-05-28",
+        "mean_rate": 1.9689e-05,
+        "annualised_pct_paid_by_longs": 2.156,
+        "share_positive": 0.6667
+      },
+      "DOT": {
+        "source": "feather",
+        "n_settlements": 267,
+        "first": "2026-02-28",
+        "last": "2026-05-28",
+        "mean_rate": -8.4667e-05,
+        "annualised_pct_paid_by_longs": -9.271,
+        "share_positive": 0.5506
+      },
+      "LINK": {
+        "source": "feather",
+        "n_settlements": 268,
+        "first": "2026-02-28",
+        "last": "2026-05-28",
+        "mean_rate": 2.7471e-05,
+        "annualised_pct_paid_by_longs": 3.008,
+        "share_positive": 0.694
+      }
+    },
+    "t031_recorder_series": {
+      "ADA": {
+        "n_settlements": 292,
+        "first": "2026-04-14",
+        "last": "2026-07-20",
+        "annualised_pct_paid_by_longs": 2.9
+      },
+      "AVAX": {
+        "n_settlements": 292,
+        "first": "2026-04-14",
+        "last": "2026-07-20",
+        "annualised_pct_paid_by_longs": 1.708
+      },
+      "BNB": {
+        "n_settlements": 292,
+        "first": "2026-04-14",
+        "last": "2026-07-20",
+        "annualised_pct_paid_by_longs": 3.916
+      },
+      "BTC": {
+        "n_settlements": 292,
+        "first": "2026-04-14",
+        "last": "2026-07-20",
+        "annualised_pct_paid_by_longs": 2.164
+      },
+      "DOT": {
+        "n_settlements": 292,
+        "first": "2026-04-14",
+        "last": "2026-07-20",
+        "annualised_pct_paid_by_longs": 1.285
+      },
+      "ETH": {
+        "n_settlements": 292,
+        "first": "2026-04-14",
+        "last": "2026-07-20",
+        "annualised_pct_paid_by_longs": 2.216
+      },
+      "LINK": {
+        "n_settlements": 292,
+        "first": "2026-04-14",
+        "last": "2026-07-20",
+        "annualised_pct_paid_by_longs": 3.555
+      },
+      "SOL": {
+        "n_settlements": 292,
+        "first": "2026-04-14",
+        "last": "2026-07-20",
+        "annualised_pct_paid_by_longs": 0.759
+      },
+      "UNI": {
+        "n_settlements": 292,
+        "first": "2026-04-14",
+        "last": "2026-07-20",
+        "annualised_pct_paid_by_longs": 3.995
+      }
+    },
+    "t031_note": "nine files but not the whitelist: holds UNI, lacks XRP"
+  },
+  "survivorship": "THE BASKET IS SURVIVORSHIP-BIASED, and the bias cannot be removed here.\n\nThe nine instruments are config_perp.json's whitelist, selected in 2026 as the\nperps with complete cached history (that file's own comment: \"verified\n2026-07-28\"). All nine were still listed and liquid in 2026. A basket chosen in\n2026 and then backtested from 2022 never holds the perps that delisted, died, or\nwent illiquid in between.\n\nRemoving the bias needs a point-in-time OKX perp listing history the project does\nnot hold; obtaining one is an A-XXX data task, not something a benchmark\ncomputation may improvise.\n\nDirection: upward. Like the funding exclusion, it makes this benchmark HARDER to\nbeat, so it is conservative with respect to promotion.\n",
+  "construction_check": {
+    "closed_form_terminal_equity": 6.043410410539359,
+    "constructed_terminal_equity": 6.04341041053937,
+    "abs_error": 1.1546319456101628e-14,
+    "identity": "equity(T) = mean_i(close_i(T)/close_i(0)) * (1 - entry_cost)",
+    "applies_to": "drift variant; validates the shared weight-drift arithmetic"
+  },
+  "full": {
+    "final_equity": 6.0352,
+    "total_return": 5.0352,
+    "cagr": 0.9248,
+    "sharpe": 1.3553,
+    "sortino": 2.0601,
+    "max_dd": -0.5133,
+    "profit_factor": 2.405,
+    "win_rate": 0.5359,
+    "n_trades": 306,
+    "years": 2.75,
+    "sharpe_per_period": 0.070938,
+    "sharpe_annualised": 1.3553,
+    "annualisation": "sqrt(365) \u2014 daily bars, crypto trades 365 days/year",
+    "n_bars": 1002,
+    "max_year_share": 0.45724420183547176
+  },
+  "train": {
+    "final_equity": 4.9332,
+    "total_return": 3.9332,
+    "cagr": 1.2956,
+    "sharpe": 1.7184,
+    "sortino": 2.727,
+    "max_dd": -0.4308,
+    "profit_factor": null,
+    "win_rate": null,
+    "n_trades": null,
+    "years": 1.92,
+    "sharpe_per_period": 0.089945,
+    "sharpe_annualised": 1.7184,
+    "annualisation": "sqrt(365) \u2014 daily bars, crypto trades 365 days/year",
+    "n_bars": 701,
+    "trade_stats": "n/a for a sub-window - the trade log is whole-window; per-window trade stats would repeat full-window figures"
+  },
+  "val": {
+    "final_equity": 0.7358,
+    "total_return": -0.2642,
+    "cagr": -0.5261,
+    "sharpe": -0.4792,
+    "sortino": -0.6621,
+    "max_dd": -0.5133,
+    "profit_factor": null,
+    "win_rate": null,
+    "n_trades": null,
+    "years": 0.41,
+    "sharpe_per_period": -0.025081,
+    "sharpe_annualised": -0.4792,
+    "annualisation": "sqrt(365) \u2014 daily bars, crypto trades 365 days/year",
+    "n_bars": 150,
+    "trade_stats": "n/a for a sub-window - the trade log is whole-window; per-window trade stats would repeat full-window figures"
+  },
+  "test": {
+    "final_equity": 1.6628,
+    "total_return": 0.6628,
+    "cagr": 2.4182,
+    "sharpe": 2.356,
+    "sortino": 4.3451,
+    "max_dd": -0.2502,
+    "profit_factor": null,
+    "win_rate": null,
+    "n_trades": null,
+    "years": 0.41,
+    "sharpe_per_period": 0.123321,
+    "sharpe_annualised": 2.356,
+    "annualisation": "sqrt(365) \u2014 daily bars, crypto trades 365 days/year",
+    "n_bars": 151,
+    "trade_stats": "n/a for a sub-window - the trade log is whole-window; per-window trade stats would repeat full-window figures"
+  },
+  "yearly": {
+    "2022": -0.051342,
+    "2023": 1.89475,
+    "2024": 0.83839,
+    "2025": 0.19546
+  },
+  "wf": [
+    {
+      "final_equity": 0.8111,
+      "total_return": -0.1889,
+      "cagr": -0.5343,
+      "sharpe": -0.9609,
+      "sortino": -1.5471,
+      "max_dd": -0.3358,
+      "profit_factor": null,
+      "win_rate": null,
+      "n_trades": null,
+      "years": 0.27,
+      "sharpe_per_period": -0.050294,
+      "sharpe_annualised": -0.9609,
+      "annualisation": "sqrt(365) \u2014 daily bars, crypto trades 365 days/year",
+      "n_bars": 100,
+      "trade_stats": "n/a for a sub-window - the trade log is whole-window; per-window trade stats would repeat full-window figures",
+      "window": 1,
+      "is_end": "2024-05-07",
+      "oos_end": "2024-08-14",
+      "warmup_mode": "n/a \u2014 no indicator"
+    },
+    {
+      "final_equity": 1.891,
+      "total_return": 0.891,
+      "cagr": 9.2309,
+      "sharpe": 4.1688,
+      "sortino": 8.6718,
+      "max_dd": -0.1931,
+      "profit_factor": null,
+      "win_rate": null,
+      "n_trades": null,
+      "years": 0.27,
+      "sharpe_per_period": 0.218204,
+      "sharpe_annualised": 4.1688,
+      "annualisation": "sqrt(365) \u2014 daily bars, crypto trades 365 days/year",
+      "n_bars": 100,
+      "trade_stats": "n/a for a sub-window - the trade log is whole-window; per-window trade stats would repeat full-window figures",
+      "window": 2,
+      "is_end": "2024-08-15",
+      "oos_end": "2024-11-22",
+      "warmup_mode": "n/a \u2014 no indicator"
+    },
+    {
+      "final_equity": 0.9915,
+      "total_return": -0.0085,
+      "cagr": -0.0308,
+      "sharpe": 0.3636,
+      "sortino": 0.5522,
+      "max_dd": -0.3826,
+      "profit_factor": null,
+      "win_rate": null,
+      "n_trades": null,
+      "years": 0.27,
+      "sharpe_per_period": 0.019034,
+      "sharpe_annualised": 0.3636,
+      "annualisation": "sqrt(365) \u2014 daily bars, crypto trades 365 days/year",
+      "n_bars": 100,
+      "trade_stats": "n/a for a sub-window - the trade log is whole-window; per-window trade stats would repeat full-window figures",
+      "window": 3,
+      "is_end": "2024-11-23",
+      "oos_end": "2025-03-02",
+      "warmup_mode": "n/a \u2014 no indicator"
+    },
+    {
+      "final_equity": 0.9091,
+      "total_return": -0.0909,
+      "cagr": -0.2938,
+      "sharpe": -0.092,
+      "sortino": -0.1187,
+      "max_dd": -0.2778,
+      "profit_factor": null,
+      "win_rate": null,
+      "n_trades": null,
+      "years": 0.27,
+      "sharpe_per_period": -0.004817,
+      "sharpe_annualised": -0.092,
+      "annualisation": "sqrt(365) \u2014 daily bars, crypto trades 365 days/year",
+      "n_bars": 100,
+      "trade_stats": "n/a for a sub-window - the trade log is whole-window; per-window trade stats would repeat full-window figures",
+      "window": 4,
+      "is_end": "2025-03-03",
+      "oos_end": "2025-06-10",
+      "warmup_mode": "n/a \u2014 no indicator"
+    }
+  ],
+  "mc_trade_level_harness": {
+    "mc_p5_sharpe": 1.7566773214827893,
+    "mc_p50_sharpe": 2.4784977446100456,
+    "mc_p95_sharpe": 3.1728909093584257,
+    "mc_p5_return": 270.21340087138003,
+    "mc_p50_return": 203754.20477499923,
+    "mc_p95_return": 126381114.66441758,
+    "mc_p50_maxdd": -0.8319488739670257,
+    "mc_p95_maxdd": -0.9422950767918085,
+    "mc_worst_maxdd": -0.9850660693721213,
+    "mc_seeds": [
+      42,
+      43,
+      44,
+      45,
+      46
+    ],
+    "mc_sims_per_seed": 200,
+    "mc_n_sims": 1000,
+    "mc_p5_sharpe_per_seed": [
+      1.8068,
+      1.7008,
+      1.8765,
+      1.7741,
+      1.7521
+    ],
+    "mc_seed_spread_p5_sharpe": 0.17572775285359166,
+    "mc_gate": "PASS",
+    "mc_resampling": "bootstrap(sharpe,return) + permutation(maxdd)"
+  },
+  "mc_bar_level_diagnostic": {
+    "mc_basis": "BAR-LEVEL DIAGNOSTIC \u2014 supplements validator.monte_carlo()",
+    "mc_p5_sharpe": 0.36758635221116115,
+    "mc_p50_sharpe": 1.3507457882340517,
+    "mc_p95_sharpe": 2.2975939618194805,
+    "mc_p5_return": 0.10286019229907613,
+    "mc_p50_return": 5.010265762660372,
+    "mc_p95_maxdd": -0.6639262631208452,
+    "mc_worst_maxdd": -0.7989060281511594,
+    "mc_p5_sharpe_per_seed": [
+      0.289,
+      0.4389,
+      0.3675,
+      0.5303,
+      0.2412
+    ],
+    "mc_gate": "PASS",
+    "mc_n_sims": 1000
+  },
+  "dsr": {
+    "dsr": 0.93914,
+    "sr_hat_per_trade": 0.12373,
+    "sr0_benchmark": 0.0,
+    "n_obs": 151,
+    "n_trials": 1,
+    "skew": 0.427,
+    "kurtosis": 4.0368,
+    "trial_var_source": "estimator_proxy",
+    "n_trials_recorded": 0,
+    "trial_sharpe_var": null,
+    "ledger_basis": null,
+    "window": "test_split",
+    "basis": "per_bar",
+    "dsr_full_window_diagnostic": 0.98815
+  },
+  "criterion_3_worked_examples": {
+    "self": {
+      "sharpe_a": 0.12332120518705939,
+      "sharpe_b": 0.12332120518705939,
+      "delta": 0.0,
+      "se": 0.0,
+      "rho": 1.0,
+      "n_obs": 151,
+      "criterion_3_pass": true,
+      "sharpe_a_annualised": 2.3560483169510578,
+      "sharpe_b_annualised": 2.3560483169510578,
+      "delta_annualised": 0.0,
+      "se_annualised": 0.0,
+      "bars_per_year": 365,
+      "formula": "SE = sqrt((1/N)[2(1-rho) + 0.5(Sa^2+Sb^2) - rho*Sa*Sb])",
+      "sharpe_basis": "per-period, sample sd (ddof=1), matching metrics()"
+    },
+    "drift_variant_vs_benchmark": {
+      "sharpe_a": 0.12234390141737937,
+      "sharpe_b": 0.12332120518705939,
+      "delta": -0.000977303769680013,
+      "se": 0.013348529955099359,
+      "rho": 0.9866481270987548,
+      "n_obs": 151,
+      "criterion_3_pass": false,
+      "sharpe_a_annualised": 2.3373769546479415,
+      "sharpe_b_annualised": 2.3560483169510578,
+      "delta_annualised": -0.018671362303116203,
+      "se_annualised": 0.2550233067117542,
+      "bars_per_year": 365,
+      "formula": "SE = sqrt((1/N)[2(1-rho) + 0.5(Sa^2+Sb^2) - rho*Sa*Sb])",
+      "sharpe_basis": "per-period, sample sd (ddof=1), matching metrics()"
+    }
+  },
+  "drift_variant_diagnostic": {
+    "note": "never-rebalanced buy-and-hold, the construction used in the superseded first A-005 commit; reported for reconciliation only",
+    "full": {
+      "final_equity": 6.0434,
+      "total_return": 5.0434,
+      "cagr": 0.9257,
+      "sharpe": 1.337,
+      "sortino": 2.0401,
+      "max_dd": -0.5021,
+      "profit_factor": 2.405,
+      "win_rate": 0.5359,
+      "n_trades": 306,
+      "years": 2.75,
+      "sharpe_per_period": 0.069981,
+      "sharpe_annualised": 1.337,
+      "annualisation": "sqrt(365) \u2014 daily bars, crypto trades 365 days/year",
+      "n_bars": 1002
+    },
+    "test": {
+      "final_equity": 1.6221,
+      "total_return": 0.6221,
+      "cagr": 2.2194,
+      "sharpe": 2.3374,
+      "sortino": 4.2191,
+      "max_dd": -0.2322,
+      "profit_factor": null,
+      "win_rate": null,
+      "n_trades": null,
+      "years": 0.41,
+      "sharpe_per_period": 0.122344,
+      "sharpe_annualised": 2.3374,
+      "annualisation": "sqrt(365) \u2014 daily bars, crypto trades 365 days/year",
+      "n_bars": 151,
+      "trade_stats": "n/a for a sub-window - the trade log is whole-window; per-window trade stats would repeat full-window figures"
+    }
+  },
+  "data_manifest": {
+    "verified": true,
+    "bypassed": false,
+    "files_checked": 52,
+    "manifest_built_utc": "2026-07-29T07:58:59Z"
+  },
+  "warnings": [
+    "DSR WARNING - trial_var_source='estimator_proxy'. The cross-trial Sharpe variance is not estimable (0 trial(s) in research/trial_sharpe_ledger.csv, 10 required), so the selection hurdle falls back to the Lo (2002) estimator proxy. That proxy scales as ~1/(n_obs-1), which makes the hurdle a function of TRADE FREQUENCY rather than search intensity: a high-frequency construct gets a materially lower bar than a daily one for reasons unrelated to edge quality. THIS DSR IS NOT COMPARABLE ACROSS TRADE FREQUENCIES and must not be used to rank constructs of different holding periods.",
+    "COST MODEL NOTE - slippage (3.0 bps/side) and spread (2.0 bps) are estimates, not calibrated against realized fills. Fee rates are published OKX regular (non-VIP, no fee discounts) rates for okx_usdt_perp as of 2026-07-28."
+  ],
+  "artifacts": {
+    "test_returns_csv": "research/benchmarks/perps_equal_weight_benchmark_TEST_returns.csv",
+    "full_returns_csv": "research/benchmarks/perps_equal_weight_benchmark_FULL_returns.csv"
+  },
+  "defect_presumption_check": {
+    "triggered": true,
+    "windows_over_100pct_cagr": [
+      "test",
+      "train"
+    ],
+    "costs_applied": "VERIFIED. per_side_cost('taker') from validator.COST_MODEL = 9.0 bps. Entry charges exactly that once; each of the 33 monthly rebalances charges it on realised turnover (mean 0.1005 of notional). Total cost over the window = 0.388% of notional. Nothing hardcoded, no default inherited.",
+    "signal_lag": "NOT APPLICABLE \u2014 there is no signal. Position is constant long from bar 0 and rebalance dates are calendar-determined, not data-determined. Returns are close-to-close; no bar uses information from a later bar.",
+    "indicator_warmup": "NOT APPLICABLE \u2014 no indicators, no state to warm up. Splits are pure slices of one continuous series.",
+    "survivorship": "PRESENT AND NOT REMOVED \u2014 see survivorship note. Upward bias, i.e. it makes the benchmark harder to beat.",
+    "conclusion": "Not a cost, lag or warmup defect. (a) 2023-2025 crypto bull on an unhedged long basket; (b) short-window annualisation \u2014 the TEST CAGR +241.82% annualises a 151-bar +66.28% move and is not a sustainable rate; (c) real, unremoved upward survivorship bias. The drift variant's terminal equity is independently reproduced in closed form."
+  }
+}

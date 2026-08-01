@@ -631,6 +631,118 @@ def metrics(returns: pd.DataFrame, trades: pd.DataFrame, bars_per_year: int = AN
     }
 
 
+# --------------------------------------------------------------------------- #
+#  PROMOTION CRITERION 3 (added 2026-08-01, A-005 item 3)
+#
+#  The manual has required criterion 3 since 2026-07-29 and NOTHING in this
+#  repository implemented it — no jobson, no memmel, no paired standard error.
+#  Criterion 3 was therefore unevaluable, which per the promotion rule's own
+#  "failing any one is REJECT or PARK" means no candidate could ever have been
+#  promoted. This closes that gap.
+# --------------------------------------------------------------------------- #
+
+def sharpe_difference_se(returns_a, returns_b,
+                         bars_per_year: int = ANNUALIZATION_DAILY) -> dict:
+    """Standard error of the PAIRED Sharpe difference (Jobson-Korkie / Memmel).
+
+    Promotion criterion 3 (PROJECT_OPERATOR_MANUAL.md, "Promotion rule"): the
+    candidate's TEST Sharpe must exceed the benchmark's by at least one standard
+    error of the paired difference. Formula, transcribed literally from the
+    manual:
+
+        SE(D) = sqrt( (1/N) * [ 2(1-rho) + 0.5(Sa^2 + Sb^2) - rho*Sa*Sb ] )
+
+    and criterion 3 passes iff D = Sa - Sb >= SE(D).
+
+    `returns_a` is the CANDIDATE, `returns_b` the BENCHMARK. Raw per-period
+    return series only — the rounded annualised Sharpe from metrics() cannot be
+    used, because the formula needs rho between the two series and rho is not
+    recoverable from summary statistics. That pairing is the point: a candidate
+    highly correlated with the benchmark needs a smaller raw edge to clear one
+    standard error, which is correct, because shared exposure is not the
+    candidate's contribution.
+
+    CONVENTIONS, both deliberate:
+
+    * Sharpe uses the SAMPLE standard deviation (ddof=1), matching metrics().
+      Every TEST-split Sharpe this project publishes comes from metrics(); a
+      criterion that silently used the population sd would be judging a slightly
+      different statistic from the one in the report.
+    * Sharpes enter PER-PERIOD, never annualised. `delta_annualised` and
+      `se_annualised` are reported for readability only. Scaling both by the same
+      sqrt(bars_per_year) cannot change the verdict; mixing conventions can, so
+      `criterion_3_pass` is computed once, from the per-period pair.
+
+    NOTE ON THE FORMULA, recorded rather than silently "fixed": the canonical
+    Memmel (2003) correction carries `-(Sa*Sb/2)*(1+rho^2)` where the manual
+    writes `-rho*Sa*Sb`. They agree at rho=1 and differ elsewhere; at this
+    project's per-period Sharpe magnitudes (|S| ~ 0.1) the gap is ~0.4% of SE,
+    far below the resolution at which criterion 3 decides anything. The MANUAL
+    GOVERNS and is implemented literally. Changing it is an operator decision,
+    not a code fix.
+
+    Raises rather than guessing when the inputs cannot support the comparison:
+    different lengths, non-identical indexes ("Like-for-like or void" requires
+    date-identical overlap, and a silent reindex is how a void comparison slips
+    through), fewer than 3 overlapping bars, or a constant series.
+    """
+    a_idx = returns_a.index if isinstance(returns_a, (pd.Series, pd.DataFrame)) else None
+    b_idx = returns_b.index if isinstance(returns_b, (pd.Series, pd.DataFrame)) else None
+    if a_idx is not None and b_idx is not None and not a_idx.equals(b_idx):
+        raise ValueError(
+            "returns_a and returns_b do not share an identical index. Criterion 3 "
+            "requires date-identical overlap ('Like-for-like or void'); aligning "
+            "them here would silently compare different windows. Align the series "
+            "explicitly in the caller and pass the overlapping bars.")
+
+    a = np.asarray(returns_a, dtype=float).ravel()
+    b = np.asarray(returns_b, dtype=float).ravel()
+    if a.shape != b.shape:
+        raise ValueError(
+            f"returns_a and returns_b must be the same length (got {a.size} and "
+            f"{b.size}). N is the count of OVERLAPPING bars; truncating one side "
+            f"here would invent an overlap that does not exist.")
+    if not (np.isfinite(a).all() and np.isfinite(b).all()):
+        raise ValueError("returns contain NaN or inf; drop or fill them in the caller")
+    n = a.size
+    if n < 3:
+        raise ValueError(f"need at least 3 overlapping bars, got {n}")
+
+    sd_a, sd_b = a.std(ddof=1), b.std(ddof=1)
+    if sd_a <= 0 or sd_b <= 0:
+        raise ValueError(
+            "a constant (zero-variance) return series has no Sharpe ratio, so the "
+            "paired difference is undefined")
+
+    s_a = float(a.mean() / sd_a)
+    s_b = float(b.mean() / sd_b)
+    rho = float(np.corrcoef(a, b)[0, 1])
+
+    bracket = 2.0 * (1.0 - rho) + 0.5 * (s_a ** 2 + s_b ** 2) - rho * s_a * s_b
+    # Numerically, exactly-correlated identical series give a bracket of -0 or a
+    # tiny negative from floating point. Clamp at zero rather than returning nan.
+    se = float(np.sqrt(max(bracket, 0.0) / n))
+    delta = s_a - s_b
+    k = float(np.sqrt(bars_per_year))
+
+    return {
+        "sharpe_a": s_a,
+        "sharpe_b": s_b,
+        "delta": delta,
+        "se": se,
+        "rho": rho,
+        "n_obs": int(n),
+        "criterion_3_pass": bool(delta >= se),
+        "sharpe_a_annualised": s_a * k,
+        "sharpe_b_annualised": s_b * k,
+        "delta_annualised": delta * k,
+        "se_annualised": se * k,
+        "bars_per_year": int(bars_per_year),
+        "formula": "SE = sqrt((1/N)[2(1-rho) + 0.5(Sa^2+Sb^2) - rho*Sa*Sb])",
+        "sharpe_basis": "per-period, sample sd (ddof=1), matching metrics()",
+    }
+
+
 def yearly_breakdown(returns: pd.DataFrame) -> pd.DataFrame:
     ret = returns["ret_net"]
     yearly = (1 + ret).groupby(ret.index.year).prod() - 1
