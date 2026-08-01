@@ -182,20 +182,85 @@ def read_trial_ledger(path: Optional[Path] = None) -> list[dict]:
     return rows
 
 
-def trial_sharpe_variance(path: Optional[Path] = None) -> dict:
-    """Cross-trial variance of recorded per-trade Sharpes.
+#: A Sharpe can be computed on per-BAR returns or per-TRADE returns. The two are
+#: different statistics on different scales; averaging them is meaningless.
+LEDGER_BASES = ("per_bar", "per_trade")
 
-    Returns {"variance": float|None, "n_trials_recorded": int, "source": str}.
-    `variance` is None when fewer than MIN_TRIALS_FOR_CROSS_VARIANCE rows exist —
-    pass it straight to deflated_sharpe_ratio(trial_sharpe_var=...), which then
-    falls back to the estimator proxy.
+
+class LedgerBasisError(RuntimeError):
+    """Raised when the trial ledger mixes per_bar and per_trade Sharpes."""
+
+
+def append_trial(task_id: str, construct: str, sharpe: float, n_obs: int,
+                 basis: str, path: Optional[Path] = None,
+                 date: Optional[str] = None) -> dict:
+    """Append one completed trial to the ledger and return the written row.
+
+    One row per VARIANT, not per cycle: the research budget allows 3 variants per
+    cycle and each variant is one trial (PROJECT_OPERATOR_MANUAL.md, "Research
+    budget"). The trial number is derived from the existing row count, so it
+    cannot drift from the file.
+
+    `basis` is mandatory and must be one of LEDGER_BASES. It exists because
+    validate() computes Sharpe on per-BAR returns while
+    freqtrade_dsr.returns_from_freqtrade() produces per-TRADE returns; mixing them
+    in one variance estimate reintroduces exactly the frequency contamination the
+    ledger was created to remove.
+    """
+    import csv as _csv
+    if basis not in LEDGER_BASES:
+        raise ValueError(f"basis must be one of {LEDGER_BASES}, got {basis!r}")
+    fp = TRIAL_LEDGER_PATH if path is None else Path(path)
+    existing = read_trial_ledger(fp)
+    row = {
+        "trial": len(existing) + 1,
+        "task_id": task_id,
+        "construct": construct,
+        "sr_hat_per_trade": round(float(sharpe), 6),
+        "n_obs": int(n_obs),
+        "basis": basis,
+        "date": date or pd.Timestamp.utcnow().strftime("%Y-%m-%d"),
+    }
+    header_needed = not fp.exists() or not any(
+        ln.startswith("trial,") for ln in fp.read_text(encoding="utf-8").splitlines())
+    with open(fp, "a", newline="", encoding="utf-8") as f:
+        w = _csv.DictWriter(f, fieldnames=list(row))
+        if header_needed:
+            w.writeheader()
+        w.writerow(row)
+    return row
+
+
+def trial_sharpe_variance(path: Optional[Path] = None) -> dict:
+    """Cross-trial variance of the recorded Sharpes, on a SINGLE basis.
+
+    Returns {"variance", "n_trials_recorded", "source", "basis"}. `variance` is
+    None when fewer than MIN_TRIALS_FOR_CROSS_VARIANCE rows exist — pass it
+    straight to deflated_sharpe_ratio(trial_sharpe_var=...), which then falls back
+    to the estimator proxy.
+
+    RAISES LedgerBasisError if the ledger mixes per_bar and per_trade rows. It
+    does not average across them and it does not silently pick one: a per-bar
+    Sharpe and a per-trade Sharpe are different statistics on different scales,
+    and pooling their variance is the frequency contamination this ledger exists
+    to prevent.
     """
     rows = read_trial_ledger(path)
     n = len(rows)
+    bases = sorted({r.get("basis") for r in rows if r.get("basis")})
+    if len(bases) > 1:
+        raise LedgerBasisError(
+            f"trial ledger mixes bases {bases}. A per_bar Sharpe and a per_trade "
+            f"Sharpe are different statistics on different scales; their variance "
+            f"cannot be pooled. Split the ledger by basis, or recompute the "
+            f"minority rows on the majority basis. Do NOT average across them.")
+    basis = bases[0] if bases else None
     if n < MIN_TRIALS_FOR_CROSS_VARIANCE:
-        return {"variance": None, "n_trials_recorded": n, "source": "estimator_proxy"}
+        return {"variance": None, "n_trials_recorded": n,
+                "source": "estimator_proxy", "basis": basis}
     vals = np.array([r["sr_hat_per_trade"] for r in rows], dtype=float)
-    return {"variance": float(vals.var(ddof=1)), "n_trials_recorded": n, "source": "trials"}
+    return {"variance": float(vals.var(ddof=1)), "n_trials_recorded": n,
+            "source": "trials", "basis": basis}
 
 
 def _load_dsr_module():
@@ -225,6 +290,7 @@ def deflated_sharpe(returns, n_trials: int, ledger_path: Optional[Path] = None) 
         "trial_var_source", "estimator_proxy")
     res["n_trials_recorded"] = tv["n_trials_recorded"]
     res["trial_sharpe_var"] = tv["variance"]
+    res["ledger_basis"] = tv.get("basis")
     return res
 
 
@@ -1157,11 +1223,13 @@ def cost_model_snapshot(execution_mode: Optional[str] = None,
 
 
 def validate(name: str, df: pd.DataFrame, signal_fn: Callable[[pd.DataFrame], pd.Series],
+             n_trials: int,
              bars_per_year: int = ANNUALIZATION_DAILY,
              family: Optional[list] = None,
              execution_mode: Optional[str] = None,
-             n_trials: Optional[int] = None,
              n_sims: int = 200,
+             task_id: Optional[str] = None,
+             record_trial: bool = False,
              split_dates: Optional[tuple] = None,
              enforce_holdout: bool = True) -> Verdict:
     """Run the full pipeline. signal_fn(df) -> pd.Series of {-1, 0, 1} indexed by df.index.
@@ -1266,11 +1334,43 @@ def validate(name: str, df: pd.DataFrame, signal_fn: Callable[[pd.DataFrame], pd
     passed = not reasons
     fam_ctx = family_context(name, m_full["sharpe"], m_te["sharpe"], family) if family else {}
 
-    dsr_res: dict = {}
-    dsr_warn: list[str] = []
-    if n_trials is not None:
-        dsr_res = deflated_sharpe(rets["ret_net"].dropna().tolist(), n_trials)
-        dsr_warn = dsr_warnings(dsr_res)
+    # DSR is computed on the TEST SPLIT, not the full window.
+    #
+    # Promotion criteria 2-4 (PROJECT_OPERATOR_MANUAL.md, "Promotion rule") are all
+    # TEST-split: Sharpe > 0, Sharpe beats the benchmark by >= 1 SE, MaxDD within
+    # 1.25x. Criterion 1 is the DSR gate. Computing criterion 1 on the full window
+    # while 2-4 judge TEST means the gate and the criteria are testing different
+    # objects: a construct can clear a train-dominated full-window DSR and fail
+    # every TEST criterion. research_index.md also records that full-window Sharpe
+    # runs 2-4x inflated here, so the full-window DSR is the flattering one.
+    #
+    # "Like-for-like or void" already requires the benchmark comparison to use one
+    # window; the DSR gate is held to the same standard. The full-window figure is
+    # still computed and reported, explicitly labelled a diagnostic, because it is
+    # what every archived result used and dropping it would break comparability
+    # with the record.
+    te_returns = rets_te["ret_net"].dropna().tolist()
+    dsr_res = deflated_sharpe(te_returns, n_trials)
+    dsr_res["window"] = "test_split"
+    dsr_res["basis"] = "per_bar"
+    _full = deflated_sharpe(rets["ret_net"].dropna().tolist(), n_trials)
+    dsr_res["dsr_full_window_diagnostic"] = _full.get("dsr")
+    dsr_warn = dsr_warnings(dsr_res)
+
+    if record_trial:
+        if not task_id:
+            raise ValueError("record_trial=True requires task_id")
+        append_trial(task_id, name, dsr_res.get("sr_hat_per_trade", float("nan")),
+                     dsr_res.get("n_obs", 0), "per_bar")
+    else:
+        warnings.warn(
+            "TRIAL NOT RECORDED - record_trial=False, so this run does not append to "
+            "research/trial_sharpe_ledger.csv. n_trials was supplied, meaning a trial "
+            "was spent; an unrecorded trial keeps the ledger below the 10 rows needed "
+            "to escape the estimator proxy, and understates the multiple-testing debt "
+            "priced into every future DSR. Pass task_id=... and record_trial=True for "
+            "a real cycle.",
+            ValidatorWarning, stacklevel=2)
     return Verdict(
         name=name,
         passed=passed,
@@ -1313,11 +1413,12 @@ def print_verdict(v: Verdict):
               f"manifest {dm.get('manifest_built_utc')})")
     if v.dsr:
         d = v.dsr
-        print(f"DSR: {d.get('dsr')}  sr0 {d.get('sr0_benchmark')}  "
-              f"sr_hat/trade {d.get('sr_hat_per_trade')}  n_obs {d.get('n_obs')}  "
-              f"n_trials {d.get('n_trials')}  "
-              f"trial_var_source={d.get('trial_var_source')} "
-              f"(ledger rows {d.get('n_trials_recorded')})")
+        print(f"DSR: {d.get('dsr')}  [window={d.get('window')} basis={d.get('basis')}]  "
+              f"sr0 {d.get('sr0_benchmark')}  sr_hat {d.get('sr_hat_per_trade')}  "
+              f"n_obs {d.get('n_obs')}  n_trials {d.get('n_trials')}")
+        print(f"     trial_var_source={d.get('trial_var_source')} "
+              f"(ledger rows {d.get('n_trials_recorded')}, basis {d.get('ledger_basis')})"
+              f"   full-window DSR (diagnostic only): {d.get('dsr_full_window_diagnostic')}")
     if v.cost_model:
         print(f"Costs: {v.cost_model.get('summary', '')}")
     for w in v.warnings:

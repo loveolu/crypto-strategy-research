@@ -36,11 +36,16 @@
 #   trial             cumulative perps n_trials AFTER this trial (1, 2, 3, ...)
 #   task_id           T-XXX that spent it
 #   construct         short name of the variant tested
-#   sr_hat_per_trade  the DSR output field of the same name (per-trade, NOT annualised)
+#   sr_hat_per_trade  the DSR output field of the same name (NOT annualised)
 #   n_obs             observation count the Sharpe was computed on
+#   basis             "per_bar" | "per_trade" - WHICH return series the Sharpe came
+#                     from. validate() produces per_bar; freqtrade_dsr's
+#                     returns_from_freqtrade() produces per_trade. They are different
+#                     statistics on different scales. trial_sharpe_variance() RAISES
+#                     rather than pooling across bases.
 #   date              UTC date the trial was run, YYYY-MM-DD
 #
 # One row per VARIANT, not per cycle: the research budget allows 3 variants per cycle
 # and each variant is one trial (PROJECT_OPERATOR_MANUAL.md, "Research budget").
 #
-trial,task_id,construct,sr_hat_per_trade,n_obs,date
+trial,task_id,construct,sr_hat_per_trade,n_obs,basis,date

@@ -461,6 +461,96 @@ def test_verdict_full_and_wf_sharpes_scale_consistently():
             f"full ratio {full_ratio:.4f}")
 
 
+# --------------------------------------------------------------------------- #
+#  ITEM 5 — DSR window, ledger writer, basis, entry point
+# --------------------------------------------------------------------------- #
+
+def _tmp_ledger(rows, basis="per_bar"):
+    """Write a throwaway ledger. Never touches the real one."""
+    import tempfile
+    p = Path(tempfile.mkdtemp(prefix="ledger_")) / "trial_sharpe_ledger.csv"
+    lines = ["# synthetic test ledger",
+             "trial,task_id,construct,sr_hat_per_trade,n_obs,basis,date"]
+    for i, (sr, b) in enumerate(rows, 1):
+        lines.append(f"{i},T-{100+i},c{i},{sr},500,{b or basis},2026-08-01")
+    p.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    return p
+
+
+# --- (a) DSR must be computed on the promotion series -----------------------
+
+def test_dsr_is_computed_on_the_test_split():
+    """Criterion 1 must gate the same series criteria 2-4 judge: the TEST split."""
+    df = _series_spanning_holdout()
+    dates = ("2025-06-30", "2025-12-31", "2026-05-27")
+    v = V.validate("dsr_window", df, _long_warmup_signal, n_trials=3, n_sims=20,
+                   split_dates=dates)
+    _, _, df_te = V.split_by_dates(df, *dates)
+    sig = _long_warmup_signal(df)
+    rets_te = V.signal_to_returns(df_te, sig.reindex(df_te.index))
+    expected_n = len(rets_te["ret_net"].dropna())
+
+    assert v.dsr.get("window") == "test_split", (
+        f"DSR window is {v.dsr.get('window')!r}, expected 'test_split'")
+    assert v.dsr["n_obs"] == expected_n, (
+        f"DSR n_obs {v.dsr['n_obs']} != TEST-split length {expected_n}")
+    # the full-window figure must still be reported, clearly labelled, as diagnostic
+    assert "dsr_full_window_diagnostic" in v.dsr
+
+
+# --- (b) the ledger must have a writer --------------------------------------
+
+def test_append_trial_writes_and_numbers_rows():
+    p = _tmp_ledger([])
+    r1 = V.append_trial("T-038", "alpha", 0.031, 480, "per_bar", path=p)
+    r2 = V.append_trial("T-038", "beta", 0.014, 480, "per_bar", path=p)
+    assert r1["trial"] == 1 and r2["trial"] == 2, (r1, r2)
+    rows = V.read_trial_ledger(p)
+    assert len(rows) == 2
+    assert rows[1]["construct"] == "beta"
+    assert rows[1]["basis"] == "per_bar"
+
+
+def test_append_trial_rejects_bad_basis():
+    p = _tmp_ledger([])
+    try:
+        V.append_trial("T-038", "x", 0.01, 100, "per_candle", path=p)
+        raise AssertionError("accepted an invalid basis")
+    except ValueError as exc:
+        assert "basis" in str(exc)
+
+
+# --- (c) bases must not be mixed --------------------------------------------
+
+def test_trial_variance_refuses_to_mix_bases():
+    rows = [(0.02 + i * 0.005, "per_bar") for i in range(9)]
+    rows.append((0.09, "per_trade"))          # one contaminating row
+    p = _tmp_ledger(rows)
+    try:
+        V.trial_sharpe_variance(p)
+        raise AssertionError("averaged across mixed bases instead of raising")
+    except V.LedgerBasisError as exc:
+        assert "per_bar" in str(exc) and "per_trade" in str(exc)
+
+
+def test_trial_variance_works_on_a_single_basis():
+    rows = [(0.02 + i * 0.005, "per_bar") for i in range(12)]
+    p = _tmp_ledger(rows)
+    tv = V.trial_sharpe_variance(p)
+    assert tv["source"] == "trials"
+    assert tv["basis"] == "per_bar"
+    assert tv["n_trials_recorded"] == 12
+
+
+# --- (d) validate() must require n_trials -----------------------------------
+
+def test_validate_requires_n_trials():
+    import inspect
+    p = inspect.signature(V.validate).parameters["n_trials"]
+    assert p.default is inspect.Parameter.empty, (
+        "n_trials still has a default, so DSR can be silently skipped")
+
+
 TESTS = [v for k, v in sorted(globals().items()) if k.startswith("test_") and callable(v)]
 
 
