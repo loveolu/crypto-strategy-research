@@ -194,7 +194,12 @@ is worthless — it locks in whatever the bug was.
 
 ## A-005 — Compute and commit the perps program benchmark
 
-**Status:** LOGGED, NOT ASSIGNED. Do not execute without explicit assignment.
+**Status:** ✅ **COMPLETE, 2026-08-01.** Executed as specified; specification not varied. **T-038 is
+unblocked.** Zero trials — perps `n_trials` stays 0; meta-review counter unchanged.
+Report: `research/results/A-005_report.md`. Script: `user_data/research/perps_benchmark.py`.
+Artifacts: `research/benchmarks/`. Headline recorded in `research/research_index.md`.
+Do not re-execute — the benchmark is pre-registered and re-running it after a candidate exists is
+exactly what the "not a number chosen to be beaten" rule forbids.
 **Logged:** 2026-07-29 (manual gap closure 3).
 **Class:** OPS / measurement. Zero trials for the *program*; the benchmark itself is priced at
 `n_trials = 1`. Does not advance the meta-review counter.

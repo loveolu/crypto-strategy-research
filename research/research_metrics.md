@@ -4,7 +4,13 @@
 > (increment counts, append to the DSR-trend table, refresh indicator-usage tally). This file is
 > aggregate/statistical; narrative belongs in `strategy_iteration_log.md`, current status belongs
 > in `research_index.md`. 
-> Last updated: 2026-07-29, repo repair item 7: **T-036 / A-ForwardParityConfirm TERMINATED BY
+> Last updated: 2026-08-01, **A-005 / perps program benchmark — COMPLETE**. Equal-weight
+> buy-and-hold of the 9 `config_perp.json` perps computed and committed on the frozen split triple
+> (train_end 2024-11-22 / val_end 2025-04-21 / test_end 2025-09-19): TEST Sharpe +0.122344
+> per-period (+2.3374 annualised), TEST MaxDD −23.22%, DSR 0.93713 at n_trials=1. Funding excluded
+> (no series overlaps the window). **T-038 unblocked.** OPS cycle, zero trials — **perps n_trials
+> stays 0**; meta-review counter unchanged. See `research/results/A-005_report.md`.
+> Previous update: 2026-07-29, repo repair item 7: **T-036 / A-ForwardParityConfirm TERMINATED BY
 > OPERATOR DECISION.** The champion has taken zero trades in dry run, so the parity instrument
 > reconciles trivially on every bar and cannot produce evidence about it. Supersedes the REJECTED
 > verdict below as the cycle's disposition; the underlying findings there stand. No new task
@@ -122,8 +128,8 @@ scheme and is not counted.
 | Metric | Value |
 |---|---|
 | RESEARCH cycles | **0** |
-| OPS/INFRASTRUCTURE cycles | **0** |
-| Ratio | n/a — no cycles completed |
+| OPS/INFRASTRUCTURE cycles | **1** — A-005 (perps program benchmark, 2026-08-01) |
+| Ratio | n/a — below the 6-cycle threshold |
 | Floor status | **Not yet in force** |
 
 **The 2:1 floor applies only after 6 completed perps cycles.** Below that count the ratio is

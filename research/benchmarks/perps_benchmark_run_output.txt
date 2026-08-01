@@ -1,0 +1,143 @@
+
+==============================================================================
+PERPS PROGRAM BENCHMARK (A-005) — equal-weight buy-and-hold, 9 OKX USDT perps
+==============================================================================
+Instruments : BTC, ETH, SOL, BNB, XRP, ADA, AVAX, DOT, LINK  (1d)
+Window      : 2022-12-23 .. 2025-09-19  (1002 bars)  holdout after 2025-09-19
+Splits      : date_pinned  train<=2024-11-22 (701)  val<=2025-04-21 (150)  test<=2025-09-19 (151)
+Data        : VERIFIED (52 files, manifest 2026-07-29T07:58:59Z)
+Costs       : okx_usdt_perp / regular (non-VIP, no fee discounts) / fill=taker: maker 2.0bps, taker 5.0bps, slippage 3.0bps/side, spread 2.0bps, adverse selection unset -> 9.00bps/side, 18.00bps round trip
+              entry charged ONCE per instrument at 9.0 bps/side on 2022-12-23; no rebalancing turnover; terminal value is mark-to-market (an exit would cost a further 9.0 bps)
+
+------------------------------------------------------------------------------
+FUNDING — EXCLUDED
+------------------------------------------------------------------------------
+FUNDING IS EXCLUDED FROM THIS BENCHMARK, and the exclusion is forced, not chosen.
+
+Source series held: user_data/data/okx/futures/<PAIR>-1h-funding_rate.feather,
+one per instrument. Every one of them covers only 2026-02-26 .. 2026-05-28
+(266-273 8-hourly settlements each) — a ~91-day window that lies entirely AFTER
+the benchmark window's end (2025-09-19) and after the reserved-holdout boundary.
+There is ZERO overlap with the window being measured. OKX's public funding
+endpoint is retention-limited (~97 days observed in T-031), so the missing
+history cannot be recovered from the venue; acquiring it is an A-XXX data task,
+and this task may not touch user_data/data/.
+
+Direction and magnitude of the resulting bias, measured on the only window the
+project holds (printed by this script): longs PAY funding on average across the
+nine, an equal-weight ~+0.7%/yr. Excluding it therefore OVERSTATES the
+benchmark's return by roughly that order, which makes the promotion bar HARDER,
+not easier. The bias is conservative with respect to promotion — a candidate
+beating this benchmark would also beat a funding-charged one. That is why the
+exclusion is acceptable; it is not acceptable to leave it implicit.
+
+  measured coverage 2026-02-26 .. 2026-05-28 (benchmark window ends 2025-09-19 — NO OVERLAP)
+    BTC   n= 273  mean +0.00001346  ann  +1.47%  positive 60.8%
+    ETH   n= 266  mean +0.00002215  ann  +2.42%  positive 64.3%
+    SOL   n= 266  mean -0.00000397  ann  -0.43%  positive 49.6%
+    BNB   n= 267  mean +0.00003004  ann  +3.29%  positive 68.2%
+    XRP   n= 267  mean +0.00001737  ann  +1.90%  positive 61.1%
+    ADA   n= 267  mean +0.00001768  ann  +1.94%  positive 66.7%
+    AVAX  n= 267  mean +0.00001969  ann  +2.16%  positive 66.7%
+    DOT   n= 267  mean -0.00008467  ann  -9.27%  positive 55.1%
+    LINK  n= 268  mean +0.00002747  ann  +3.01%  positive 69.4%
+  equal-weight annualised funding paid by longs: +0.720%/yr
+
+------------------------------------------------------------------------------
+SURVIVORSHIP
+------------------------------------------------------------------------------
+THE BASKET IS SURVIVORSHIP-BIASED, and the bias cannot be removed here.
+
+The nine instruments are config_perp.json's whitelist, selected in 2026 as the
+perps with complete cached history (that file's own comment: "verified
+2026-07-28"). All nine were still listed and liquid in 2026. A basket chosen in
+2026 and then backtested from 2022 never holds the perps that delisted, died, or
+went illiquid in between, so its measured return is the return of the winners
+plus the losers that merely fell — not of the universe as it stood in 2022.
+
+Removing the bias needs a point-in-time OKX perp listing history the project does
+not hold; obtaining one is an A-XXX data task, not something a benchmark
+computation may improvise.
+
+Direction: upward. Like the funding exclusion, it makes this benchmark HARDER to
+beat, so it is conservative with respect to promotion. It is stated because
+criterion 3 compares a candidate against these numbers and a reader must know
+they are an optimistic estimate of the do-nothing alternative.
+
+------------------------------------------------------------------------------
+CONSTRUCTION CHECK — closed form, independent of the implementation
+------------------------------------------------------------------------------
+  equity(T) = mean_i(close_i(T)/close_i(0)) * (1 - entry_cost)
+  closed form 6.043410410539   constructed 6.043410410539   abs error 1.155e-14  -> PASS (raises otherwise)
+
+------------------------------------------------------------------------------
+>100% CAGR DEFECT PRESUMPTION — mandatory verification
+------------------------------------------------------------------------------
+  Triggered on: test, train
+  - costs_applied: VERIFIED. per_side_cost('taker') resolved from validator.COST_MODEL = 9.0 bps, charged once per instrument on bar 0; bar 0's net return equals exactly -9.0 bps. Nothing is hardcoded and no default is inherited.
+  - signal_lag: NOT APPLICABLE, and that is the point: there is no signal. Position is the constant 1 from bar 0, so signal_to_returns()'s 2-bar lag has nothing to protect against. Returns are close-to-close, close_i(t)/close_i(t-1); no bar uses information from a later bar.
+  - indicator_warmup: NOT APPLICABLE — no indicators. The full-series-then-slice rule exists so a split does not restart an indicator's warmup; buy-and-hold has no state to warm up. Splits are pure slices of one continuous series.
+  - survivorship: PRESENT AND NOT REMOVED — see SURVIVORSHIP_NOTE. The nine instruments were selected in 2026 for having complete history; delisted perps are absent. The bias is upward, i.e. it makes this benchmark harder to beat.
+  => The high CAGRs are NOT a cost, lag, or warmup defect. They are (a) the 2023-2025 crypto bull measured on an unhedged long basket, (b) short-window annualisation — the +221.94% TEST CAGR annualises a 151-bar +62.21% move and must not be read as a sustainable rate, and (c) an upward survivorship bias that is real and unremoved. The closed-form check above independently reproduces the terminal equity.
+
+------------------------------------------------------------------------------
+HEADLINE — the numbers the promotion rule consumes
+------------------------------------------------------------------------------
+  TEST Sharpe (per-period) : +0.122344   <- criterion 3 input
+  TEST Sharpe (annualised) : +2.3374   [sqrt(365) — daily bars, crypto trades 365 days/year]
+  TEST MaxDD               : -23.22%   -> criterion 4 cap -29.03%
+  TEST bars (N)            : 151
+  DSR (TEST, n_trials=1)   : 0.93713   sr0 0.0
+
+------------------------------------------------------------------------------
+FULL METRIC SET
+------------------------------------------------------------------------------
+window      return      CAGR    Sharpe    per-per   Sortino     MaxDD  bars
+full      +504.34%   +92.57%   +1.3370  +0.069981   +2.0401   -50.21%  1002
+train     +444.28%  +141.62%   +1.7508  +0.091641   +2.7904   -40.35%   701
+val        -31.55%   -60.24%   -0.6705  -0.035097   -0.9357   -50.21%   150
+test       +62.21%  +221.94%   +2.3374  +0.122344   +4.2191   -23.22%   151
+
+  Profit factor / win rate / trade count are FULL-WINDOW ONLY: PF 1679.7474, win rate 88.9%, 9 trades
+    (n/a - one buy-and-hold position per instrument spans the whole window; there is no per-window trade log to derive these from) — they are blanked on train/val/test/WF rows above.
+  years 2.75   max single-year share of $ profit 0.4032
+  yearly: 2022:-5.1%  2023:+203.6%  2024:+70.6%  2025:+23.0%
+
+  walk-forward (validator.walk_forward window arithmetic, anchored, 4 OOS windows):
+    W1  2024-05-07 .. 2024-08-14  ret  -14.59%  Sharpe -0.5025  MaxDD  -32.78%  bars 100
+    W2  2024-08-15 .. 2024-11-22  ret  +78.85%  Sharpe +4.0192  MaxDD  -20.19%  bars 100
+    W3  2024-11-23 .. 2025-03-02  ret   -9.70%  Sharpe -0.0565  MaxDD  -37.90%  bars 100
+    W4  2025-03-03 .. 2025-06-10  ret   -8.82%  Sharpe -0.0706  MaxDD  -26.93%  bars 100
+    positive in 1/4 OOS windows
+
+  Monte Carlo — harness trade-level gate: INSUFFICIENT (fewer than 30 trades)
+    Structural, not a defect: buy-and-hold holds nine positions and closes none, so the
+    trade log can never reach validator.monte_carlo()'s 30-trade floor. The bar-level
+    diagnostic below is the substitute and is labelled as such.
+  Monte Carlo — bar-level diagnostic (1000 sims, 5 seeds, one extra round trip of portfolio notional (18.0 bps) spread across 1002 bars):
+    GATE PASS   per-seed p5 Sharpe [0.2672, 0.4088, 0.3338, 0.448, 0.2536]   spread 0.1944
+    Sharpe p5 +0.3628  p50 +1.3198  p95 +2.2531
+    Return p5 +7.93%  p50 +485.69%
+    MaxDD  p50 -50.92%  p95(worst tail) -67.83%  worst -84.33%
+    NOTE: permuted-order MaxDD overstates dispersion and MUST NOT feed promotion
+          criterion 4 — that uses the realized TEST MaxDD above.
+
+  DSR (TEST split, per_bar, n_trials=1): 0.93713   sr_hat 0.12275  sr0 0.0  n_obs 151
+    trial_var_source=estimator_proxy (ledger rows 0)   full-window DSR (diagnostic only): 0.9872
+    At n_trials=1 expected_max_sharpe() returns exactly 0.0, so sr0=0 and DSR reduces to
+    P(true Sharpe > 0). The estimator-proxy warning below cannot affect this figure:
+    trial_sharpe_var enters only through sr0. This is the 'mechanically high by
+    construction' DSR the manual describes — it is NOT a quality signal.
+
+------------------------------------------------------------------------------
+WARNINGS — reproduce verbatim in any report quoting these numbers
+------------------------------------------------------------------------------
+  !! DSR WARNING - trial_var_source='estimator_proxy'. The cross-trial Sharpe variance is not estimable (0 trial(s) in research/trial_sharpe_ledger.csv, 10 required), so the selection hurdle falls back to the Lo (2002) estimator proxy. That proxy scales as ~1/(n_obs-1), which makes the hurdle a function of TRADE FREQUENCY rather than search intensity: a high-frequency construct gets a materially lower bar than a daily one for reasons unrelated to edge quality. THIS DSR IS NOT COMPARABLE ACROSS TRADE FREQUENCIES and must not be used to rank constructs of different holding periods.
+
+  !! COST MODEL NOTE - slippage (3.0 bps/side) and spread (2.0 bps) are estimates, not calibrated against realized fills. Fee rates are published OKX regular (non-VIP, no fee discounts) rates for okx_usdt_perp as of 2026-07-28.
+
+
+Wrote:
+  research\benchmarks\perps_benchmark_TEST_returns.csv
+  research\benchmarks\perps_benchmark_FULL_returns.csv
+  research\benchmarks\perps_benchmark.json

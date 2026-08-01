@@ -13,17 +13,33 @@
   is a pointer. `research_metrics.md` is authoritative for the count.
 - Judge on TEST-set / walk-forward numbers only. Full-window Sharpe runs 2-4x inflated here.
 - Asset universe is not restricted to BTC/ETH — they are the default because most liquid/stable.
-- **Costs**: `validator.COST_MODEL` only; pre-2026-07-28 results are not comparable. **Holdout**: all
-  bars after 2026-05-27. Both in `PROJECT_OPERATOR_MANUAL.md`.
+- **Costs**: `validator.COST_MODEL` only; pre-2026-07-28 results are not comparable. **Holdout is
+  PROGRAM-SCOPED**: perps = after **2025-09-19**, spot = after 2026-05-27
+  (`validator.HOLDOUT_BOUNDARIES`, operator decision 2026-08-01). `PROJECT_OPERATOR_MANUAL.md` is
+  primary; "after 2026-05-27" for perps (older line here, and `T-037_PERPS_TRANSITION_brief.md`
+  line 41) reserves zero perp bars and is superseded.
+- **Perps split triple, frozen by A-005 and mandatory for every perps candidate**: `train_end
+  2024-11-22 · val_end 2025-04-21 · test_end 2025-09-19`, date-pinned. Other dates void the
+  benchmark comparison.
 
 ## Champion status
 
 **The perps program has NO champion.** TrendVolTarget and the 80/20 portfolio stance are spot
 artifacts computed at the pre-2026-07-28 cost model; their figures are void as perps evidence and are
 not a promotion baseline. Until one is established on perp data, candidates are compared against the
-pre-registered program benchmark (A-005, blocking T-038). Spot detail, all historical:
+pre-registered program benchmark. Spot detail, all historical:
 `research/current_champion.md`, `research/strategy_portfolio.md`,
 `research/review_briefs/T-037_PERPS_TRANSITION_brief.md`.
+
+## Perps program benchmark (A-005, 2026-08-01) — a candidate must beat this to be promoted
+
+Equal-weight buy-and-hold, 9 `config_perp.json` perps, 1d, taker, **2022-12-23…2025-09-19**.
+**TEST Sharpe +0.122344 per-period / +2.3374 ann(√365) · TEST MaxDD −23.22% (criterion-4 cap
+−29.03%) · N=151 · DSR 0.93713 @ n_trials=1** (sr0=0 — high by construction, not a quality signal).
+Full window +504.34% / Sharpe 1.3370 / MaxDD −50.21%; WF positive in **1 of 4** windows. Funding
+EXCLUDED and basket survivorship-biased — both bias the bar *upward*, i.e. harder to beat. Spent no
+trial. Criterion-3 return series: `research/benchmarks/perps_benchmark_TEST_returns.csv`.
+Detail and caveats: `research/results/A-005_report.md`.
 
 ## Cycles completed
 
