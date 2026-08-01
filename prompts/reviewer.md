@@ -211,8 +211,20 @@ Write `research/review_briefs/<Task ID>_verdict_a.json`:
    This file is machine-budgeted. Run `python scripts/check_context_budget.py` after
    writing and confirm it exits 0. If your additions breach the budget, compact your
    own additions rather than another file's content.
-3. Update `research_metrics.md`: headline numbers, `n_trials` after this cycle, and the
-   per-program RESEARCH:OPS ratio.
+3. Update `research_metrics.md`. **Division of ownership with the Engineer** — both roles
+   write to this file, so neither may write the other's part:
+
+   | The Engineer writes | You (Reviewer) write |
+   |---|---|
+   | headline performance numbers for the cycle | the verdict block at the top of the file |
+   | the constructs/indicators tally, if new | `n_trials` after this cycle |
+   | | the per-program RESEARCH:OPS ratio and cycle counts |
+   | | the rejection/promotion rate recomputation |
+
+   The Engineer does not advance `n_trials`, because whether the trial counts is part of
+   your verdict. Verify the Engineer's headline numbers against your reproduction rather
+   than rewriting them; if they disagree, that is an INVALID CYCLE finding, not a silent
+   correction.
 4. Add durable lessons to `strategy_research_notes.md` — patterns across cycles, not
    per-cycle detail.
 5. Mark the hypothesis TESTED in the `hypothesis_bank.md` ledger with its verdict and

@@ -84,12 +84,22 @@ program. Do not use them as a cost reference and do not re-point them.
 
 ### 4. Splits are pinned by date
 
-Use the exact dates in `NEXT_TASK.md`. Never compute a split as a fraction of the
-dataset — a fractional split slides into reserved holdout whenever data is topped up,
-silently and without error.
+Use the exact dates in `NEXT_TASK.md`, via **`validator.split_by_dates(df, train_end,
+val_end, test_end)`**, or by passing `split_dates=(train_end, val_end, test_end)` to
+`validate()`. Never compute a split as a fraction of the dataset — a fractional split
+slides into reserved holdout whenever data is topped up, silently and without error.
+`validator.split_70_15_15()` is **deprecated** and warns; it exists only so the frozen
+`phase*.py` scripts still reproduce.
 
-Reserved holdout may not be touched for training, tuning, or validation. Read the
-manual's holdout rule and state in your report that you complied.
+Reserved holdout may not be touched for training, tuning, or validation. The boundary is
+**program-scoped** — see the manual's "Reserved holdout"; there is no single global date.
+
+**`validate()` RAISES `HoldoutViolation` if its input contains holdout bars.** It does
+not trim them, because trimming would remove the bars silently and report the result as
+if the series had always ended there. Exclude them explicitly in your caller. **Never
+pass `enforce_holdout=False`** — that silences the guard instead of fixing the caller,
+makes every metric in-sample, and marks the run as not-evidence. State in your report
+which split dates you used and that holdout was untouched.
 
 ---
 
@@ -125,14 +135,30 @@ If a falsification condition is genuinely ambiguous — for example, singular ph
 applied to a multi-asset hypothesis — that is a BLOCK, not something to resolve by
 choosing an interpretation. Quote the ambiguous sentence in `BLOCKED.md`.
 
-**DSR must not use the estimator proxy.** `freqtrade_dsr.deflated_sharpe_ratio()` falls
-back to a Lo-2002 estimator proxy when `trial_sharpe_var` is not supplied, and that
-proxy shrinks with trade count — inflating DSR for high-frequency constructs relative
-to low-frequency ones for reasons unrelated to edge quality. Pass `trial_sharpe_var`
-explicitly, computed as the cross-trial variance of per-trial Sharpe estimates recorded
-in `research_metrics.md`. Report the resulting `trial_var_source` field. If it reads
-`estimator_proxy`, say so prominently — the number is not comparable across trade
-frequencies.
+**DSR has exactly ONE entry point: `validator.deflated_sharpe(returns, n_trials)`.**
+
+Calling `freqtrade_dsr.deflated_sharpe_ratio()` directly is **barred**. It silently
+falls back to a Lo-2002 estimator proxy when `trial_sharpe_var` is not supplied, and
+that proxy shrinks with observation count — making the selection hurdle a function of
+TRADE FREQUENCY rather than search intensity, so a high-frequency construct clears a
+materially lower bar for reasons unrelated to edge quality. The wrapper supplies the
+real cross-trial variance from **`research/trial_sharpe_ledger.csv`** (NOT from
+`research_metrics.md`, which does not carry per-trial Sharpes).
+
+`scripts/check_dsr_entrypoint.py` fails on direct `freqtrade_dsr` calls. Run it.
+
+Report the resulting `trial_var_source` field. If it reads `estimator_proxy`, say so
+prominently: the ledger holds fewer than the 10 rows needed for the variance to be
+estimable, the number is not comparable across trade frequencies, and **promotion
+criterion 7 caps the verdict at PARK** until the ledger fills.
+
+**`validate()` requires `n_trials`.** It is a positional parameter with no default —
+omitting it is a TypeError, not a silent skip. Also pass **`record_trial=True` and
+`task_id="T-XXX"`** for any real cycle that spends a trial. If you do not, the harness
+emits a `TRIAL NOT RECORDED` warning onto the run: the trial was spent but never
+appended to the ledger, which both keeps the ledger below the 10-row threshold and
+understates the multiple-testing debt priced into every future DSR. A pre-gate cycle
+that spends no trial correctly does not record one.
 
 **Lookahead:** verify no indicator or signal uses future candles. Check shift and
 warmup handling. Confirm indicators were computed *before* splitting, not after. State
@@ -212,11 +238,26 @@ completing the assignment, or begin implementing your own recommendations.
 
 - Append one entry to `strategy_iteration_log.md` — Task ID, hypothesis, verdict,
   one-line reason.
-- Update `research_metrics.md` with headline numbers.
+- Update `research_metrics.md` — **headline numbers only.** See the division below.
 - Update `strategy_research_notes.md` ONLY if a genuinely new durable lesson was
   learned.
 
 Do NOT write to `research_index.md`. Index maintenance belongs to the Reviewer.
+
+**`research_metrics.md` — division of ownership with the Reviewer.** Both roles write to
+this file, so the split is explicit and neither may write the other's part:
+
+| You (Engineer) write | The Reviewer writes |
+|---|---|
+| headline performance numbers for this cycle | the verdict block at the top of the file |
+| the constructs/indicators tally, if this cycle used something new | `n_trials` after this cycle |
+| | the per-program RESEARCH:OPS ratio and cycle counts |
+| | the rejection/promotion rate recomputation |
+
+You do **not** write the verdict — you did not render one — and you do **not** advance
+`n_trials`, because whether the trial counts is part of the verdict. If your cycle
+stopped at a pre-gate, record the headline numbers you did compute and leave the
+counters alone.
 
 **Any lesson not written to these files does not exist.** When in doubt, write it down.
 
