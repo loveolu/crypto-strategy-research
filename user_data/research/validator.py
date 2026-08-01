@@ -584,7 +584,96 @@ def yearly_pnl_dollar_concentration(returns: pd.DataFrame, starting: float = 1.0
     return {"max_year_share": float(shares.abs().max()), "year_pnl": year_pnl.to_dict()}
 
 
+# --------------------------------------------------------------------------- #
+#  SPLITS AND THE RESERVED HOLDOUT (added 2026-07-31, item 3)
+#
+#  Fractional splits compute their boundaries as percentages of whatever series
+#  they are handed, so a data top-up silently slides the TEST window forward. On
+#  today's feathers every bar after 2026-05-27 lands inside TEST — the reserved
+#  holdout is being scored against, with no error and no warning.
+#
+#  PROJECT_OPERATOR_MANUAL.md mandates date-pinned splits. This is that
+#  implementation, plus a guard that refuses to evaluate any window containing a
+#  holdout bar.
+#
+#  BOUNDARY CAVEAT — UNRESOLVED. The manual declares the holdout twice and the two
+#  readings disagree: "all bars after 2026-05-27" (which selects zero bars of the
+#  perp futures series, since it ends on that date) versus "most recent 20% by
+#  calendar date" (which selects from ~2025-02-13). That is an open operator
+#  decision and is NOT resolved here. RESERVED_HOLDOUT_AFTER below implements the
+#  FIRST reading literally because it is the explicit dated statement; if the
+#  operator resolves in favour of the second, change this constant and re-run.
+# --------------------------------------------------------------------------- #
+
+#: Bars STRICTLY AFTER this timestamp are reserved holdout.
+RESERVED_HOLDOUT_AFTER = pd.Timestamp("2026-05-27", tz="UTC")
+
+
+class HoldoutViolation(RuntimeError):
+    """Raised when an evaluation window contains reserved-holdout bars."""
+
+
+def assert_no_holdout(obj, label: str = "window",
+                      boundary: Optional[pd.Timestamp] = None) -> None:
+    """Raise HoldoutViolation if `obj` contains any bar past the holdout boundary.
+
+    Accepts a DataFrame, Series, or DatetimeIndex. Called on every train, val,
+    test and walk-forward window, because a boundary that is only checked at the
+    top level is not a boundary.
+    """
+    bound = RESERVED_HOLDOUT_AFTER if boundary is None else pd.Timestamp(boundary)
+    idx = obj.index if hasattr(obj, "index") else obj
+    if len(idx) == 0:
+        return
+    if getattr(idx, "tz", None) is None:
+        idx = idx.tz_localize("UTC")
+    offending = idx[idx > bound]
+    if len(offending):
+        raise HoldoutViolation(
+            f"{label}: {len(offending)} bar(s) fall past the reserved-holdout "
+            f"boundary {bound.date()} "
+            f"({offending.min().date()} .. {offending.max().date()}). "
+            f"Holdout bars may not appear in ANY evaluation window - not train, "
+            f"val, test, or walk-forward. Pin the split dates so they end on or "
+            f"before {bound.date()} (see split_by_dates), or trim the input. "
+            f"Disabling the guard requires enforce_holdout=False and makes the run "
+            f"non-evidence.")
+
+
+def split_by_dates(df: pd.DataFrame, train_end, val_end, test_end):
+    """Date-pinned train/val/test split. Boundaries are INCLUSIVE end dates.
+
+    Mandated by PROJECT_OPERATOR_MANUAL.md, "Reserved holdout": splits must be
+    pinned by DATE, not by fraction, so extending the data cannot move them.
+    Anything after `test_end` is dropped, which is how holdout stays out.
+    """
+    t_end, v_end, s_end = (pd.Timestamp(x) for x in (train_end, val_end, test_end))
+    t_end, v_end, s_end = (x.tz_localize("UTC") if x.tz is None else x
+                           for x in (t_end, v_end, s_end))
+    if not (t_end < v_end < s_end):
+        raise ValueError(
+            f"split dates must be strictly increasing, got train_end={t_end.date()} "
+            f"val_end={v_end.date()} test_end={s_end.date()}")
+    idx = df.index
+    return (df.loc[idx <= t_end],
+            df.loc[(idx > t_end) & (idx <= v_end)],
+            df.loc[(idx > v_end) & (idx <= s_end)])
+
+
 def split_70_15_15(df: pd.DataFrame):
+    """DEPRECATED — fractional split. Retained only for the frozen phase scripts.
+
+    Boundaries are percentages of the series handed in, so extending the data
+    moves every boundary and slides TEST into the reserved holdout with no error.
+    New work must use split_by_dates().
+    """
+    warnings.warn(
+        "split_70_15_15() is DEPRECATED: fractional boundaries move when the data "
+        "is extended, which slides the TEST window into the reserved holdout "
+        "silently. It is retained only so the frozen phase*.py scripts still "
+        "reproduce. New work must use split_by_dates() with explicit dates "
+        "(PROJECT_OPERATOR_MANUAL.md, 'Reserved holdout').",
+        ValidatorWarning, stacklevel=2)
     n = len(df)
     i1 = int(n * 0.70)
     i2 = int(n * 0.85)
@@ -593,7 +682,8 @@ def split_70_15_15(df: pd.DataFrame):
 
 def walk_forward(df: pd.DataFrame, signal_fn, windows: int = 4,
                  execution_mode: Optional[str] = None,
-                 signal: Optional[pd.Series] = None) -> list[dict]:
+                 signal: Optional[pd.Series] = None,
+                 enforce_holdout: bool = True) -> list[dict]:
     """Anchored walk-forward: 4 OOS windows. Each window: prior 60%+ is IS, next 10% is OOS."""
     if signal is None:
         warnings.warn(WF_PER_WINDOW_WARMUP_WARNING, ValidatorWarning, stacklevel=2)
@@ -608,6 +698,8 @@ def walk_forward(df: pd.DataFrame, signal_fn, windows: int = 4,
         oos_df = df.iloc[is_end:oos_end]
         if len(oos_df) < 30:
             continue
+        if enforce_holdout:
+            assert_no_holdout(oos_df, label=f"walk-forward window {k}")
         # Same warmup rule as validate(): slice a precomputed full-series signal
         # when one is supplied. Recomputing per window restarts every indicator's
         # warmup inside a window that is typically ~10% of the series.
@@ -1046,6 +1138,9 @@ class Verdict:
     # n_trials. Always carries trial_var_source so a report can never quote a DSR
     # without saying whether its hurdle came from the ledger or the estimator proxy.
     dsr: dict = field(default_factory=dict)
+    # Split provenance (added 2026-07-31, item 3): which split mode produced these
+    # metrics and on what dates, so a report can never leave it implicit.
+    splits: dict = field(default_factory=dict)
 
 
 def cost_model_snapshot(execution_mode: Optional[str] = None,
@@ -1065,7 +1160,9 @@ def validate(name: str, df: pd.DataFrame, signal_fn: Callable[[pd.DataFrame], pd
              family: Optional[list] = None,
              execution_mode: Optional[str] = None,
              n_trials: Optional[int] = None,
-             n_sims: int = 200) -> Verdict:
+             n_sims: int = 200,
+             split_dates: Optional[tuple] = None,
+             enforce_holdout: bool = True) -> Verdict:
     """Run the full pipeline. signal_fn(df) -> pd.Series of {-1, 0, 1} indexed by df.index.
 
     family (optional): list of {"name", "full_sharpe", "test_sharpe"} dicts for the
@@ -1100,7 +1197,31 @@ def validate(name: str, df: pd.DataFrame, signal_fn: Callable[[pd.DataFrame], pd
     # primary promotion metric, so that is not a rounding issue - it is a fabricated
     # verdict. Slicing the signal keeps the warmup that the earlier data provides,
     # which is also what live trading would have.
-    df_tr, df_vl, df_te = split_70_15_15(df)
+    if split_dates is not None:
+        df_tr, df_vl, df_te = split_by_dates(df, *split_dates)
+        split_info = {"mode": "date_pinned",
+                      "train_end": str(df_tr.index.max().date()) if len(df_tr) else None,
+                      "val_end": str(df_vl.index.max().date()) if len(df_vl) else None,
+                      "test_end": str(df_te.index.max().date()) if len(df_te) else None}
+    else:
+        df_tr, df_vl, df_te = split_70_15_15(df)
+        split_info = {"mode": "fractional_DEPRECATED",
+                      "train_end": str(df_tr.index.max().date()) if len(df_tr) else None,
+                      "val_end": str(df_vl.index.max().date()) if len(df_vl) else None,
+                      "test_end": str(df_te.index.max().date()) if len(df_te) else None}
+    split_info["enforce_holdout"] = bool(enforce_holdout)
+    split_info["holdout_after"] = str(RESERVED_HOLDOUT_AFTER.date())
+
+    if enforce_holdout:
+        for _lbl, _seg in (("train", df_tr), ("val", df_vl), ("test", df_te)):
+            assert_no_holdout(_seg, label=_lbl)
+    else:
+        warnings.warn(
+            "HOLDOUT GUARD DISABLED (enforce_holdout=False). Evaluation windows may "
+            "contain reserved-holdout bars, which makes every metric below "
+            "in-sample. This run is NOT evidence and must not appear in a report, "
+            "a verdict, or a promotion argument.",
+            ValidatorWarning, stacklevel=2)
     sig_tr = sig.reindex(df_tr.index)
     sig_vl = sig.reindex(df_vl.index)
     sig_te = sig.reindex(df_te.index)
@@ -1108,7 +1229,8 @@ def validate(name: str, df: pd.DataFrame, signal_fn: Callable[[pd.DataFrame], pd
     rets_vl = signal_to_returns(df_vl, sig_vl, execution_mode=execution_mode); trs_vl = extract_trades(rets_vl); m_vl = metrics(rets_vl, trs_vl, bars_per_year)
     rets_te = signal_to_returns(df_te, sig_te, execution_mode=execution_mode); trs_te = extract_trades(rets_te); m_te = metrics(rets_te, trs_te, bars_per_year)
 
-    wf = walk_forward(df, signal_fn, execution_mode=execution_mode, signal=sig)
+    wf = walk_forward(df, signal_fn, execution_mode=execution_mode, signal=sig,
+                      enforce_holdout=enforce_holdout)
     mc = monte_carlo(rets, trs, n_sims=n_sims, execution_mode=execution_mode)
 
     reasons = []
@@ -1161,6 +1283,7 @@ def validate(name: str, df: pd.DataFrame, signal_fn: Callable[[pd.DataFrame], pd
         warnings=data_integrity_warnings() + dsr_warn + mc_warn + cost_model_warnings(execution_mode),
         data_manifest=data_integrity_snapshot(),
         dsr=dsr_res,
+        splits=split_info,
     )
 
 
@@ -1175,6 +1298,12 @@ def print_verdict(v: Verdict):
     print(f"\n{'='*70}")
     print(f"STRATEGY: {v.name}")
     print(f"{'='*70}")
+    if v.splits:
+        s = v.splits
+        print(f"Splits: {s.get('mode')}  train<={s.get('train_end')}  "
+              f"val<={s.get('val_end')}  test<={s.get('test_end')}  "
+              f"holdout_after={s.get('holdout_after')}  "
+              f"guard={'ON' if s.get('enforce_holdout') else 'OFF — NOT EVIDENCE'}")
     if v.data_manifest:
         dm = v.data_manifest
         state = "VERIFIED" if dm.get("verified") else ("BYPASSED" if dm.get("bypassed") else "UNVERIFIED")

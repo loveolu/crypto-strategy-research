@@ -292,6 +292,98 @@ def test_validator_warnings_survive_the_blanket_ignore():
     assert "ValidatorWarning" in cats, "harness-integrity warning was swallowed"
 
 
+# --------------------------------------------------------------------------- #
+#  ITEM 3 — date-pinned splits and a reserved-holdout guard
+# --------------------------------------------------------------------------- #
+
+def _series_spanning_holdout(n_bars: int = 900, seed: int = 3) -> pd.DataFrame:
+    """OHLCV ending 2026-07-18, i.e. past the declared holdout boundary."""
+    rng = np.random.default_rng(seed)
+    close = 100 * np.exp(np.cumsum(rng.normal(0.0005, 0.02, n_bars)))
+    idx = pd.date_range(end="2026-07-18", periods=n_bars, freq="D", tz="UTC")
+    return pd.DataFrame({
+        "open": close, "high": close * 1.01, "low": close * 0.99,
+        "close": close, "volume": 1000.0,
+    }, index=idx)
+
+
+def test_holdout_guard_raises_on_series_past_boundary():
+    df = _series_spanning_holdout()
+    assert df.index.max() > V.RESERVED_HOLDOUT_AFTER
+    try:
+        V.assert_no_holdout(df, label="test-split")
+        raise AssertionError("guard did not raise on a series past the boundary")
+    except V.HoldoutViolation as exc:
+        assert "test-split" in str(exc)
+        assert "2026-05-27" in str(exc)
+
+
+def test_holdout_guard_passes_on_clean_series():
+    df = _series_spanning_holdout()
+    clean = df.loc[:V.RESERVED_HOLDOUT_AFTER]
+    V.assert_no_holdout(clean, label="clean")     # must not raise
+
+
+def test_holdout_guard_counts_and_names_the_offending_bars():
+    df = _series_spanning_holdout()
+    try:
+        V.assert_no_holdout(df, label="x")
+    except V.HoldoutViolation as exc:
+        msg = str(exc)
+        n = int((df.index > V.RESERVED_HOLDOUT_AFTER).sum())
+        assert str(n) in msg, f"guard did not report the offending bar count {n}: {msg}"
+
+
+def test_split_by_dates_honours_explicit_boundaries():
+    df = _series_spanning_holdout()
+    tr, vl, te = V.split_by_dates(df, "2025-06-30", "2025-12-31", "2026-05-27")
+    assert tr.index.max() <= pd.Timestamp("2025-06-30", tz="UTC")
+    assert vl.index.min() > pd.Timestamp("2025-06-30", tz="UTC")
+    assert vl.index.max() <= pd.Timestamp("2025-12-31", tz="UTC")
+    assert te.index.min() > pd.Timestamp("2025-12-31", tz="UTC")
+    assert te.index.max() <= pd.Timestamp("2026-05-27", tz="UTC")
+    # nothing past the boundary survives
+    for name, seg in (("train", tr), ("val", vl), ("test", te)):
+        assert (seg.index <= V.RESERVED_HOLDOUT_AFTER).all(), f"{name} leaked holdout bars"
+
+
+def test_split_by_dates_rejects_unordered_dates():
+    df = _series_spanning_holdout()
+    try:
+        V.split_by_dates(df, "2025-12-31", "2025-06-30", "2026-05-27")
+        raise AssertionError("unordered split dates were accepted")
+    except ValueError:
+        pass
+
+
+def test_validate_raises_when_data_extends_past_holdout():
+    """Fractional splits on today's feathers put holdout bars in TEST."""
+    df = _series_spanning_holdout()
+    try:
+        V.validate("holdout_leak", df, _long_warmup_signal, n_trials=1, n_sims=20)
+        raise AssertionError("validate() accepted a series extending past the holdout")
+    except V.HoldoutViolation:
+        pass
+
+
+def test_validate_accepts_date_pinned_splits_inside_the_boundary():
+    df = _series_spanning_holdout()
+    v = V.validate("pinned", df, _long_warmup_signal, n_trials=1, n_sims=20,
+                   split_dates=("2025-06-30", "2025-12-31", "2026-05-27"))
+    assert v.splits["mode"] == "date_pinned"
+    assert v.splits["test_end"].startswith("2026-05-27")
+
+
+def test_fractional_split_is_deprecated():
+    import warnings as _w
+    df = _series_spanning_holdout()
+    with _w.catch_warnings(record=True) as caught:
+        _w.simplefilter("always")
+        V.split_70_15_15(df)
+    assert any(issubclass(c.category, V.ValidatorWarning) for c in caught), (
+        "split_70_15_15 did not announce that it is deprecated")
+
+
 TESTS = [v for k, v in sorted(globals().items()) if k.startswith("test_") and callable(v)]
 
 
