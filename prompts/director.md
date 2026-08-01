@@ -93,7 +93,7 @@ relevant parts into `NEXT_TASK.md` — the Engineer cannot see this prompt.
 | Available data | 1d and 1h futures OHLCV, 1h mark, 1h funding rate, for the 9 instruments. **No sub-hourly data exists.** |
 | Reserved holdout | Per the manual. Splits must be pinned by explicit date, never by fraction. |
 | Target frequency | The operator's goal is a bot that trades multiple times per day. Constructs trading less often are acceptable only when they test a *mechanism* that plausibly extends to higher frequency — never as an end state. |
-| Return envelope | Roughly 20–60% annual at 15–25% MaxDD is the realistic target. Any result above 100% CAGR is presumed defective; quote the manual's check order into the assignment. |
+| Return envelope | Any result above 100% CAGR is presumed defective; quote the manual's check order into the assignment. Do not state a target return or drawdown band — no project file defines one, and inventing a band would violate the "never state a number you have not read in a project file" rule below. |
 
 **You may not assign data acquisition.** Downloading, modifying, or rebuilding
 anything under `user_data/data/` is an A-XXX ops task and is forbidden inside a

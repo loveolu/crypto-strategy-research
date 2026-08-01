@@ -31,11 +31,15 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 
-DEFAULT_BUDGET_KB = 48  # 49,152 bytes. Raised from 40 KB by operator decision 2026-07-29:
-#                        the mandatory set gained ten standards during the repair (cost model,
-#                        counters, holdout, pre-gate ladder, DSR threshold, promotion comparison,
-#                        research budget, data freeze, Reviewer cap, benchmark) and 40 KB left
-#                        38 B of headroom. Raise the cap deliberately; never to dodge a breach.
+DEFAULT_BUDGET_KB = 56  # 57,344 bytes. Raised from 48 KB by operator decision 2026-08-01:
+#                        the mandatory set now carries the FULL seven-criterion promotion rule, the
+#                        committed perps benchmark figures, the zero-cost pre-gate ladder and the
+#                        program trial cap — none of which existed when 40 KB, or even 48 KB, was
+#                        chosen. At 48 KB the region was at 99.9% with 62 B of headroom and the only
+#                        remaining cuts were standards, not narrative.
+#                        Previously: 48 KB (2026-07-29, +10 repair standards), 40 KB (original).
+#                        Raise the cap deliberately, as an operator decision recorded in
+#                        PROJECT_OPERATOR_MANUAL.md — never to dodge a breach.
 BYTES_PER_TOKEN_APPROX = 4  # rough English/markdown approximation, not a tokenizer run
 
 MARKER_BEGIN = "<!-- DIRECTOR-MANDATORY-BEGIN -->"

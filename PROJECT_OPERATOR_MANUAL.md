@@ -49,9 +49,18 @@ required by its role.
 ### Research Director — context loading (budget: 48 KB mandatory)
 
 This list is authoritative and is machine-enforced by `scripts/check_context_budget.py`, which
-fails nonzero if the MANDATORY set exceeds 48 KB. Run it after editing any mandatory file. **Raise
+fails nonzero if the MANDATORY set exceeds 56 KB. Run it after editing any mandatory file. **Raise
 the cap only as a deliberate operator decision, never to clear a breach** — a breach normally means a
 mandatory file needs compacting or demoting.
+
+**Cap history, so a future operator can see whether raising it has become a habit**: 40 KB original
+→ **48 KB** (2026-07-29, ten standards added by the repair) → **56 KB** (2026-08-01). The 2026-08-01
+raise was taken deliberately and is recorded here as required: the mandatory set now carries the full
+seven-criterion promotion rule, the committed perps benchmark figures, the zero-cost pre-gate ladder
+and the program trial cap, none of which existed when 40 KB was chosen. At 48 KB the region stood at
+99.9% with 62 B of headroom, and **every remaining cut would have removed a standard rather than
+narrative** — all narrative and rationale had already been compacted out. That is the condition under
+which the cap moves; a breach with narrative still in the region is not.
 
 **MANDATORY (load every cycle, before selecting a hypothesis):**
 
@@ -669,6 +678,22 @@ Consequences an Engineer must plan around:
 
 **Confirmed by operator decision, 2026-07-29** — limits, not provisional defaults. Deliberately
 tight: this project's history includes a 61-variant sweep (#8) that found a ceiling and no edge.
+
+### Program trial cap and terminal condition (operator decision, 2026-08-01)
+
+**The perps program has a hard cap of `n_trials` = 30.** Cycles are uncapped; trials are not. A cycle
+killed at a zero-cost pre-gate spends no trial.
+
+At `n_trials` = 30 with nothing having cleared the promotion rule, the program's conclusion is that
+this venue and instrument set contains **no accessible edge for this operator**, and it terminates.
+**The Director may not assign past the cap.** The Reviewer writes **`PROGRAM_CAP_REACHED`** at the
+top of `research/research_index.md` when the cap is reached.
+
+**Rationale.** The spot program ran to ~100 trials with no terminal condition and converted into
+infrastructure work while appearing productive. A pre-registered cap makes cheap falsification
+structurally rewarded — a Director who designs zero-cost pre-gates keeps exploring, one who burns
+trials on full backtests hits the wall fast — and makes termination a **rule** rather than a
+decision someone has to be willing to make.
 
 ## Promotion comparison
 
