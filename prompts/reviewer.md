@@ -86,10 +86,20 @@ section 13. Do not reimplement — run what they ran and diff the output.
   `research_metrics.md`.
 - **Check `trial_var_source` in the DSR output.** If it reads `estimator_proxy`, the
   selection hurdle was computed from the variance of *this strategy's* Sharpe estimate
-  rather than the cross-trial variance, which shrinks with trade count and inflates DSR
-  for high-frequency constructs. Record this in the verdict file. A promotion may not
-  rest on a proxy-sourced DSR when the candidate's trade count materially exceeds the
-  incumbent's or the benchmark's.
+  rather than the cross-trial variance, which shrinks with observation count and makes
+  the hurdle a function of trade frequency rather than search intensity. Record it in
+  the verdict file.
+
+  **This bar is UNCONDITIONAL. Promotion criterion 7 (`PROJECT_OPERATOR_MANUAL.md`,
+  "Promotion rule — FINAL") forbids PROMOTE on a proxy-sourced DSR outright** — not
+  only when the candidate's trade count exceeds the incumbent's or the benchmark's.
+  While `research/trial_sharpe_ledger.csv` holds fewer than 10 rows, **the maximum
+  available verdict is PARK**, whatever the other metrics show. Do not apply a weaker
+  reading than the manual's; where this prompt and the manual differ, the manual governs.
+
+- **Confirm the DSR came from `validator.deflated_sharpe()`**, not from a direct
+  `freqtrade_dsr.deflated_sharpe_ratio()` call, which silently takes the proxy. Run
+  `python scripts/check_dsr_entrypoint.py` — it fails on direct calls.
 
 **C2. Boolean gate transcription**
 
@@ -197,16 +207,21 @@ Write `research/review_briefs/<Task ID>_verdict_a.json`:
 
 1. Append the verdict and reason to `strategy_iteration_log.md`.
 2. **`research_index.md`:**
-   - Append exactly ONE row to the hypotheses-tested table —
-     `Task ID | hypothesis (short) | verdict | one-phrase reason`. Never prose, never
-     more than one row.
-   - You may add at most ONE numbered item to "Lessons from empirical testing", and
-     only if this cycle produced a lesson no existing item covers. One sentence.
+   - Append exactly ONE row to the table under **`## Cycles completed`** —
+     `Task ID | Hypothesis | Verdict | Primary reason`. Never prose, never more than one
+     row.
+   - **Durable lessons do NOT go in this file.** It has no lessons section: the former
+     "Lessons from empirical testing" was removed in the 2026-07-28 compaction and now
+     exists only in `research/archive/index_narrative_pre_2026-07-28.md`. The index's own
+     "Where detail lives" section redirects lessons to
+     **`research/strategy_research_notes.md`** — write them there (step 4 below), and do
+     not recreate the removed section.
    - Correct any existing line this cycle proved factually wrong (e.g. T-035 corrected
      a stale "sentiment axis unreachable" claim). Corrections replace, never append
      alongside.
-   - Advance the cycles-since-meta-review counter. Count RESEARCH cycles only; A-XXX
-     ops cycles do not advance it.
+   - Advance the cycles-since-meta-review counter on the line near the top of the file
+     (`**Cycles since meta-review #N (<date>): X of 25**`). Count RESEARCH cycles only;
+     A-XXX ops cycles do not advance it.
 
    This file is machine-budgeted. Run `python scripts/check_context_budget.py` after
    writing and confirm it exits 0. If your additions breach the budget, compact your
