@@ -54,6 +54,19 @@ import pandas as pd
 
 warnings.filterwarnings("ignore")
 
+
+class ValidatorWarning(UserWarning):
+    """Harness-integrity warning. Deliberately exempt from the blanket ignore above.
+
+    The module-level filterwarnings("ignore") exists to silence pandas/numpy noise.
+    A silent fallback to a known-defective code path is exactly the pattern that let
+    trial_sharpe_var=None ship for the project's whole history, so warnings raised
+    by this harness about its OWN degraded modes must never be swallowed.
+    """
+
+
+warnings.simplefilter("always", ValidatorWarning)
+
 REPO_ROOT = Path(__file__).resolve().parents[2]   # <root>/user_data/research/validator.py
 DATA_DIR = REPO_ROOT / "user_data" / "data" / "okx"
 RESULTS_DIR = REPO_ROOT / "user_data" / "research" / "results"
@@ -582,6 +595,9 @@ def walk_forward(df: pd.DataFrame, signal_fn, windows: int = 4,
                  execution_mode: Optional[str] = None,
                  signal: Optional[pd.Series] = None) -> list[dict]:
     """Anchored walk-forward: 4 OOS windows. Each window: prior 60%+ is IS, next 10% is OOS."""
+    if signal is None:
+        warnings.warn(WF_PER_WINDOW_WARMUP_WARNING, ValidatorWarning, stacklevel=2)
+
     n = len(df)
     results = []
     for k in range(1, windows + 1):
@@ -596,9 +612,11 @@ def walk_forward(df: pd.DataFrame, signal_fn, windows: int = 4,
         # when one is supplied. Recomputing per window restarts every indicator's
         # warmup inside a window that is typically ~10% of the series.
         sig_w = signal.reindex(oos_df.index) if signal is not None else signal_fn(oos_df)
+        m_extra = {"warmup_mode": "full_series" if signal is not None else "per_window"}
         rets = signal_to_returns(oos_df, sig_w, execution_mode=execution_mode)
         trs = extract_trades(rets)
         m = metrics(rets, trs)
+        m.update(m_extra)
         m["window"] = k
         m["is_end"] = str(df.index[is_end])
         m["oos_end"] = str(df.index[oos_end - 1])
@@ -618,6 +636,16 @@ _MC_NAN_KEYS = ("mc_p5_sharpe", "mc_p50_sharpe", "mc_p95_sharpe",
 #: MC gate outcomes. INSUFFICIENT is distinct from FAIL: the run did not
 #: demonstrate survival, but neither did it demonstrate failure.
 MC_PASS, MC_FAIL, MC_INSUFFICIENT = "PASS", "FAIL", "INSUFFICIENT"
+
+WF_PER_WINDOW_WARMUP_WARNING = (
+    "WALK-FORWARD WARNING - windows were computed with PER-WINDOW indicator warmup "
+    "because no precomputed `signal=` was supplied. Every indicator restarts inside "
+    "each OOS window, which on a ~10%-of-series window forces the early bars flat by "
+    "warmup rather than by the strategy, and empties the window entirely when warmup "
+    "exceeds window length. These window figures are NOT comparable to a validate() "
+    "run, which computes the signal once on the full series and slices it. Pass "
+    "signal=signal_fn(df) to get comparable numbers."
+)
 
 MC_INSUFFICIENT_WARNING = (
     "MC GATE INSUFFICIENT - the p5 Sharpe disagrees in SIGN across seeds: {vals}. "

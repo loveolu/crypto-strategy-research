@@ -787,3 +787,44 @@ Both entries arose from the repair session of 2026-07-28 (item 2 feather provena
   long as this holdout is reserved.
 
   This becomes a standing manual rule in `PROJECT_OPERATOR_MANUAL.md` (repair item 6).
+
+## Warmup truncation in the validation harness (2026-07-31)
+
+- **Every archived TEST-split and walk-forward figure was computed with truncated indicator
+  warmup, and the bias is one-directional: it DEPRESSED val and test metrics.** `validate()`
+  called `signal_fn` separately on each split slice and `walk_forward()` on each OOS window, so
+  every indicator restarted its warmup *inside* the window being scored. Train is long enough to
+  absorb its own warmup; val and test are not — and those are the splits promotion depends on.
+
+  Measured on real BTC 1d with an SMA200 (the champion's own core), splits 2177/467/467:
+
+  | split | before (slice-first) | after (compute-once) |
+  |---|---|---|
+  | train | Sharpe +0.9967, 17 trades | Sharpe +0.9967, 17 trades (unchanged) |
+  | val | Sharpe −0.1302, 9 trades | Sharpe +0.6345, 10 trades |
+  | test | Sharpe −1.2159, 4 trades | Sharpe +0.2129, 4 trades |
+
+  Where warmup exceeds the split length the failure is total rather than partial: a 200-bar SMA
+  handed a 180-bar TEST slice is NaN throughout, so the split reports **0 trades and Sharpe 0.0000
+  regardless of merit**. That does not look like an error in a report — it looks like a strategy
+  that sat flat.
+
+- **What this costs us, precisely.** The champion's recorded TEST Sharpe 0.41 is one of these
+  figures. So are the two load-bearing project conclusions — *"no signal-prediction edge survives
+  OOS; only regime avoidance transfers"* and *"the data's Sharpe ceiling is ~1.2-1.3"* — both of
+  which are inferences from strong train numbers against weak test numbers, with the test side
+  biased downward by an unknown amount.
+
+  **Rejections remain valid a fortiori**: a construct that failed a pessimistically-biased TEST
+  would also fail an unbiased one, and none of the zero-cost pre-gate stops used TEST metrics at
+  all. What is *not* established is the **magnitude** of the OOS collapse, and so how much of the
+  train→test decay was overfitting versus an artifact of the harness. A "10x decay" and a "2x
+  decay" imply very different research programs.
+
+- **Process lesson: a defect that only ever moves results in the direction you expect is the
+  hardest kind to notice.** This one made OOS look worse, which matched the project's prior and
+  confirmed its central thesis, so no cycle ever questioned it — six consecutive pre-gate stops
+  were celebrated as discipline while the metric behind the thesis was quietly broken. Prefer
+  invariance tests (does the answer change when something irrelevant changes?) over
+  plausibility checks (does the answer look right?). The bug was found by asking whether TEST
+  metrics should depend on where the split boundary falls, not by anything looking wrong.

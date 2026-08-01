@@ -259,6 +259,39 @@ def test_walk_forward_windows_are_warmup_invariant():
         "per window and never clears its warmup")
 
 
+def test_walk_forward_warns_on_silent_per_window_fallback():
+    """The degraded path must announce itself, like the DSR estimator proxy does."""
+    import warnings as _w
+    df = _warmup_ohlcv()
+
+    with _w.catch_warnings(record=True) as caught:
+        _w.simplefilter("always")
+        wf_bad = V.walk_forward(df, _long_warmup_signal)
+    assert any(issubclass(c.category, V.ValidatorWarning) for c in caught), (
+        "per-window warmup fallback was silent")
+    assert all(x["warmup_mode"] == "per_window" for x in wf_bad)
+
+    with _w.catch_warnings(record=True) as caught2:
+        _w.simplefilter("always")
+        wf_ok = V.walk_forward(df, _long_warmup_signal, signal=_long_warmup_signal(df))
+    assert not [c for c in caught2 if issubclass(c.category, V.ValidatorWarning)], (
+        "correct path must not warn")
+    assert all(x["warmup_mode"] == "full_series" for x in wf_ok)
+
+
+def test_validator_warnings_survive_the_blanket_ignore():
+    """validator.py sets filterwarnings('ignore'); ValidatorWarning must escape it."""
+    import warnings as _w
+    with _w.catch_warnings(record=True) as caught:
+        _w.resetwarnings()
+        _w.filterwarnings("ignore")            # reproduce the module-level state
+        _w.simplefilter("always", V.ValidatorWarning)
+        _w.warn("integrity", V.ValidatorWarning)
+        _w.warn("noise", UserWarning)
+    cats = [c.category.__name__ for c in caught]
+    assert "ValidatorWarning" in cats, "harness-integrity warning was swallowed"
+
+
 TESTS = [v for k, v in sorted(globals().items()) if k.startswith("test_") and callable(v)]
 
 

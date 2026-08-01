@@ -111,6 +111,33 @@ five seeds with a unanimity requirement. On the same construct the Sharpe p5/p50
 0.469840/0.469840/0.469840 to -0.0121/0.4912/0.7512, and the gate verdict flipped. **Pre- and
 post-fix MC figures are not comparable and must never be quoted side by side.**
 
+## 4c. TEST-split and walk-forward figures predating 2026-07-31 are BIASED LOW
+
+Also independent of the cost discontinuity. `validate()` recomputed `signal_fn` on each split slice
+and `walk_forward()` on each OOS window, restarting every indicator's warmup inside the window being
+scored. The bias is **one-directional: val and test metrics were depressed.** Train is long enough to
+absorb its own warmup; the later splits are not.
+
+Real BTC 1d, SMA200 (the champion's core), splits 2177/467/467:
+
+| split | before | after |
+|---|---|---|
+| train | Sharpe +0.9967, 17 trades | +0.9967, 17 trades (unchanged) |
+| val | Sharpe -0.1302, 9 trades | **+0.6345**, 10 trades |
+| test | Sharpe -1.2159, 4 trades | **+0.2129**, 4 trades |
+
+Where warmup exceeded the split length the split reported **0 trades / Sharpe 0.0000 regardless of
+merit** - indistinguishable in a report from a strategy that stayed flat.
+
+Affected: the champion's recorded **TEST Sharpe 0.41**; every `test`/`val`/`wf` field in the 63
+result JSONs and the cycle reports; and the two headline conclusions built on train-vs-test gaps -
+"no signal-prediction edge survives OOS" and the "~1.2-1.3 Sharpe ceiling".
+
+**Rejections stand a fortiori** (a pessimistic TEST cannot have passed something that deserved
+failing, and pre-gate stops never used TEST metrics). **The magnitude of the OOS collapse does not.**
+See `research/STANDING_DIRECTIVES.md` directive 8, which requires this caveat to be cited whenever
+those conclusions are.
+
 ## 5. Rules
 
 1. **The `phase*.py` scripts are frozen.** Their `FEE = 0.0015` constants are the

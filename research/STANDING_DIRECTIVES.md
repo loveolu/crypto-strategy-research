@@ -40,3 +40,35 @@ Source: `research/meta_reviews/meta_review_1.md` §"Directives for future cycles
    T-017/T-018 already did informally and would have caught both false claims earlier.
 
 ---
+
+---
+
+## Directives from the 2026-07-31 validation-harness repair
+
+Not a meta-review, but binding on the same terms. Numbering continues the global
+sequence (Meta-Review #1 ended at 7).
+
+8. **The spot program's headline conclusions carry a measurement caveat, and it must be cited
+   with them.** Every archived TEST-split and walk-forward figure predating 2026-07-31 was computed
+   with **truncated indicator warmup**: `validate()` recomputed `signal_fn` on each split slice and
+   `walk_forward()` on each OOS window, restarting every indicator inside the window. This
+   **systematically DEPRESSED val and test metrics** — train is long enough to absorb its own warmup,
+   the later splits are not. Measured on BTC 1d with an SMA200, the champion's own core: TEST Sharpe
+   **−1.2159 → +0.2129** and val **−0.1302 → +0.6345** after the fix, same data, same strategy. Where
+   warmup exceeded the split length the affected split reported **0 trades and Sharpe 0.0000
+   regardless of merit**.
+
+   The champion's recorded **TEST Sharpe 0.41** is one of these figures. So is the
+   *"no signal-prediction edge survives OOS, only regime avoidance transfers"* conclusion and the
+   *"~1.2-1.3 Sharpe ceiling"*, both of which rest on comparing strong train numbers against weak
+   test numbers — and the test side was biased downward by an unknown amount.
+
+   **What this does and does not overturn.** Rejections stand *a fortiori*: a construct that failed
+   on a pessimistically-biased TEST would also have failed on an unbiased one, and the pre-gate stops
+   never used TEST metrics at all. What is not established is the **magnitude** of the OOS collapse,
+   and therefore how much of the train→test decay was overfitting versus warmup truncation.
+
+   **Any Director citing the OOS-collapse conclusion, the Sharpe ceiling, or the champion's TEST
+   Sharpe must cite this caveat alongside it.** Quoting the number without the caveat is a
+   misstatement of the evidence. Re-measuring any of it costs fresh trials under the current cost
+   model and is a pre-registered cycle, not a free correction.
