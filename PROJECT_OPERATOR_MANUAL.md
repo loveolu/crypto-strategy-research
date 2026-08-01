@@ -843,6 +843,30 @@ any `and`/`or` mismatch as a spec deviation, and state explicitly whether it was
 Both are required — an outcome-changing mismatch invalidates the cycle, a non-outcome-changing one is
 still a deviation and is still reported.
 
+## Monte Carlo gate
+
+The MC gate has three outcomes, not two. **PASS requires the 5th-percentile Sharpe to be > 0 for
+EVERY seed individually** — not merely for the pooled distribution.
+
+| Outcome | Condition | Disposition |
+|---|---|---|
+| **PASS** | every seed's p5 Sharpe > 0 | eligible to continue |
+| **FAIL** | every seed's p5 Sharpe ≤ 0 | REJECT |
+| **INSUFFICIENT** | seeds disagree in sign | **PARK, never PROMOTE** |
+
+**An INSUFFICIENT result maps to PARK. A construct whose survival depends on which seeds were drawn
+has not demonstrated survival** — the pooled figure's sign is an accident of the draw, and reporting
+it as PASS or FAIL asserts something the run did not establish. INSUFFICIENT is not a soft FAIL and
+not a near-PASS; it is the absence of a result.
+
+**`n_sims` may be raised to tighten the estimate, but only as a PRE-REGISTERED choice in
+`NEXT_TASK.md`.** Raising it after seeing a straddling result is choosing the seed set that gives the
+answer you want, and it invalidates the cycle. If a construct comes back INSUFFICIENT, it parks; the
+re-run is a new, pre-registered cycle.
+
+The per-seed values are printed and carried on `Verdict.warnings`, so an INSUFFICIENT cannot be
+reported as anything else.
+
 ## Independent Reviewer output standard
 
 **A review brief must not exceed 4 KB (4,096 bytes).** The latest brief is MANDATORY Director

@@ -611,6 +611,42 @@ _MC_NAN_KEYS = ("mc_p5_sharpe", "mc_p50_sharpe", "mc_p95_sharpe",
                 "mc_p50_maxdd", "mc_p95_maxdd", "mc_worst_maxdd",
                 "mc_seed_spread_p5_sharpe")
 
+#: MC gate outcomes. INSUFFICIENT is distinct from FAIL: the run did not
+#: demonstrate survival, but neither did it demonstrate failure.
+MC_PASS, MC_FAIL, MC_INSUFFICIENT = "PASS", "FAIL", "INSUFFICIENT"
+
+MC_INSUFFICIENT_WARNING = (
+    "MC GATE INSUFFICIENT - the p5 Sharpe disagrees in SIGN across seeds: {vals}. "
+    "The pooled figure ({pooled:+.4f}) is therefore an artifact of which seeds were "
+    "drawn, not a property of the construct. A construct whose survival depends on "
+    "seed choice has not demonstrated survival. This maps to PARK, never PROMOTE "
+    "(PROJECT_OPERATOR_MANUAL.md, 'Monte Carlo gate'). n_sims may be raised to "
+    "tighten the estimate, but only as a PRE-REGISTERED choice in NEXT_TASK.md - "
+    "raising it after seeing a straddling result is selecting the seed set that "
+    "gives the answer you want."
+)
+
+
+def mc_gate_status(per_seed_p5: list) -> str:
+    """Classify the MC gate from the PER-SEED p5 Sharpes, not the pooled figure.
+
+    PASS         every seed's p5 Sharpe > 0
+    FAIL         every seed's p5 Sharpe <= 0
+    INSUFFICIENT seeds disagree in sign — the verdict is seed-dependent
+
+    Pooling first and thresholding the pooled number hides disagreement: a set
+    like [+0.05, -0.03, -0.08, -0.02, +0.08] pools to a single value whose sign
+    is an accident of the seed draw. Requiring unanimity makes that visible.
+    """
+    vals = [v for v in per_seed_p5 if v is not None and np.isfinite(v)]
+    if not vals:
+        return MC_INSUFFICIENT
+    if all(v > 0 for v in vals):
+        return MC_PASS
+    if all(v <= 0 for v in vals):
+        return MC_FAIL
+    return MC_INSUFFICIENT
+
 
 def monte_carlo(returns: pd.DataFrame, trades: pd.DataFrame, n_sims: int = 200,
                 extra_cost: Optional[float] = None,
@@ -645,11 +681,27 @@ def monte_carlo(returns: pd.DataFrame, trades: pd.DataFrame, n_sims: int = 200,
     len(seeds) * n_sims simulations. `mc_seed_spread_p5_sharpe` is the range of
     the gated statistic across individual seeds — if that is large relative to
     the statistic, the gate's verdict is a seed artifact and must not be trusted.
+    `mc_gate` classifies from the PER-SEED values (see mc_gate_status): PASS only
+    if every seed's p5 Sharpe is > 0, INSUFFICIENT if the seeds disagree in sign.
+
+    LIMIT OF THE MaxDD DISTRIBUTION — read before quoting it.
+    It is computed on PERMUTED trade order, which destroys volatility clustering
+    and trend persistence. Real drawdowns are made by losses arriving in runs;
+    shuffling breaks up those runs and scatters them, so the permuted
+    distribution OVERSTATES dispersion relative to realized paths. It answers
+    "how bad could this trade set have been in a different order", NOT "what
+    drawdown should be expected going forward".
+
+    It therefore MUST NOT be used for promotion criterion 4
+    (PROJECT_OPERATOR_MANUAL.md, "Promotion rule"), which compares REALIZED
+    MaxDD against the benchmark's realized MaxDD on the same window. Use
+    metrics()["max_dd"] for that. The MC MaxDD is a robustness diagnostic only.
     """
     if len(trades) < 30:
         out = {k: np.nan for k in _MC_NAN_KEYS}
         out.update({"mc_n_sims": 0, "mc_sims_per_seed": int(n_sims),
-                    "mc_seeds": list(seeds), "mc_note": "fewer than 30 trades"})
+                    "mc_seeds": list(seeds), "mc_note": "fewer than 30 trades",
+                    "mc_p5_sharpe_per_seed": [], "mc_gate": MC_INSUFFICIENT})
         return out
 
     if extra_cost is None:
@@ -697,6 +749,7 @@ def monte_carlo(returns: pd.DataFrame, trades: pd.DataFrame, n_sims: int = 200,
         "mc_n_sims": int(n_sims * len(seeds)),
         "mc_p5_sharpe_per_seed": [round(x, 4) for x in per_seed_p5],
         "mc_seed_spread_p5_sharpe": spread,
+        "mc_gate": mc_gate_status(per_seed_p5),
         "mc_resampling": "bootstrap(sharpe,return) + permutation(maxdd)",
     }
 
@@ -1035,8 +1088,17 @@ def validate(name: str, df: pd.DataFrame, signal_fn: Callable[[pd.DataFrame], pd
     if wf:
         wf_pos = sum(1 for w in wf if w["total_return"] > 0)
         if wf_pos / len(wf) < 0.5: reasons.append(f"WF profitable in {wf_pos}/{len(wf)} windows")
-    if mc.get("mc_p5_sharpe") is not None and not np.isnan(mc["mc_p5_sharpe"]) and mc["mc_p5_sharpe"] < 0:
-        reasons.append(f"MC p5 sharpe {mc['mc_p5_sharpe']:.2f} < 0")
+    mc_gate = mc.get("mc_gate")
+    mc_warn: list[str] = []
+    if mc_gate == MC_FAIL:
+        reasons.append(f"MC gate FAIL: p5 sharpe <= 0 on every seed "
+                       f"(pooled {mc.get('mc_p5_sharpe', float('nan')):.2f})")
+    elif mc_gate == MC_INSUFFICIENT and mc.get("mc_p5_sharpe_per_seed"):
+        reasons.append("MC gate INSUFFICIENT: p5 sharpe disagrees in sign across seeds "
+                       f"{mc['mc_p5_sharpe_per_seed']} - PARK, not PROMOTE")
+        mc_warn.append(MC_INSUFFICIENT_WARNING.format(
+            vals=mc["mc_p5_sharpe_per_seed"],
+            pooled=mc.get("mc_p5_sharpe", float("nan"))))
 
     passed = not reasons
     fam_ctx = family_context(name, m_full["sharpe"], m_te["sharpe"], family) if family else {}
@@ -1057,7 +1119,7 @@ def validate(name: str, df: pd.DataFrame, signal_fn: Callable[[pd.DataFrame], pd
         mc=mc,
         family_context=fam_ctx,
         cost_model=cost_model_snapshot(execution_mode),
-        warnings=data_integrity_warnings() + dsr_warn + cost_model_warnings(execution_mode),
+        warnings=data_integrity_warnings() + dsr_warn + mc_warn + cost_model_warnings(execution_mode),
         data_manifest=data_integrity_snapshot(),
         dsr=dsr_res,
     )
@@ -1107,6 +1169,9 @@ def print_verdict(v: Verdict):
         _seed_note = (f"{len(_seeds)} seeds, p5-Sharpe spread {v.mc.get('mc_seed_spread_p5_sharpe', float('nan')):.3f}"
                       if len(_seeds) > 1 else "SINGLE SEED — cross-seed spread UNMEASURED")
         print(f"Monte Carlo ({v.mc.get('mc_n_sims', 0)} sims, {_seed_note}, +1 extra round trip of cost)")
+        print(f"  GATE: {v.mc.get('mc_gate', 'n/a')}   per-seed p5 Sharpe {v.mc.get('mc_p5_sharpe_per_seed', [])}")
+        if v.mc.get("mc_gate") == MC_INSUFFICIENT:
+            print("        ^ seeds disagree in sign — PARK, never PROMOTE")
         print(f"  resampling: {v.mc.get('mc_resampling', 'n/a')}")
         print(f"  Sharpe p5 {v.mc.get('mc_p5_sharpe', float('nan')):.2f}  "
               f"p50 {v.mc.get('mc_p50_sharpe', float('nan')):.2f}  "

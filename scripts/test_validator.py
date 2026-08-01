@@ -123,6 +123,57 @@ def test_mc_gate_statistic_is_stable_across_seeds():
         "p5 Sharpe is unstable across seeds")
 
 
+def test_mc_gate_status_classification():
+    """Exhaustive, deterministic classification from per-seed p5 values."""
+    assert V.mc_gate_status([0.1, 0.2, 0.05, 0.3, 0.02]) == V.MC_PASS
+    assert V.mc_gate_status([-0.1, -0.2, -0.05]) == V.MC_FAIL
+    # a single non-positive seed is enough to deny PASS
+    assert V.mc_gate_status([0.1, 0.2, -0.01, 0.3]) == V.MC_INSUFFICIENT
+    assert V.mc_gate_status([-0.05, 0.2]) == V.MC_INSUFFICIENT
+    # exactly zero is NOT > 0, so it cannot contribute to a PASS
+    assert V.mc_gate_status([0.0, 0.1]) == V.MC_INSUFFICIENT
+    assert V.mc_gate_status([0.0, -0.1]) == V.MC_FAIL
+    assert V.mc_gate_status([]) == V.MC_INSUFFICIENT
+    assert V.mc_gate_status([float("nan")]) == V.MC_INSUFFICIENT
+
+
+def test_mc_gate_is_not_the_pooled_threshold():
+    """A straddling seed set must not be rescued by a positive pooled figure.
+
+    This is the regression: thresholding the pooled p5 would call
+    [+0.05, -0.03, -0.08, -0.02, +0.08] a PASS or FAIL depending only on which
+    side of zero the pool happened to land.
+    """
+    straddle = [0.0484, -0.0341, -0.0816, -0.0176, 0.0814]
+    assert V.mc_gate_status(straddle) == V.MC_INSUFFICIENT
+    assert V.mc_gate_status([abs(x) for x in straddle]) == V.MC_PASS
+    assert V.mc_gate_status([-abs(x) for x in straddle]) == V.MC_FAIL
+
+
+def test_mc_gate_reported_and_consistent_with_per_seed_values():
+    trades, rets = synthetic_trades(), synthetic_returns()
+    mc = V.monte_carlo(rets, trades, n_sims=200)
+    assert mc["mc_gate"] in (V.MC_PASS, V.MC_FAIL, V.MC_INSUFFICIENT)
+    assert mc["mc_gate"] == V.mc_gate_status(mc["mc_p5_sharpe_per_seed"]), (
+        "reported gate disagrees with its own per-seed values")
+
+
+def test_mc_insufficient_lands_on_verdict_warnings():
+    """An INSUFFICIENT gate must surface as a warning, not just a reason string."""
+    per_seed = [0.05, -0.03, -0.08, -0.02, 0.08]
+    assert V.mc_gate_status(per_seed) == V.MC_INSUFFICIENT
+    msg = V.MC_INSUFFICIENT_WARNING.format(vals=per_seed, pooled=-0.01)
+    assert "PARK, never PROMOTE" in msg
+    assert "PRE-REGISTERED" in msg
+
+
+def test_mc_maxdd_carries_its_limitation_in_the_docstring():
+    """The permuted MaxDD must not be silently usable for promotion criterion 4."""
+    doc = V.monte_carlo.__doc__
+    assert "MUST NOT be used for promotion criterion 4" in doc
+    assert "volatility clustering" in doc
+
+
 def test_mc_small_sample_still_short_circuits():
     """Fewer than 30 trades still returns NaNs rather than fabricating a distribution."""
     trades, rets = synthetic_trades(n=10), synthetic_returns()

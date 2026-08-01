@@ -86,6 +86,31 @@ Every one of these was produced under the archived model:
 - The champion (`TrendVolTarget`) headline figures, including the Sharpe 1.26 /
   DD -16.6% / +458% numbers and the T-030 (H-TailAlloc) 80/20 promotion.
 
+## 4b. Monte Carlo figures predating 2026-07-31 are VOID
+
+Separate from the cost discontinuity, and applying to **every archived result regardless of cost
+model**: `validator.monte_carlo()` resampled by PERMUTING the per-trade P&L vector, then computed
+Sharpe, terminal return and their percentiles from it. All three statistics are
+permutation-invariant, so **every simulation was identical**. Measured spread across 500 sims:
+Sharpe 3.886e-16, terminal return 1.110e-15 - floating-point noise.
+
+Consequences for the archive:
+
+- `mc_p5_sharpe` was **equal to the point estimate**, relabelled as a 5th percentile. So were
+  `mc_p50_sharpe`, `mc_p95_sharpe`, `mc_p5_return` and `mc_p50_return`.
+- The MC gate in `validate()` (`p5 Sharpe > 0`) **never tested anything** - it compared the point
+  estimate against zero, which the full-window Sharpe already did.
+- **Any archived "survived Monte Carlo" or "MC robust" claim is VOID.** It records that a number
+  equalled itself 200 times. This includes every MC tail figure quoted in a promotion argument -
+  notably the H-TailAlloc 30.5% -> 16.5% MC tail comparison, the stated basis of the 80/20
+  portfolio promotion.
+- No MaxDD distribution was computed at all; that statistic did not exist before 2026-07-31.
+
+Post-fix figures use bootstrap resampling for Sharpe and terminal return, permutation for MaxDD, and
+five seeds with a unanimity requirement. On the same construct the Sharpe p5/p50/p95 moved from
+0.469840/0.469840/0.469840 to -0.0121/0.4912/0.7512, and the gate verdict flipped. **Pre- and
+post-fix MC figures are not comparable and must never be quoted side by side.**
+
 ## 5. Rules
 
 1. **The `phase*.py` scripts are frozen.** Their `FEE = 0.0015` constants are the
