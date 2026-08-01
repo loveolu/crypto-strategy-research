@@ -683,7 +683,8 @@ def split_70_15_15(df: pd.DataFrame):
 def walk_forward(df: pd.DataFrame, signal_fn, windows: int = 4,
                  execution_mode: Optional[str] = None,
                  signal: Optional[pd.Series] = None,
-                 enforce_holdout: bool = True) -> list[dict]:
+                 enforce_holdout: bool = True,
+                 bars_per_year: int = ANNUALIZATION_DAILY) -> list[dict]:
     """Anchored walk-forward: 4 OOS windows. Each window: prior 60%+ is IS, next 10% is OOS."""
     if signal is None:
         warnings.warn(WF_PER_WINDOW_WARMUP_WARNING, ValidatorWarning, stacklevel=2)
@@ -707,7 +708,7 @@ def walk_forward(df: pd.DataFrame, signal_fn, windows: int = 4,
         m_extra = {"warmup_mode": "full_series" if signal is not None else "per_window"}
         rets = signal_to_returns(oos_df, sig_w, execution_mode=execution_mode)
         trs = extract_trades(rets)
-        m = metrics(rets, trs)
+        m = metrics(rets, trs, bars_per_year)
         m.update(m_extra)
         m["window"] = k
         m["is_end"] = str(df.index[is_end])
@@ -1230,8 +1231,9 @@ def validate(name: str, df: pd.DataFrame, signal_fn: Callable[[pd.DataFrame], pd
     rets_te = signal_to_returns(df_te, sig_te, execution_mode=execution_mode); trs_te = extract_trades(rets_te); m_te = metrics(rets_te, trs_te, bars_per_year)
 
     wf = walk_forward(df, signal_fn, execution_mode=execution_mode, signal=sig,
-                      enforce_holdout=enforce_holdout)
-    mc = monte_carlo(rets, trs, n_sims=n_sims, execution_mode=execution_mode)
+                      enforce_holdout=enforce_holdout, bars_per_year=bars_per_year)
+    mc = monte_carlo(rets, trs, n_sims=n_sims, execution_mode=execution_mode,
+                     bars_per_year=bars_per_year)
 
     reasons = []
     if m_full["years"] < 5: reasons.append(f"only {m_full['years']:.1f}y data (need 5+)")

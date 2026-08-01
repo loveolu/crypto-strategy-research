@@ -384,6 +384,83 @@ def test_fractional_split_is_deprecated():
         "split_70_15_15 did not announce that it is deprecated")
 
 
+# --------------------------------------------------------------------------- #
+#  ITEM 4 — bars_per_year must reach walk_forward() and monte_carlo()
+# --------------------------------------------------------------------------- #
+
+def _intraday_ohlcv(n_bars: int = 3000, seed: int = 5) -> pd.DataFrame:
+    """Hourly-style series ending well before the holdout boundary."""
+    rng = np.random.default_rng(seed)
+    close = 100 * np.exp(np.cumsum(rng.normal(0.00005, 0.004, n_bars)))
+    idx = pd.date_range(end="2025-12-31", periods=n_bars, freq="h", tz="UTC")
+    return pd.DataFrame({
+        "open": close, "high": close * 1.002, "low": close * 0.998,
+        "close": close, "volume": 100.0,
+    }, index=idx)
+
+
+def _fast_signal(d: pd.DataFrame) -> pd.Series:
+    return (d["close"] > d["close"].rolling(48).mean()).astype(float).fillna(0.0)
+
+
+def test_walk_forward_honours_bars_per_year():
+    """WF window Sharpes must scale with bars_per_year, like every other Sharpe."""
+    df = _intraday_ohlcv()
+    sig = _fast_signal(df)
+    wf_d = V.walk_forward(df, _fast_signal, signal=sig, bars_per_year=365)
+    wf_h = V.walk_forward(df, _fast_signal, signal=sig, bars_per_year=8760)
+    assert wf_d and len(wf_d) == len(wf_h)
+    # metrics() rounds Sharpe to 4 dp, so on a near-zero window Sharpe the ratio is
+    # rounding-dominated. Skip those and use a RELATIVE tolerance; 1% is still ~400x
+    # tighter than the defect under test (ratio 1.0 vs 4.9).
+    expected = np.sqrt(8760 / 365)          # sqrt(24) ~= 4.899
+    for a, b in zip(wf_d, wf_h):
+        if abs(a["sharpe"]) < 0.05:
+            continue
+        ratio = b["sharpe"] / a["sharpe"]
+        assert abs(ratio - expected) / expected < 1e-2, (
+            f"WF window {a['window']} Sharpe did not scale: {a['sharpe']} -> "
+            f"{b['sharpe']} (ratio {ratio:.4f}, expected {expected:.4f})")
+
+
+def test_monte_carlo_honours_bars_per_year():
+    trades, rets = synthetic_trades(), synthetic_returns()
+    mc_d = V.monte_carlo(rets, trades, n_sims=100, bars_per_year=365)
+    mc_h = V.monte_carlo(rets, trades, n_sims=100, bars_per_year=8760)
+    expected = np.sqrt(8760 / 365)
+    ratio = mc_h["mc_p50_sharpe"] / mc_d["mc_p50_sharpe"]
+    assert abs(ratio - expected) < 1e-6, (
+        f"MC Sharpe did not scale: ratio {ratio:.4f}, expected {expected:.4f}")
+
+
+def test_verdict_full_and_wf_sharpes_scale_consistently():
+    """The defect: on hourly data one Verdict mixed 365- and 8760-annualised Sharpes.
+
+    Full-window Sharpe took bars_per_year from validate(); walk-forward hardcoded
+    365. The two therefore differed by sqrt(24) = 4.9x inside a single Verdict.
+    """
+    df = _intraday_ohlcv()
+    dates = ("2025-10-31", "2025-11-30", "2025-12-31")
+    v_d = V.validate("ann365", df, _fast_signal, n_trials=1, n_sims=50,
+                     split_dates=dates, bars_per_year=365)
+    v_h = V.validate("ann8760", df, _fast_signal, n_trials=1, n_sims=50,
+                     split_dates=dates, bars_per_year=8760)
+    expected = np.sqrt(8760 / 365)
+
+    full_ratio = v_h.full["sharpe"] / v_d.full["sharpe"]
+    assert abs(full_ratio - expected) / expected < 1e-2, f"full-window ratio {full_ratio}"
+
+    assert v_d.wf and len(v_d.wf) == len(v_h.wf)
+    for a, b in zip(v_d.wf, v_h.wf):
+        if abs(a["sharpe"]) < 0.05:
+            continue
+        wf_ratio = b["sharpe"] / a["sharpe"]
+        assert abs(wf_ratio - full_ratio) / full_ratio < 1e-2, (
+            f"walk-forward window {a['window']} annualised on a different basis "
+            f"than the full window in the SAME Verdict: wf ratio {wf_ratio:.4f} vs "
+            f"full ratio {full_ratio:.4f}")
+
+
 TESTS = [v for k, v in sorted(globals().items()) if k.startswith("test_") and callable(v)]
 
 
