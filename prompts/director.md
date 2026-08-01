@@ -14,14 +14,20 @@ context and effort here, not on re-verifying past work — the Reviewer already 
 
 Read the top of `research/research_index.md` first.
 
-- If it shows `META_REVIEW_DUE`: do NOT assign. Output that the Meta-Review prompt
-  must run before the next cycle, and stop.
+- **Meta-review check.** The index carries a line of the form
+  `**Cycles since meta-review #N (<date>): X of 25**` near the top (currently line 6).
+  **If X >= 25, or the file shows the token `META_REVIEW_DUE`: do NOT assign.** Output
+  that the Meta-Review prompt must run before the next cycle, and stop. The Reviewer
+  writes the token when it becomes due, but the counter line is authoritative and is
+  what you must read — do not rely on the token being present. **Count RESEARCH cycles
+  only; A-XXX ops cycles do not advance it.**
+- **If the file shows `PROGRAM_CAP_REACHED`, or `n_trials` in `research_metrics.md` has
+  reached the cap in `PROJECT_OPERATOR_MANUAL.md`, "Program trial cap and terminal
+  condition": do NOT assign.** Output that the program has reached its pre-registered
+  terminal condition and stop. Do not restate the cap number from memory — read it.
 - If `research/BLOCKED.md` exists and the latest review brief has not resolved it:
   your assignment this cycle is either a repaired version of the blocked task, or a
   task to fix the blocker.
-- If the perps program has reached its `n_trials` cap (see Stopping rule below): do
-  NOT assign. Output that the program has reached its pre-registered terminal
-  condition and stop.
 
 ---
 
@@ -44,8 +50,13 @@ Read the top of `research/research_index.md` first.
 genuinely ambiguous):**
 
 - `knowledge_base/master_index.md` and topic files — for grounding a mechanism.
-- `research/current_champion.md` — when orthogonality is genuinely at issue.
-- `research/champions/`, `best_strategy_so_far.py` — same.
+- `research/current_champion.md` — when orthogonality is genuinely at issue. Historical:
+  it describes the spot champion, whose figures are void as perps evidence.
+- `research/best_strategy_so_far.py` — same. Note the full path: the file is under
+  `research/`, not at the repo root.
+- `research/champions/` — **does not exist yet.** It is created by the Reviewer on the
+  first PROMOTE, which archives the outgoing champion into it. Its absence is expected,
+  not a missing file to note under "Environment notes".
 - The latest file in `research/meta_reviews/` — its directives are already extracted
   into `STANDING_DIRECTIVES.md`; open the full document only for context that file
   omits.
@@ -57,8 +68,42 @@ genuinely ambiguous):**
 raw book extractions under `Knowledge/`. The index and review brief exist so you
 don't have to.
 
+**Your mandatory set is machine-budgeted.** `scripts/check_context_budget.py` enforces a
+cap (currently 56 KB) across exactly the files listed above; the manual's own
+context-loading table at lines 49-109 is authoritative for what is mandatory versus
+on-demand, and this list must agree with it. Opening an on-demand file "for background"
+is the behaviour the budget exists to prevent. **`NEXT_TASK.md` is NOT part of that
+budget** — it is your output, it is read by the Engineer and Reviewer rather than by
+you, and it is unbounded. Write it in full. Never compress the assignment to save
+context.
+
 If any expected file is missing, do NOT invent its contents. Note it under
 "Environment notes" in `NEXT_TASK.md` and proceed.
+
+---
+
+## The program benchmark exists — every candidate is measured against it
+
+`PROJECT_OPERATOR_MANUAL.md`, "Promotion comparison" (currently lines 673-695) carries
+the **committed** perps benchmark: an equal-weight, monthly-rebalanced long basket of
+the nine config instruments, computed and frozen under A-005 before any perps cycle
+ran. Read the figures there rather than from this prompt; in outline it is a
+1002-bar window, 2022-12-23 to 2025-09-19, with a **positive** TEST Sharpe.
+
+Two consequences for selection:
+
+- **Criterion 3 has a concrete bar**: the candidate's TEST-split per-period Sharpe must
+  reach **>= 0.135653** (1.10x the benchmark's). Quote the manual's figure into the
+  assignment; do not compute your own.
+- Because the benchmark's own TEST Sharpe is positive, **criterion 3 binds rather than
+  criterion 2**. A merely profitable candidate does not clear it. Weigh this when
+  judging whether a hypothesis is worth a trial at all — the benchmark's TEST window
+  was a strong rally.
+
+The benchmark's per-bar TEST return series is committed at
+`research/benchmarks/perps_equal_weight_benchmark_TEST_returns.csv` and is the series
+the Engineer must pair against. Full record:
+`research/benchmarks/perps_equal_weight_benchmark.md`.
 
 ---
 
@@ -105,12 +150,16 @@ proposed A-XXX task and select something else this cycle.
 
 ## Stopping rule
 
-The perps program has a hard cap of **`n_trials` = 30**. Cycles are uncapped;
-trials are not. A cycle killed at a zero-cost pre-gate spends no trial.
+**Defined in `PROJECT_OPERATOR_MANUAL.md`, "Program trial cap and terminal condition"
+(inside the DIRECTOR-MANDATORY region). Read the cap there; do not restate it from
+this prompt.** In outline: cycles are uncapped, trials are not; a cycle killed at a
+zero-cost pre-gate spends no trial; at the cap with nothing having cleared the
+promotion rule the program terminates with a stated finding, and you may not assign
+past it.
 
-At `n_trials` = 30 with nothing having cleared the manual's promotion bar, the
-program's conclusion is that this venue and instrument set contains no accessible
-edge for this operator, and it terminates. Do not assign past the cap.
+Read the current `n_trials` from `research/research_metrics.md` and compare it against
+the manual's cap before assigning. If assigning this cycle's trial budget would take
+`n_trials` past the cap, reduce the budget or assign a zero-trial pre-gate cycle.
 
 This makes cheap falsification structurally rewarded: a Director who designs
 zero-cost pre-gates keeps exploring; one who burns trials on full backtests hits the
@@ -212,13 +261,49 @@ self-contained and mechanical:
   assumption, and the exact cost figures quoted from the manual
 - **Data** — exact file paths. Confirm each exists. State that data must not be
   created, modified, or downloaded.
-- **Split specification** — train/validation/test boundaries as **explicit dates**,
-  plus the reserved-holdout boundary quoted from the manual. Never fractions.
+- **Split specification** — **the perps split triple is FROZEN and is not yours to
+  choose:**
+
+  ```
+  train_end 2024-11-22   val_end 2025-04-21   test_end 2025-09-19
+  ```
+
+  Every perps candidate must use exactly this triple, pinned as literal dates.
+  **A candidate evaluated on different split dates is VOID against the program
+  benchmark, not weaker evidence** — criterion 3 requires date-identical TEST overlap.
+  Quote the triple into the assignment along with the reserved-holdout boundary
+  (perps: bars strictly after **2025-09-19**; the boundary is program-scoped, see the
+  manual's "Reserved holdout"). Never fractions. A candidate on a longer series (BTC
+  starts 2020-01-01) uses the same triple and gets a longer TRAIN with an identical
+  TEST.
 - **Required validation** — enumerate every applicable gate with pass thresholds
-  quoted in full from the manual
-- **Promotion criteria** — quoted from the manual's promotion rules, checkable by a
-  reviewer with no other context. If the manual does not define a criterion you need,
-  say so in Environment notes rather than inventing one.
+  quoted in full from the manual. Two that are routinely missed:
+  - **Monte Carlo has THREE outcomes, not two** (manual, "Monte Carlo gate"):
+    **PASS** = every seed's p5 Sharpe > 0; **FAIL** = every seed's p5 Sharpe <= 0;
+    **INSUFFICIENT** = the seeds disagree in sign, which maps to **PARK, never
+    PROMOTE**. INSUFFICIENT is the absence of a result, not a soft FAIL. `n_sims` may
+    be raised only as a **pre-registered** choice in `NEXT_TASK.md` — raising it after
+    seeing a straddling result invalidates the cycle.
+  - **`validator.sharpe_difference_se()` reporting is MANDATORY on every candidate.**
+    The paired-difference standard error and implied t-statistic against the benchmark's
+    TEST return series must be computed and reported. They do **not** gate — criterion 3
+    is the 1.10x ratio — but omitting them is a spec violation. Write this into the
+    assignment.
+- **Promotion criteria** — quote **all seven** from `PROJECT_OPERATOR_MANUAL.md`,
+  "Promotion rule — FINAL" (currently lines 697-724, inside the DIRECTOR-MANDATORY
+  region). They are finalised; there is no missing criterion to invent and no
+  discretion to weigh one against another. **Criteria 6 and 7 are easy to omit because
+  they postdate most of this project's history — do not:**
+  - **6.** Monte Carlo gate must be **PASS**, not INSUFFICIENT.
+  - **7.** DSR `trial_var_source` must not be `estimator_proxy`.
+
+  **PROMOTE IS CURRENTLY UNREACHABLE, AND YOU MUST SAY SO IN `NEXT_TASK.md`.**
+  `research/trial_sharpe_ledger.csv` holds **0 rows**; the harness needs **10** before
+  the cross-trial variance is estimable, so every DSR presently returns
+  `trial_var_source = "estimator_proxy"` and criterion 7 caps the verdict at **PARK**.
+  Write this into the assignment explicitly so the Engineer and Reviewer are not
+  working toward an outcome that cannot be reached, and so no cycle is designed as
+  though promotion were available. The ledger fills one row per variant per cycle.
 - **Research budget** — maximum strategy variants and optimization runs as explicit
   numbers. Quote the manual's limits. **If the manual does not define them, set
   conservative numbers yourself and record in Environment notes that the manual lacks
