@@ -603,29 +603,55 @@ selection and either corrected or explicitly justified.
 
 ## Reserved holdout
 
-**All bars after 2026-05-27 are RESERVED HOLDOUT.** The BTC/ETH 1d feathers now run to 2026-07-18;
-every recorded split boundary in this repository was drawn on a dataset ending on or before
-2026-05-27. No training, validation, parameter selection, or pre-gate screening may touch those bars.
+**The boundary is PROGRAM-SCOPED. There is no global holdout date.**
 
-**Pin splits by DATE, not by fraction, while the holdout is reserved.** `split_70_15_15()` and
-`walk_forward()` compute boundaries as percentages of whatever they are handed, so a data top-up
-slides the TEST window forward into the holdout silently — no error, no warning, just a construct
-scored on bars that helped choose it. A data refresh is not a neutral maintenance action.
+| Program | Reserved holdout | Applies to |
+|---|---|---|
+| **Perps** | bars strictly after **2025-09-19 UTC** | all nine perp instruments, identically |
+| **Spot** | bars strictly after **2026-05-27 UTC** | the spot feathers |
 
-**The perps program's holdout boundary must be declared in writing and committed BEFORE any
-sub-hourly data is downloaded.** Not after inspecting it, not while designing the first hypothesis.
+Implemented as `validator.HOLDOUT_BOUNDARIES` / `holdout_boundary(program)`, with
+`ACTIVE_PROGRAM = "perps"`. It is a lookup rather than one constant because a single constant would
+silently apply the wrong date to whichever program was not being thought about.
 
-Mechanism, fixed in advance so it cannot be chosen to flatter a result: **the holdout is the most
-recent 20% of the series by CALENDAR DATE, computed from the download end date.** With span
-`S = end − start` in days, the boundary is `end − 0.20 × S`, rounded to a whole UTC date; everything
-after it is holdout. Calendar date, not bar count, so a venue outage or a thin period cannot shift
-the boundary. The download's start date, end date, and the resulting boundary go in the `A-XXX`
-acquisition task's commit message and in `research_index.md` standing constraints, in the same commit
-as the data.
+**No training, validation, parameter selection, or pre-gate screening may touch holdout bars.**
+`validate()` RAISES `HoldoutViolation` if its input series contains any — it does not trim them,
+because trimming would remove the bars silently and report the result as if the series had always
+ended there. The caller must exclude them explicitly.
 
-A holdout boundary chosen or adjusted after any of the data has been examined is not a holdout, and
-every result measured against it is in-sample. If the boundary must change, that is a new declaration
-with a new date, stated as such — and every prior result on the old boundary is void, not rebased.
+### Why 2025-09-19 for perps (resolved by operator decision, 2026-08-01)
+
+Two readings were in the manual and they disagreed. The resolution and its reasoning:
+
+- **Reading A — "all bars after 2026-05-27" — reserves ZERO bars on every perp series**, because all
+  nine end on exactly that date. A program with no holdout has no out-of-sample evaluation at all.
+- **Reading B — per-series 20% of calendar span — produces nine DIFFERENT boundaries**, from
+  2025-02-13 to 2025-09-19. The same calendar day would be holdout for one instrument and training
+  data for another, making any cross-sectional or basket construct incoherent.
+- **2025-09-19 is the LATEST of reading B's per-series boundaries** (BNB, the shortest series).
+  Adopting it as a single common date gives all nine instruments one shared window, which is what
+  makes cross-sectional work coherent.
+
+  **Correction to the stated rationale, recorded rather than silently applied.** The decision as
+  written said this "guarantees every instrument reserves at least its full 20%". It does not.
+  Because 2025-09-19 is the *latest* of the candidate boundaries it reserves the FEWEST bars: 250 per
+  instrument, which is exactly 20% for BNB and proportionally less for every longer series — BTC
+  10.7%, SOL 12.8%, the rest 12.1%; 12.5% across the pooled 17,932 bars. Reserving ≥20% everywhere
+  would require the EARLIEST boundary (2025-02-13). The decision stands on its stated primary
+  grounds — a single shared window, and a nonzero holdout where reading A gives none — but the
+  "at least 20%" clause is not accurate and is not relied upon.
+
+**THE BOUNDARY IS FIXED. It may not be moved after any perps result has been measured against it.**
+Moving it afterwards converts held-out bars into in-sample ones retroactively and voids every result
+already scored against the old line. If it must change, that is a new declaration, stated as such,
+and every prior result on the old boundary is void — not rebased.
+
+**Pin splits by DATE, not by fraction.** `split_70_15_15()` is deprecated and warns; it computes
+boundaries as percentages of whatever it is handed, so a data top-up slides the TEST window forward
+with no error. Use `split_by_dates(df, train_end, val_end, test_end)`.
+
+Any future data acquisition records its start date, end date and the boundary in force in the `A-XXX`
+task's commit message and in `research_index.md` standing constraints, in the same commit as the data.
 
 ## Data acquisition is not research
 

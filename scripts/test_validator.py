@@ -315,7 +315,7 @@ def test_holdout_guard_raises_on_series_past_boundary():
         raise AssertionError("guard did not raise on a series past the boundary")
     except V.HoldoutViolation as exc:
         assert "test-split" in str(exc)
-        assert "2026-05-27" in str(exc)
+        assert str(V.RESERVED_HOLDOUT_AFTER.date()) in str(exc)
 
 
 def test_holdout_guard_passes_on_clean_series():
@@ -336,12 +336,14 @@ def test_holdout_guard_counts_and_names_the_offending_bars():
 
 def test_split_by_dates_honours_explicit_boundaries():
     df = _series_spanning_holdout()
-    tr, vl, te = V.split_by_dates(df, "2025-06-30", "2025-12-31", "2026-05-27")
-    assert tr.index.max() <= pd.Timestamp("2025-06-30", tz="UTC")
-    assert vl.index.min() > pd.Timestamp("2025-06-30", tz="UTC")
-    assert vl.index.max() <= pd.Timestamp("2025-12-31", tz="UTC")
-    assert te.index.min() > pd.Timestamp("2025-12-31", tz="UTC")
-    assert te.index.max() <= pd.Timestamp("2026-05-27", tz="UTC")
+    b = V.RESERVED_HOLDOUT_AFTER
+    d1, d2 = b - pd.Timedelta(days=400), b - pd.Timedelta(days=200)
+    tr, vl, te = V.split_by_dates(df, d1, d2, b)
+    assert tr.index.max() <= d1
+    assert vl.index.min() > d1
+    assert vl.index.max() <= d2
+    assert te.index.min() > d2
+    assert te.index.max() <= b
     # nothing past the boundary survives
     for name, seg in (("train", tr), ("val", vl), ("test", te)):
         assert (seg.index <= V.RESERVED_HOLDOUT_AFTER).all(), f"{name} leaked holdout bars"
@@ -350,7 +352,7 @@ def test_split_by_dates_honours_explicit_boundaries():
 def test_split_by_dates_rejects_unordered_dates():
     df = _series_spanning_holdout()
     try:
-        V.split_by_dates(df, "2025-12-31", "2025-06-30", "2026-05-27")
+        V.split_by_dates(df, "2025-12-31", "2025-06-30", "2025-09-19")
         raise AssertionError("unordered split dates were accepted")
     except ValueError:
         pass
@@ -367,11 +369,13 @@ def test_validate_raises_when_data_extends_past_holdout():
 
 
 def test_validate_accepts_date_pinned_splits_inside_the_boundary():
+    b = V.RESERVED_HOLDOUT_AFTER
     df = _series_spanning_holdout()
+    df = df.loc[df.index <= b]
     v = V.validate("pinned", df, _long_warmup_signal, n_trials=1, n_sims=20,
-                   split_dates=("2025-06-30", "2025-12-31", "2026-05-27"))
+                   split_dates=(b - pd.Timedelta(days=400), b - pd.Timedelta(days=200), b))
     assert v.splits["mode"] == "date_pinned"
-    assert v.splits["test_end"].startswith("2026-05-27")
+    assert v.splits["test_end"] == str(b.date())
 
 
 def test_fractional_split_is_deprecated():
@@ -392,7 +396,7 @@ def _intraday_ohlcv(n_bars: int = 3000, seed: int = 5) -> pd.DataFrame:
     """Hourly-style series ending well before the holdout boundary."""
     rng = np.random.default_rng(seed)
     close = 100 * np.exp(np.cumsum(rng.normal(0.00005, 0.004, n_bars)))
-    idx = pd.date_range(end="2025-12-31", periods=n_bars, freq="h", tz="UTC")
+    idx = pd.date_range(end=V.RESERVED_HOLDOUT_AFTER, periods=n_bars, freq="h", tz="UTC")
     return pd.DataFrame({
         "open": close, "high": close * 1.002, "low": close * 0.998,
         "close": close, "volume": 100.0,
@@ -440,7 +444,8 @@ def test_verdict_full_and_wf_sharpes_scale_consistently():
     365. The two therefore differed by sqrt(24) = 4.9x inside a single Verdict.
     """
     df = _intraday_ohlcv()
-    dates = ("2025-10-31", "2025-11-30", "2025-12-31")
+    b = V.RESERVED_HOLDOUT_AFTER
+    dates = (b - pd.Timedelta(days=60), b - pd.Timedelta(days=30), b)
     v_d = V.validate("ann365", df, _fast_signal, n_trials=1, n_sims=50,
                      split_dates=dates, bars_per_year=365)
     v_h = V.validate("ann8760", df, _fast_signal, n_trials=1, n_sims=50,
@@ -481,8 +486,10 @@ def _tmp_ledger(rows, basis="per_bar"):
 
 def test_dsr_is_computed_on_the_test_split():
     """Criterion 1 must gate the same series criteria 2-4 judge: the TEST split."""
+    b = V.RESERVED_HOLDOUT_AFTER
     df = _series_spanning_holdout()
-    dates = ("2025-06-30", "2025-12-31", "2026-05-27")
+    df = df.loc[df.index <= b]                      # holdout excluded by the caller
+    dates = (b - pd.Timedelta(days=400), b - pd.Timedelta(days=200), b)
     v = V.validate("dsr_window", df, _long_warmup_signal, n_trials=3, n_sims=20,
                    split_dates=dates)
     _, _, df_te = V.split_by_dates(df, *dates)

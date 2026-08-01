@@ -662,17 +662,52 @@ def yearly_pnl_dollar_concentration(returns: pd.DataFrame, starting: float = 1.0
 #  implementation, plus a guard that refuses to evaluate any window containing a
 #  holdout bar.
 #
-#  BOUNDARY CAVEAT — UNRESOLVED. The manual declares the holdout twice and the two
-#  readings disagree: "all bars after 2026-05-27" (which selects zero bars of the
-#  perp futures series, since it ends on that date) versus "most recent 20% by
-#  calendar date" (which selects from ~2025-02-13). That is an open operator
-#  decision and is NOT resolved here. RESERVED_HOLDOUT_AFTER below implements the
-#  FIRST reading literally because it is the explicit dated statement; if the
-#  operator resolves in favour of the second, change this constant and re-run.
+#  BOUNDARY — RESOLVED by operator decision 2026-08-01. The boundary is
+#  PROGRAM-SCOPED, not global: the perps and spot programs have different ones,
+#  so a single module constant would silently apply the wrong date to one of
+#  them. Use HOLDOUT_BOUNDARIES / holdout_boundary(program).
+#
+#    perps : bars strictly after 2025-09-19 UTC, all nine instruments alike
+#    spot  : bars strictly after 2026-05-27 UTC (unchanged)
+#
+#  Why 2025-09-19 for perps. Reading A ("after 2026-05-27") reserves ZERO bars on
+#  every perp series, because all nine end on exactly that date - a program with
+#  no holdout has no out-of-sample evaluation. Reading B (per-series 20% of
+#  calendar span) yields nine DIFFERENT boundaries from 2025-02-13 to 2025-09-19,
+#  so the same calendar day would be holdout for one instrument and training data
+#  for another, making any cross-sectional or basket construct incoherent.
+#  2025-09-19 is the LATEST of reading B's per-series boundaries (BNB, the
+#  shortest series); adopting it as one common date guarantees every instrument
+#  reserves at least its full 20% while all nine share a single window.
+#
+#  THE BOUNDARY IS FIXED. It may not be moved after any perps result has been
+#  measured against it (PROJECT_OPERATOR_MANUAL.md, "Reserved holdout").
 # --------------------------------------------------------------------------- #
 
-#: Bars STRICTLY AFTER this timestamp are reserved holdout.
-RESERVED_HOLDOUT_AFTER = pd.Timestamp("2026-05-27", tz="UTC")
+#: Program-scoped holdout boundaries. Bars STRICTLY AFTER the value are reserved.
+HOLDOUT_BOUNDARIES = {
+    "perps": pd.Timestamp("2025-09-19", tz="UTC"),
+    "spot":  pd.Timestamp("2026-05-27", tz="UTC"),
+}
+
+#: The program this harness is currently validating for.
+ACTIVE_PROGRAM = "perps"
+
+
+def holdout_boundary(program: Optional[str] = None) -> pd.Timestamp:
+    """Reserved-holdout boundary for a program. Defaults to ACTIVE_PROGRAM."""
+    prog = ACTIVE_PROGRAM if program is None else program
+    if prog not in HOLDOUT_BOUNDARIES:
+        raise ValueError(
+            f"unknown program {prog!r}; known: {sorted(HOLDOUT_BOUNDARIES)}. The "
+            f"holdout boundary is program-scoped and has no global default.")
+    return HOLDOUT_BOUNDARIES[prog]
+
+
+#: Convenience alias for the ACTIVE_PROGRAM boundary. Prefer holdout_boundary()
+#: when the program matters - measuring a SPOT construct with the perps boundary
+#: (or vice versa) is the error this split exists to prevent.
+RESERVED_HOLDOUT_AFTER = HOLDOUT_BOUNDARIES[ACTIVE_PROGRAM]
 
 
 class HoldoutViolation(RuntimeError):
@@ -680,14 +715,15 @@ class HoldoutViolation(RuntimeError):
 
 
 def assert_no_holdout(obj, label: str = "window",
-                      boundary: Optional[pd.Timestamp] = None) -> None:
+                      boundary: Optional[pd.Timestamp] = None,
+                      program: Optional[str] = None) -> None:
     """Raise HoldoutViolation if `obj` contains any bar past the holdout boundary.
 
     Accepts a DataFrame, Series, or DatetimeIndex. Called on every train, val,
     test and walk-forward window, because a boundary that is only checked at the
     top level is not a boundary.
     """
-    bound = RESERVED_HOLDOUT_AFTER if boundary is None else pd.Timestamp(boundary)
+    bound = holdout_boundary(program) if boundary is None else pd.Timestamp(boundary)
     idx = obj.index if hasattr(obj, "index") else obj
     if len(idx) == 0:
         return
@@ -1250,8 +1286,22 @@ def validate(name: str, df: pd.DataFrame, signal_fn: Callable[[pd.DataFrame], pd
     the hurdle falls back to the estimator proxy and a warning is attached.
     """
     t0 = time.time()
+    # Signal on the FULL series so indicators get every bar of warmup available,
+    # then EVALUATE only on non-holdout bars. Holdout data may inform an
+    # indicator's history but must never enter a reported metric - including the
+    # full-window one, which previously spanned the whole input and so silently
+    # included holdout bars even when the splits did not.
     sig = signal_fn(df)
-    rets = signal_to_returns(df, sig, execution_mode=execution_mode)
+    # The INPUT must not contain holdout bars at all. Raising here rather than
+    # trimming keeps the exclusion explicit: a caller that hands over holdout data
+    # is told so, instead of having it silently removed and reported as if the
+    # series had always ended there. With a clean input, the full-window metric
+    # and every window below are holdout-free by construction.
+    if enforce_holdout:
+        assert_no_holdout(df, label="input series")
+    df_eval = df
+    rets = signal_to_returns(df_eval, sig.reindex(df_eval.index),
+                             execution_mode=execution_mode)
     trs = extract_trades(rets)
     m_full = metrics(rets, trs, bars_per_year)
     yearly = yearly_breakdown(rets)
@@ -1267,13 +1317,13 @@ def validate(name: str, df: pd.DataFrame, signal_fn: Callable[[pd.DataFrame], pd
     # verdict. Slicing the signal keeps the warmup that the earlier data provides,
     # which is also what live trading would have.
     if split_dates is not None:
-        df_tr, df_vl, df_te = split_by_dates(df, *split_dates)
+        df_tr, df_vl, df_te = split_by_dates(df_eval, *split_dates)
         split_info = {"mode": "date_pinned",
                       "train_end": str(df_tr.index.max().date()) if len(df_tr) else None,
                       "val_end": str(df_vl.index.max().date()) if len(df_vl) else None,
                       "test_end": str(df_te.index.max().date()) if len(df_te) else None}
     else:
-        df_tr, df_vl, df_te = split_70_15_15(df)
+        df_tr, df_vl, df_te = split_70_15_15(df_eval)
         split_info = {"mode": "fractional_DEPRECATED",
                       "train_end": str(df_tr.index.max().date()) if len(df_tr) else None,
                       "val_end": str(df_vl.index.max().date()) if len(df_vl) else None,
@@ -1298,7 +1348,7 @@ def validate(name: str, df: pd.DataFrame, signal_fn: Callable[[pd.DataFrame], pd
     rets_vl = signal_to_returns(df_vl, sig_vl, execution_mode=execution_mode); trs_vl = extract_trades(rets_vl); m_vl = metrics(rets_vl, trs_vl, bars_per_year)
     rets_te = signal_to_returns(df_te, sig_te, execution_mode=execution_mode); trs_te = extract_trades(rets_te); m_te = metrics(rets_te, trs_te, bars_per_year)
 
-    wf = walk_forward(df, signal_fn, execution_mode=execution_mode, signal=sig,
+    wf = walk_forward(df_eval, signal_fn, execution_mode=execution_mode, signal=sig,
                       enforce_holdout=enforce_holdout, bars_per_year=bars_per_year)
     mc = monte_carlo(rets, trs, n_sims=n_sims, execution_mode=execution_mode,
                      bars_per_year=bars_per_year)

@@ -138,6 +138,44 @@ failing, and pre-gate stops never used TEST metrics). **The magnitude of the OOS
 See `research/STANDING_DIRECTIVES.md` directive 8, which requires this caveat to be cited whenever
 those conclusions are.
 
+## 4d. DSR figures predating 2026-07-31 were computed on the WRONG WINDOW
+
+Archived DSR figures were computed on **full-window** returns, while promotion criteria 2-4 are all
+TEST-split. Criterion 1 was therefore gating a different object from the criteria beside it - and
+`research/research_index.md` records that full-window Sharpe runs 2-4x inflated here, so the
+full-window DSR was the flattering one.
+
+Measured on the champion (see `research/measurements/2026-07-30_champion_remeasurement.md`):
+
+| | DSR |
+|---|---|
+| full window (the archived convention) | **0.8356** |
+| TEST split (the promotion series) | **0.02891** |
+
+A ~29x difference on the same construct and the same data. The archived 0.624 sits in the
+full-window regime. Every archived DSR additionally used the estimator-proxy hurdle (see the
+trial-ledger header), so it is wrong on two axes at once.
+
+## 4e. The four defects moved numbers in DIFFERENT directions
+
+There is no adjustment factor that recovers the archive. The defects do not share a sign:
+
+| Defect | Direction on reported numbers | Where |
+|---|---|---|
+| Cost model overstated | made results look **worse** | §1-4 |
+| Monte Carlo degenerate | no distribution at all - **neither** better nor worse, just absent | §4b |
+| Warmup truncation | made val/test look **worse** | §4c |
+| DSR on full window | made the DSR gate look **better** | §4d |
+
+Two depress, one inflates, one voids. They also interact: a construct's TEST Sharpe was biased down
+by warmup while its DSR was biased up by the window, so the recorded evidence understated the
+strategy and overstated its statistical credibility at the same time.
+
+**No correction factor, per-metric or global, can undo this. Only re-running the construct through
+the repaired harness produces a comparable number** - and doing so consumes a fresh trial under the
+current cost model (rule 4 below). Do not attempt to "adjust" an archived figure; quote it with the
+caveats, or re-measure it.
+
 ## 5. Rules
 
 1. **The `phase*.py` scripts are frozen.** Their `FEE = 0.0015` constants are the
