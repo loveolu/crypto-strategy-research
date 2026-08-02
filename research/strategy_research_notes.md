@@ -828,3 +828,44 @@ Both entries arose from the repair session of 2026-07-28 (item 2 feather provena
   invariance tests (does the answer change when something irrelevant changes?) over
   plausibility checks (does the answer look right?). The bug was found by asking whether TEST
   metrics should depend on where the split boundary falls, not by anything looking wrong.
+
+---
+
+## Durable lesson, 2026-08-01 — an audit procedure can destroy the artifact it audits
+
+**What happened.** `user_data/research/data/fear_greed/fng_raw.json` — the raw API response T-035
+was reviewed against — was overwritten during a reviewer-probe run on 2026-08-01 (347,198 B, mtime
+2026-07-21 → 348,514 B, mtime 20:39:53). The T-035 state is **permanently unrecoverable**:
+reconstruction by truncating the 15 prepended records was tested and is arithmetically impossible,
+and the file had never been committed so no baseline exists.
+
+**Mechanism.** `phase_feargreed.py:32` opens its raw output with mode `"w"` and re-fetches
+unconditionally. The Independent Reviewer standard requires re-running the Engineer's scripts
+**unmodified**. Those two rules compose into a trap: **performing the audit destroys the evidence
+the audit exists to check.** Neither rule is wrong alone. The defect is in their interaction, which
+is why nobody caught it by reading either one.
+
+**The generalisable lesson — three guards, one blind spot, and it was the same blind spot.**
+
+| guard | why it missed |
+|---|---|
+| `git status` / `git diff` | the tree is gitignored (`.gitignore:7`, `user_data/*`) |
+| commit baseline | the file had never been committed — the carve-out required it, but a plain `git add` on an ignored path is a silent no-op |
+| `data_manifest.py verify` | the manifest covers `user_data/data/` only; it passed clean at 52 files throughout |
+
+Three independent tripwires, all reporting green, while a research artifact was destroyed.
+
+> **Any tree that holds evidence must be inside at least one tripwire.** Independence of guards is
+> worthless if they share an exclusion. Before trusting a set of checks, ask what they *all* fail to
+> cover — not whether each is individually sound.
+
+**Corollaries adopted the same day** (`PROJECT_OPERATOR_MANUAL.md`, carve-out): raw artifacts are
+committed with `git add -f` and a fetch is not complete until the response is in a commit; fetch
+scripts must refuse to overwrite an existing raw artifact; and byte-matching anchors on the **tail**
+plus record count, never the head, because newest-first APIs shift the head on every re-fetch.
+
+**Second-order lesson.** The head/tail rule was wrong from the start, and T-035 complied with it
+correctly. Two independent audit models later flagged the resulting head mismatch as a T-035 defect.
+It was not — the rule generated a false positive. **A verification rule that produces false
+positives trains reviewers to discount it**, which is worse than having no rule, because the
+discounting generalises to the cases where it would have been right.
