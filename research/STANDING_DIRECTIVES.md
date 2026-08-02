@@ -72,3 +72,39 @@ sequence (Meta-Review #1 ended at 7).
    Sharpe must cite this caveat alongside it.** Quoting the number without the caveat is a
    misstatement of the evidence. Re-measuring any of it costs fresh trials under the current cost
    model and is a pre-registered cycle, not a free correction.
+
+---
+
+## Directives from the 2026-08-01 statistical-power finding
+
+Not a meta-review, but binding on the same terms. Numbering continues the global sequence
+(the 2026-07-31 validation-harness repair ended at 8).
+
+9. **A Director must state the expected standard error of the primary metric in `NEXT_TASK.md`
+   before assigning, and must prefer hypotheses on samples large enough to resolve the effect they
+   claim.**
+
+   Standard error on an annualised Sharpe scales as approximately `sqrt(bars_per_year / N)`.
+   Measured on this repository's actual data:
+
+   | sample | N | SE(annualised Sharpe) |
+   |---|---:|---:|
+   | TEST split, daily | 151 | **1.555** |
+   | full window, daily | 1,002 | 0.604 |
+   | BTC daily, all history | 2,339 | 0.395 |
+   | **1h pooled across the 9 perps** | **338,933** | **0.161** |
+
+   **The perps benchmark's TEST Sharpe of 2.356 carries an SE of 1.555.** The do-nothing baseline's
+   own headline number is not distinguishable from zero on this sample. Promotion criterion 3 asks a
+   candidate to resolve a difference of **0.24** with an instrument whose resolution is **1.55**.
+
+   **Consequence, binding on Directors: DSR ≥ 0.95 was never cleared in the spot program for an
+   ARITHMETIC reason, not a discipline one.** A 151-bar daily TEST split cannot supply the evidence
+   the promotion rule requires, from any construct, however good. Reaching SE 0.25 on daily bars
+   would need roughly 16 years of history; crypto perps began in 2020.
+
+   **This directive does NOT loosen any promotion criterion, and no future directive may cite it to
+   do so.** The gates are individually defensible and remain in force. The sample was the problem.
+   The two honest responses are to raise sample resolution or to accept that a daily-bar programme
+   terminates at its trial cap with a negative result — not to lower a bar because the data cannot
+   clear it.

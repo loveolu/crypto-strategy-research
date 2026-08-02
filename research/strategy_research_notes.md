@@ -869,3 +869,50 @@ correctly. Two independent audit models later flagged the resulting head mismatc
 It was not — the rule generated a false positive. **A verification rule that produces false
 positives trains reviewers to discount it**, which is worse than having no rule, because the
 discounting generalises to the cases where it would have been right.
+
+---
+
+## Durable lesson, 2026-08-01 — the promotion bar was never cleared for an arithmetic reason
+
+**Standard error on an annualised Sharpe scales as ~`sqrt(bars_per_year / N)`.** Measured on this
+repository's actual data:
+
+| sample | N | SE(annualised Sharpe) |
+|---|---:|---:|
+| TEST split, daily | 151 | **1.555** |
+| full window, daily | 1,002 | 0.604 |
+| BTC daily, all history | 2,339 | 0.395 |
+| **1h pooled across the 9 perps** | **338,933** | **0.161** |
+
+The perps benchmark's TEST Sharpe of **2.356 carries an SE of 1.555** — a 95% interval of roughly
+[−0.7, +5.4]. **The do-nothing baseline's own headline number is not statistically distinguishable
+from zero on this sample.** Promotion criterion 3 asks a candidate to resolve a difference of 0.24
+using an instrument whose resolution is 1.55.
+
+**This reframes the project's central result.** ~100 trials, ~96% rejection, DSR 0.95 never cleared,
+the champion at DSR 0.02891 — that record has been read as evidence that no edge exists in this
+data. Part of it is instead evidence that **a 151-bar daily TEST split cannot demonstrate an edge
+that does exist.** Both readings are consistent with the same numbers, and the project has never
+been able to distinguish them, because distinguishing them requires more resolution than the sample
+provides.
+
+The same arithmetic already forced one visible change: the criterion-3 standard-error gate was
+removed on 2026-08-01 after it was measured as demanding an annualised TEST Sharpe of 3.06–4.57.
+That was not a badly-chosen threshold — it was one standard error, correctly computed, on a sample
+too small to carry it.
+
+**What follows, and what does not.**
+
+- **Does not follow:** that any gate should be loosened. The gates are individually defensible and
+  the rejections stand.
+- **Does follow:** a daily-bar programme on ~1,000 bars is structurally incapable of clearing
+  DSR ≥ 0.95, so continuing to spend trials there buys near-zero information. Reaching SE 0.25 on
+  daily bars needs ~16 years; crypto perps began in 2020.
+- **Does follow:** the 1h tree — 338,933 pooled bars, ~10× the resolution of the full daily window,
+  manifest-covered, requiring no acquisition — is the sample this programme should be using, and as
+  of 2026-08-01 not one cycle has ever run on it.
+
+**Caveat, stated because it is the honest limit of this lesson:** higher resolution buys the ability
+to *prove* an edge, not the existence of one. The one genuine intraday anomaly on record (hours
+21–22 UTC, t = 2.4–3.0) failed at 25:1 fees-to-edge and is still ~15:1 at the perps cost model. More
+bars do not make a dead edge live.
