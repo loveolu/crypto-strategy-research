@@ -46,7 +46,7 @@ The following files are the authoritative record of all previous research and mu
 Each agent should load only the files
 required by its role.
 
-### Research Director — context loading (budget: 48 KB mandatory)
+### Research Director — context loading (budget: 56 KB mandatory)
 
 This list is authoritative and is machine-enforced by `scripts/check_context_budget.py`, which
 fails nonzero if the MANDATORY set exceeds 56 KB. Run it after editing any mandatory file. **Raise
@@ -72,7 +72,7 @@ which the cap moves; a breach with narrative still in the region is not.
 | `research/STANDING_DIRECTIVES.md` | whole file — the accumulated binding directives from every meta-review |
 | `research/review_briefs/` (latest only) | whole file — capped at 4 KB by the Reviewer standard below |
 
-**The DIRECTOR-MANDATORY region contains exactly these thirteen sections.** The list is
+**The DIRECTOR-MANDATORY region contains exactly these fourteen sections.** The list is
 exhaustive on purpose: an earlier version named only eight, and three of the five it omitted
 (Monte Carlo gate, Independent Reviewer output standard, Falsification conditions) are precisely
 the standards the role prompts in `prompts/` were later found to have got wrong. An incomplete
@@ -83,15 +83,16 @@ or removing a section inside the markers must update this list in the same edit.
 2. Execution and cost model
 3. Cycle classification, IDs, and counters
 4. Reserved holdout
-5. **Data acquisition is not research** (incl. the new-external-axis carve-out)
-6. Research budget (incl. the program trial cap and terminal condition)
-7. Promotion comparison (incl. the seven-criterion Promotion rule and the perps benchmark)
-8. DSR promotion threshold
-9. Zero-cost pre-gate ladder
-10. **Falsification conditions must be transcribed literally**
-11. **Monte Carlo gate**
-12. **Independent Reviewer output standard**
-13. Champion Classification & Progression Pipeline
+5. **Data already held — no acquisition required** (what exists; 1h is the preferred sample)
+6. **Data acquisition is not research** (incl. the new-external-axis carve-out)
+7. Research budget (incl. the program trial cap and terminal condition)
+8. Promotion comparison (incl. the seven-criterion Promotion rule and the perps benchmark)
+9. DSR promotion threshold
+10. Zero-cost pre-gate ladder
+11. **Falsification conditions must be transcribed literally**
+12. **Monte Carlo gate**
+13. **Independent Reviewer output standard**
+14. Champion Classification & Progression Pipeline
 
 **"Latest" means highest ID, never most recent mtime.** The latest review brief is the one with the
 highest Task ID parsed from its filename (`T-035_brief.md` → 35); the latest meta-review is the
@@ -639,6 +640,36 @@ with no error. Use `split_by_dates(df, train_end, val_end, test_end)`.
 
 Any future data acquisition records its start date, end date and the boundary in force in the `A-XXX`
 task's commit message and in `research_index.md` standing constraints, in the same commit as the data.
+
+## Data already held — no acquisition required
+
+Stated here because the manual previously described what a cycle may **not** do to data without ever
+stating what data **exists**, and a Director reading only this region could not tell.
+
+| tree | contents | status |
+|---|---|---|
+| `user_data/data/okx/futures/` | **1d and 1h** futures OHLCV, 1h mark, 1h funding rate, for the 9 perp instruments | manifest-covered, verified |
+| `user_data/data/okx/` | spot 1d (11 assets), BTC 1h and 4h | manifest-covered, verified |
+| `user_data/research/data/` | cot, dvol, fear_greed, funding — fetched external axes | committed 2026-08-01 |
+
+**1h perp futures OHLCV exists, is manifest-covered, and requires no acquisition.** Coverage: eight
+instruments 2022-01-01 → 2026-05-28 at 38,612 bars each (BTC 38,587 to 05-27); BNB 2022-12-23 →
+2026-05-28 at 30,062. **Pooled: 338,933 bars**, all nine present in `MANIFEST.json`, `verify` clean.
+
+**This is the preferred sample for the perps program.** Pooled 1h gives SE ≈ **0.161** on an
+annualised Sharpe against **1.555** for a 151-bar daily TEST split — roughly 10× the resolution of
+the full daily window (see "Research budget" → directive 9 in `research/STANDING_DIRECTIVES.md`).
+The 2026-07-28 cost model also cut execution from 15 to 9 bps/side, which **reopened the intraday
+families previously closed on fee drag** (`knowledge_base/hypothesis_bank.md`). As of 2026-08-01 no
+cycle has ever run on it.
+
+**A-002 does NOT gate this.** A-002 (binary data distribution strategy) governs **new downloads** of
+sub-hourly data and the repository growth they would cause. The 1h tree is already held, already
+committed, and already manifest-covered; using it triggers no download and no A-002 decision.
+
+**There is no sub-hourly (below 1h) data**, and acquiring any is an `A-XXX` ops task gated on A-002.
+Statements that "no sub-hourly data exists" are correct and are **not** statements that 1h is
+missing.
 
 ## Data acquisition is not research
 

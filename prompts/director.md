@@ -135,7 +135,7 @@ relevant parts into `NEXT_TASK.md` — the Engineer cannot see this prompt.
 | Instruments | The 9 pairs in that config's whitelist. No others. |
 | Fill assumption | `taker`. `maker_optimistic` is permitted only as a secondary comparison and may NEVER be the basis of a promotion. |
 | Cost | Quote the exact figures from the manual's cost-model section. Never state a cost number you have not read there. |
-| Available data | 1d and 1h futures OHLCV, 1h mark, 1h funding rate, for the 9 instruments. **No sub-hourly data exists.** |
+| Available data | **1d AND 1h** futures OHLCV, 1h mark, 1h funding rate, for the 9 instruments — all manifest-covered, no acquisition needed. **1h is the preferred sample**: 338,933 pooled bars, SE 0.161 on an annualised Sharpe vs 1.555 for a 151-bar daily TEST split. No data BELOW 1h exists; acquiring any is an A-XXX task gated on A-002, which does NOT gate the 1h data already held. |
 | Reserved holdout | Per the manual. Splits must be pinned by explicit date, never by fraction. |
 | Target frequency | The operator's goal is a bot that trades multiple times per day. Constructs trading less often are acceptable only when they test a *mechanism* that plausibly extends to higher frequency — never as an end state. |
 | Return envelope | Any result above 100% CAGR is presumed defective; quote the manual's check order into the assignment. Do not state a target return or drawdown band — no project file defines one, and inventing a band would violate the "never state a number you have not read in a project file" rule below. |
