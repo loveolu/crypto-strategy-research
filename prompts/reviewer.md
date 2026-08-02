@@ -112,9 +112,18 @@ outcome-changing.
 **C3. Fetched external data axes**
 
 If the cycle fetched a new data axis:
-- Confirm the raw response was saved verbatim to `user_data/research/data/<axis>/` and
-  committed, and that nothing was written to `user_data/data/`.
-- Byte-match the first and last records printed in the report against the saved file.
+- Confirm the raw response was saved verbatim to `user_data/research/data/<axis>/` and **actually
+  committed** — `user_data/*` is gitignored, so check `git ls-files <path>` rather than assuming a
+  plain `git add` worked. An uncommitted raw artifact has no baseline and the fetch is incomplete.
+  Confirm nothing was written to `user_data/data/`.
+- **Byte-match the LAST 10 records and the total record count** against the saved file. **Match the
+  tail, not the head** — newest-first APIs shift the head on every re-fetch, so a head mismatch is
+  usually a re-fetch rather than tampering, while a *tail* mismatch means recorded history was
+  rewritten and is a genuine integrity failure.
+- **Do NOT re-run a fetch script that overwrites its own raw artifact.** Check before running: if
+  the script opens its output path with mode `"w"` and re-fetches unconditionally, running it
+  destroys the evidence you are auditing. `fng_raw.json` was lost this way on 2026-08-01. Read the
+  saved artifact instead and reproduce the downstream computation from it.
 - Confirm the fetch was assigned in `NEXT_TASK.md`.
 - Confirm no post-hoc patching, interpolation, or regeneration of the series occurred.
 

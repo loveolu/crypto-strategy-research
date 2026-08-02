@@ -675,10 +675,21 @@ Permitted subject to **all** of:
   and is the same gap that left eight manifest feathers untracked. **A fetch is not complete until
   the raw response is in a commit.** An uncommitted raw file has no baseline, cannot be diffed, and
   can be overwritten without any tripwire firing;
-- the report prints the **first and last raw records** so a Reviewer can byte-match them against the
-  saved file;
+- the report prints the **LAST 10 raw records and the total record count**, so a Reviewer can
+  byte-match them against the saved file — **the tail, never the head** (see below);
 - the **endpoint URL, fetch timestamp, and record count** are recorded;
 - **`requests` is used, not `aiohttp`** — documented `aiodns`/`AsyncResolver` defect, T-026/T-027.
+
+**Byte-match the TAIL, never the head.** Most historical APIs return **newest-first**, so the head
+of the response shifts on every re-fetch while the tail is fixed by history. A head match is
+therefore not a durable audit anchor: it breaks on any later re-fetch even when nothing is wrong,
+and it cannot distinguish "the series was extended" from "the series was altered". A tail match can,
+because a changed tail means recorded history was rewritten — which is the thing worth detecting.
+Pair it with the total record count, so growth is visible as a number rather than inferred.
+
+This corrects the original rule, which asked for first *and* last records. T-035 followed that rule
+correctly and its head match still broke five days later when the file was re-fetched — the rule
+generated a false positive, not a catch.
 
 **Fetching an axis not assigned in `NEXT_TASK.md` is a scope violation.** **Patching, interpolating,
 or regenerating a series after saving the raw response is fabrication** — the saved raw file is the

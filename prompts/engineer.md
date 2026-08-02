@@ -47,10 +47,19 @@ is legitimate research and is explicitly allowed — but only when `NEXT_TASK.md
 it, and only under all of the following:
 
 - Write to `user_data/research/data/<axis_name>/`, never to `user_data/data/`.
-- **Save the raw, unmodified response to disk before any processing**, and commit it.
-  The raw artifact is what makes the fetch auditable.
-- Print the first and last records of the raw payload in your report so the Reviewer can
-  byte-match them against the saved file.
+- **Save the raw, unmodified response to disk before any processing**, and commit it **with
+  `git add -f`** — `user_data/*` is gitignored, so a plain `git add` is a silent no-op and the
+  artifact never enters a commit. **The fetch is not complete until the raw response is committed.**
+- **Print the LAST 10 records of the raw payload and the total record count** so the Reviewer can
+  byte-match them against the saved file. **The tail, not the head.** Most historical APIs return
+  newest-first, so the head shifts on every re-fetch while the tail is fixed by history; a head
+  match breaks on any later re-fetch even when nothing is wrong, and cannot distinguish "extended"
+  from "altered". A changed tail means recorded history was rewritten, which is what you want to
+  detect.
+- **Your fetch script must refuse to overwrite an existing raw artifact.** If the file exists, load
+  it from disk instead of re-fetching. A refresh is an A-XXX ops task writing to an explicit new
+  filename, never an in-place overwrite. Otherwise a Reviewer re-running your script destroys the
+  evidence they are checking — this happened to `fng_raw.json` on 2026-08-01.
 - Record the exact endpoint URL, the fetch timestamp, and the record count.
 - Use `requests`, not `aiohttp` — this project has a documented `aiodns`/`AsyncResolver`
   defect (T-026/T-027).
