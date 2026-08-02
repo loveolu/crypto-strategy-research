@@ -175,6 +175,15 @@ is worthless — it locks in whatever the bug was.
      is INDEPENDENT of observation count (the whole point of the ledger: the proxy path moves
      sr0 from 0.2174 at 92 obs to 0.0207 at 10,000, the ledger path does not move at all).
 
+### Worked example of the required pattern (added 2026-08-01)
+
+**`user_data/research/scratch_ac5_derivation.py` is this suite's pattern already executed once.**
+It computes what `shock_log_share` should be for the T-020 AC5 fixture by replicating the arithmetic
+**by hand, without calling `compute_shock_share`** — exactly the independence this item demands.
+Read it before writing the suite: a worked example is easier to copy correctly than a description of
+one, and the failure mode here (quietly deriving the expectation from the implementation) is easy to
+commit while believing you have not.
+
 ### Acceptance criteria
 
 - Every expected value derived independently of `validator.py`, with the derivation in a comment.
