@@ -47,6 +47,19 @@ survivorship-biased — both bias the bar upward. Spent no trial. Record:
 
 *(First perps research cycle is T-038. Rows append below as cycles complete.)*
 
+> **T-035 audit-status note (2026-08-01).** The T-035 raw artifact
+> (`user_data/research/data/fear_greed/fng_raw.json`) is **permanently lost**. It was never
+> committed, sat outside manifest coverage, and was overwritten on 2026-08-01 by an unguarded
+> re-fetch. **Restoration was tested and is impossible** — back-solving from the current byte rate
+> implies ~3,233 records against the 3,101 held, so the current file is not a superset and the API
+> response shape changed. **Do not attempt restoration.**
+> **T-035's verdict stands.** The Reviewer's contemporaneous audit reproduced every figure correctly
+> at the time, and on 2026-08-01 all six re-derived **exactly** from the current file (coverage
+> 99.87%, corr −0.1382 / 0.7011, lead/lag 0.0076/0.1405 and 0.0127/0.0136, Step-3 FAIL) — every
+> statistic is anchored to the BTC date range, which the added records postdate. **What is lost is
+> byte-level provenance of the input**, not reproducibility of the computation: the numbers can be
+> re-derived, but the raw response can no longer be proven to be what the Engineer fetched.
+
 **Prior program.** The 38 completed cycles of the spot program (2026-05-14 → 2026-07-29) are archived
 complete and unaltered in `research/archive/index_spot_program.md`. The index resets at a program
 boundary for the same reason `n_trials` does — those results were measured on a different instrument

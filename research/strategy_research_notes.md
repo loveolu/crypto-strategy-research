@@ -916,3 +916,37 @@ too small to carry it.
 to *prove* an edge, not the existence of one. The one genuine intraday anomaly on record (hours
 21–22 UTC, t = 2.4–3.0) failed at 25:1 fees-to-edge and is still ~15:1 at the perps cost model. More
 bars do not make a dead edge live.
+
+---
+
+## T-035 audit status, recorded 2026-08-01 — raw artifact permanently lost
+
+**The T-035 raw artifact is gone and cannot be restored.**
+`user_data/research/data/fear_greed/fng_raw.json` was never committed, sat outside
+`data_manifest.py`'s coverage, and was overwritten on 2026-08-01 by an unguarded re-fetch during a
+reviewer-probe run (347,198 B / mtime 2026-07-21 → 348,514 B / mtime 20:39:53).
+
+**Restoration was tested, not assumed, and is arithmetically impossible.** Truncating the 15
+prepended records yields the right record count (3,086) but 331,389 B against a 347,198 B target —
+short by 15,809. Back-solving from the current 107.36 bytes/record implies the original held ~3,233
+records, i.e. **132 more than the file now holds, not fewer**. No truncation reaches the original
+size in either direction, so the current file is **not a superset** of the original: the API's
+response shape changed, not merely its length. **Do not attempt restoration.**
+
+**T-035's verdict stands, and the loss is narrower than "the cycle cannot be re-audited."** Be
+precise about which half of auditability survived:
+
+| | status |
+|---|---|
+| **Reproducibility of the computation** | **INTACT.** All six figures re-derived exactly on 2026-08-01: coverage 99.87% (3086/3090), corr vs rv30 −0.1382, vs roc30 0.7011, lead/lag 0.0076/0.1405 and 0.0127/0.0136, Step-3 FAIL. |
+| **Provenance of the input** | **LOST.** The raw response can no longer be byte-matched against what the Engineer actually fetched. Tampering with the input is no longer detectable. |
+
+The figures survive because every statistic is anchored to the BTC feather's date range (ending
+2026-07-18) and all 15 added records postdate it, so none enters the join. That is luck, not design —
+had the axis been extended at the tail, or the price series been longer, the numbers would have
+moved and the cycle's arithmetic would have become unverifiable too.
+
+**The lesson is the asymmetry.** A computation can be re-run from whatever inputs happen to be
+present; provenance can only be established from a baseline captured at the time. Losing the second
+is permanent in a way losing the first is not, and it is exactly what an uncommitted, unmanifested
+artifact guarantees. See the 2026-08-01 durable lesson above on guards that share an exclusion.
