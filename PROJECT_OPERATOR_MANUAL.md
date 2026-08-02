@@ -669,7 +669,12 @@ as satisfying auditability.
 Permitted subject to **all** of:
 
 - writes go to `user_data/research/data/<axis_name>/`, **never** to `user_data/data/`;
-- the **raw, unmodified response is saved to disk BEFORE any processing**, and committed;
+- the **raw, unmodified response is saved to disk BEFORE any processing**, and **committed with
+  `git add -f`**. `user_data/*` is gitignored, so a plain `git add` silently does nothing and the
+  artifact never enters a commit — which is what happened to every axis fetched before 2026-08-01,
+  and is the same gap that left eight manifest feathers untracked. **A fetch is not complete until
+  the raw response is in a commit.** An uncommitted raw file has no baseline, cannot be diffed, and
+  can be overwritten without any tripwire firing;
 - the report prints the **first and last raw records** so a Reviewer can byte-match them against the
   saved file;
 - the **endpoint URL, fetch timestamp, and record count** are recorded;
