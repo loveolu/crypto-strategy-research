@@ -1,0 +1,905 @@
+{
+  "code": "0",
+  "data": [
+    {
+      "formulaType": "withRate",
+      "fundingRate": "-0.0000561272817844",
+      "fundingTime": "1784534400000",
+      "instId": "ADA-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "-0.0000561272817844"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "0.0001",
+      "fundingTime": "1784505600000",
+      "instId": "ADA-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "0.0001"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "0.0001",
+      "fundingTime": "1784476800000",
+      "instId": "ADA-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "0.0001"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "0.0001",
+      "fundingTime": "1784448000000",
+      "instId": "ADA-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "0.0001"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "-0.0000170355747781",
+      "fundingTime": "1784419200000",
+      "instId": "ADA-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "-0.0000170355747781"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "-0.000023093654673",
+      "fundingTime": "1784390400000",
+      "instId": "ADA-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "-0.000023093654673"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "0.0001",
+      "fundingTime": "1784361600000",
+      "instId": "ADA-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "0.0001"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "0.0001",
+      "fundingTime": "1784332800000",
+      "instId": "ADA-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "0.0001"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "0.0000376156185068",
+      "fundingTime": "1784304000000",
+      "instId": "ADA-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "0.0000376156185068"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "-0.0001791797701155",
+      "fundingTime": "1784275200000",
+      "instId": "ADA-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "-0.0001791797701155"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "0.0000008161701584",
+      "fundingTime": "1784246400000",
+      "instId": "ADA-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "0.0000008161701584"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "0.0001",
+      "fundingTime": "1784217600000",
+      "instId": "ADA-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "0.0001"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "0.0000567635028415",
+      "fundingTime": "1784188800000",
+      "instId": "ADA-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "0.0000567635028415"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "-0.000050503767676",
+      "fundingTime": "1784160000000",
+      "instId": "ADA-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "-0.000050503767676"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "-0.0000025568460819",
+      "fundingTime": "1784131200000",
+      "instId": "ADA-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "-0.0000025568460819"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "0.0000576366173074",
+      "fundingTime": "1784102400000",
+      "instId": "ADA-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "0.0000576366173074"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "0.0000882880445264",
+      "fundingTime": "1784073600000",
+      "instId": "ADA-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "0.0000882880445264"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "0.0000473213032104",
+      "fundingTime": "1784044800000",
+      "instId": "ADA-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "0.0000473213032104"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "0.0001",
+      "fundingTime": "1784016000000",
+      "instId": "ADA-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "0.0001"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "0.0000234590800092",
+      "fundingTime": "1783987200000",
+      "instId": "ADA-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "0.0000234590800092"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "0.0000785776626063",
+      "fundingTime": "1783958400000",
+      "instId": "ADA-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "0.0000785776626063"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "-0.0000782659683966",
+      "fundingTime": "1783929600000",
+      "instId": "ADA-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "-0.0000782659683966"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "-0.0000786883169953",
+      "fundingTime": "1783900800000",
+      "instId": "ADA-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "-0.0000786883169953"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "0.0001",
+      "fundingTime": "1783872000000",
+      "instId": "ADA-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "0.0001"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "-0.0001166578581497",
+      "fundingTime": "1783843200000",
+      "instId": "ADA-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "-0.0001166578581497"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "-0.0000859825101186",
+      "fundingTime": "1783814400000",
+      "instId": "ADA-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "-0.0000859825101186"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "-0.0000646391143031",
+      "fundingTime": "1783785600000",
+      "instId": "ADA-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "-0.0000646391143031"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "-0.0000911915625721",
+      "fundingTime": "1783756800000",
+      "instId": "ADA-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "-0.0000911915625721"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "-0.000026847188827",
+      "fundingTime": "1783728000000",
+      "instId": "ADA-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "-0.000026847188827"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "-0.0001867151783944",
+      "fundingTime": "1783699200000",
+      "instId": "ADA-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "-0.0001867151783944"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "0.0001",
+      "fundingTime": "1783670400000",
+      "instId": "ADA-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "0.0001"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "0.0000378335503266",
+      "fundingTime": "1783641600000",
+      "instId": "ADA-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "0.0000378335503266"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "0.0000518300569293",
+      "fundingTime": "1783612800000",
+      "instId": "ADA-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "0.0000518300569293"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "0.0001",
+      "fundingTime": "1783584000000",
+      "instId": "ADA-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "0.0001"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "0.0001",
+      "fundingTime": "1783555200000",
+      "instId": "ADA-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "0.0001"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "0.0000675079698024",
+      "fundingTime": "1783526400000",
+      "instId": "ADA-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "0.0000675079698024"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "0.0000002730035326",
+      "fundingTime": "1783497600000",
+      "instId": "ADA-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "0.0000002730035326"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "0.0000836847666",
+      "fundingTime": "1783468800000",
+      "instId": "ADA-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "0.0000836847666"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "0.0000747483359661",
+      "fundingTime": "1783440000000",
+      "instId": "ADA-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "0.0000747483359661"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "0.0001",
+      "fundingTime": "1783411200000",
+      "instId": "ADA-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "0.0001"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "0.0001",
+      "fundingTime": "1783382400000",
+      "instId": "ADA-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "0.0001"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "0.0001",
+      "fundingTime": "1783353600000",
+      "instId": "ADA-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "0.0001"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "0.0000883740353427",
+      "fundingTime": "1783324800000",
+      "instId": "ADA-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "0.0000883740353427"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "0.0001",
+      "fundingTime": "1783296000000",
+      "instId": "ADA-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "0.0001"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "0.0001",
+      "fundingTime": "1783267200000",
+      "instId": "ADA-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "0.0001"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "0.0000942992647271",
+      "fundingTime": "1783238400000",
+      "instId": "ADA-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "0.0000942992647271"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "0.0000996069525947",
+      "fundingTime": "1783209600000",
+      "instId": "ADA-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "0.0000996069525947"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "0.0001",
+      "fundingTime": "1783180800000",
+      "instId": "ADA-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "0.0001"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "0.0001",
+      "fundingTime": "1783152000000",
+      "instId": "ADA-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "0.0001"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "0.0001",
+      "fundingTime": "1783123200000",
+      "instId": "ADA-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "0.0001"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "0.0001",
+      "fundingTime": "1783094400000",
+      "instId": "ADA-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "0.0001"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "0.0001",
+      "fundingTime": "1783065600000",
+      "instId": "ADA-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "0.0001"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "0.0001",
+      "fundingTime": "1783036800000",
+      "instId": "ADA-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "0.0001"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "0.0001",
+      "fundingTime": "1783008000000",
+      "instId": "ADA-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "0.0001"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "0.0001",
+      "fundingTime": "1782979200000",
+      "instId": "ADA-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "0.0001"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "-0.000018800759894",
+      "fundingTime": "1782950400000",
+      "instId": "ADA-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "-0.000018800759894"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "0.0001",
+      "fundingTime": "1782921600000",
+      "instId": "ADA-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "0.0001"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "0.0001",
+      "fundingTime": "1782892800000",
+      "instId": "ADA-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "0.0001"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "0.0000977349935375",
+      "fundingTime": "1782864000000",
+      "instId": "ADA-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "0.0000977349935375"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "0.0000100127362037",
+      "fundingTime": "1782835200000",
+      "instId": "ADA-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "0.0000100127362037"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "-0.0001366450822726",
+      "fundingTime": "1782806400000",
+      "instId": "ADA-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "-0.0001366450822726"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "0.0001",
+      "fundingTime": "1782777600000",
+      "instId": "ADA-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "0.0001"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "-0.0000509346356618",
+      "fundingTime": "1782748800000",
+      "instId": "ADA-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "-0.0000509346356618"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "0.0000701950613858",
+      "fundingTime": "1782720000000",
+      "instId": "ADA-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "0.0000701950613858"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "-0.000134772922822",
+      "fundingTime": "1782691200000",
+      "instId": "ADA-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "-0.000134772922822"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "-0.0000843226224914",
+      "fundingTime": "1782662400000",
+      "instId": "ADA-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "-0.0000843226224914"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "-0.0001489817079447",
+      "fundingTime": "1782633600000",
+      "instId": "ADA-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "-0.0001489817079447"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "-0.0001601218674317",
+      "fundingTime": "1782604800000",
+      "instId": "ADA-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "-0.0001601218674317"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "-0.0000548868256219",
+      "fundingTime": "1782576000000",
+      "instId": "ADA-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "-0.0000548868256219"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "0.0001",
+      "fundingTime": "1782547200000",
+      "instId": "ADA-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "0.0001"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "-0.0000307130326779",
+      "fundingTime": "1782518400000",
+      "instId": "ADA-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "-0.0000307130326779"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "0.0001",
+      "fundingTime": "1782489600000",
+      "instId": "ADA-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "0.0001"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "-0.0000156722543302",
+      "fundingTime": "1782460800000",
+      "instId": "ADA-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "-0.0000156722543302"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "0.0000013423780131",
+      "fundingTime": "1782432000000",
+      "instId": "ADA-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "0.0000013423780131"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "-0.0000422005637141",
+      "fundingTime": "1782403200000",
+      "instId": "ADA-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "-0.0000422005637141"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "-0.0000028628670057",
+      "fundingTime": "1782374400000",
+      "instId": "ADA-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "-0.0000028628670057"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "-0.0000890540093333",
+      "fundingTime": "1782345600000",
+      "instId": "ADA-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "-0.0000890540093333"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "-0.0000673003842218",
+      "fundingTime": "1782316800000",
+      "instId": "ADA-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "-0.0000673003842218"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "0.0001",
+      "fundingTime": "1782288000000",
+      "instId": "ADA-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "0.0001"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "-0.0001741900285275",
+      "fundingTime": "1782259200000",
+      "instId": "ADA-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "-0.0001741900285275"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "-0.0000124464113586",
+      "fundingTime": "1782230400000",
+      "instId": "ADA-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "-0.0000124464113586"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "0.0000656908760452",
+      "fundingTime": "1782201600000",
+      "instId": "ADA-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "0.0000656908760452"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "-0.0002398121865982",
+      "fundingTime": "1782172800000",
+      "instId": "ADA-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "-0.0002398121865982"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "-0.0000186753383393",
+      "fundingTime": "1782144000000",
+      "instId": "ADA-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "-0.0000186753383393"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "0.0001",
+      "fundingTime": "1782115200000",
+      "instId": "ADA-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "0.0001"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "-0.00005338373752",
+      "fundingTime": "1782086400000",
+      "instId": "ADA-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "-0.00005338373752"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "-0.0000809205242311",
+      "fundingTime": "1782057600000",
+      "instId": "ADA-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "-0.0000809205242311"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "-0.000010949508272",
+      "fundingTime": "1782028800000",
+      "instId": "ADA-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "-0.000010949508272"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "-0.0000218882370613",
+      "fundingTime": "1782000000000",
+      "instId": "ADA-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "-0.0000218882370613"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "-0.000089964304816",
+      "fundingTime": "1781971200000",
+      "instId": "ADA-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "-0.000089964304816"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "0.0000573141018857",
+      "fundingTime": "1781942400000",
+      "instId": "ADA-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "0.0000573141018857"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "0.0000171268850611",
+      "fundingTime": "1781913600000",
+      "instId": "ADA-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "0.0000171268850611"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "0.000031703176032",
+      "fundingTime": "1781884800000",
+      "instId": "ADA-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "0.000031703176032"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "0.0000431129114862",
+      "fundingTime": "1781856000000",
+      "instId": "ADA-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "0.0000431129114862"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "0.0001",
+      "fundingTime": "1781827200000",
+      "instId": "ADA-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "0.0001"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "0.0001",
+      "fundingTime": "1781798400000",
+      "instId": "ADA-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "0.0001"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "0.0000561173401805",
+      "fundingTime": "1781769600000",
+      "instId": "ADA-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "0.0000561173401805"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "-0.0000658286317506",
+      "fundingTime": "1781740800000",
+      "instId": "ADA-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "-0.0000658286317506"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "0.0000521689144741",
+      "fundingTime": "1781712000000",
+      "instId": "ADA-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "0.0000521689144741"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "0.0000154486253107",
+      "fundingTime": "1781683200000",
+      "instId": "ADA-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "0.0000154486253107"
+    }
+  ]
+}

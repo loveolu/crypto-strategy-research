@@ -1,0 +1,833 @@
+{
+  "code": "0",
+  "data": [
+    {
+      "formulaType": "withRate",
+      "fundingRate": "0.0001",
+      "fundingTime": "1778774400000",
+      "instId": "LINK-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "0.0001"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "0.0000029469734512",
+      "fundingTime": "1778745600000",
+      "instId": "LINK-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "0.0000029469734512"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "-0.0000200576336819",
+      "fundingTime": "1778716800000",
+      "instId": "LINK-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "-0.0000200576336819"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "-0.000027372304039",
+      "fundingTime": "1778688000000",
+      "instId": "LINK-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "-0.000027372304039"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "0.0001",
+      "fundingTime": "1778659200000",
+      "instId": "LINK-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "0.0001"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "0.0001",
+      "fundingTime": "1778630400000",
+      "instId": "LINK-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "0.0001"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "-0.0000178857838185",
+      "fundingTime": "1778601600000",
+      "instId": "LINK-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "-0.0000178857838185"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "0.000080398180769",
+      "fundingTime": "1778572800000",
+      "instId": "LINK-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "0.000080398180769"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "-0.0000389162223458",
+      "fundingTime": "1778544000000",
+      "instId": "LINK-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "-0.0000389162223458"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "0.0001",
+      "fundingTime": "1778515200000",
+      "instId": "LINK-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "0.0001"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "0.0000688277541408",
+      "fundingTime": "1778486400000",
+      "instId": "LINK-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "0.0000688277541408"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "0.0001",
+      "fundingTime": "1778457600000",
+      "instId": "LINK-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "0.0001"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "0.0000888895453459",
+      "fundingTime": "1778428800000",
+      "instId": "LINK-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "0.0000888895453459"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "-0.0000439650274318",
+      "fundingTime": "1778400000000",
+      "instId": "LINK-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "-0.0000439650274318"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "0.000056698287835",
+      "fundingTime": "1778371200000",
+      "instId": "LINK-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "0.000056698287835"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "-0.000061231284937",
+      "fundingTime": "1778342400000",
+      "instId": "LINK-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "-0.000061231284937"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "0.0001",
+      "fundingTime": "1778313600000",
+      "instId": "LINK-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "0.0001"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "0.0001",
+      "fundingTime": "1778284800000",
+      "instId": "LINK-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "0.0001"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "0.0000930118688875",
+      "fundingTime": "1778256000000",
+      "instId": "LINK-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "0.0000930118688875"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "0.0000268314800135",
+      "fundingTime": "1778227200000",
+      "instId": "LINK-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "0.0000268314800135"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "0.0001",
+      "fundingTime": "1778198400000",
+      "instId": "LINK-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "0.0001"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "0.0000396234211422",
+      "fundingTime": "1778169600000",
+      "instId": "LINK-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "0.0000396234211422"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "0.0001",
+      "fundingTime": "1778140800000",
+      "instId": "LINK-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "0.0001"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "0.0001",
+      "fundingTime": "1778112000000",
+      "instId": "LINK-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "0.0001"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "0.0001",
+      "fundingTime": "1778083200000",
+      "instId": "LINK-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "0.0001"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "0.0001",
+      "fundingTime": "1778054400000",
+      "instId": "LINK-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "0.0001"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "0.0001",
+      "fundingTime": "1778025600000",
+      "instId": "LINK-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "0.0001"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "0.0001",
+      "fundingTime": "1777996800000",
+      "instId": "LINK-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "0.0001"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "0.0001",
+      "fundingTime": "1777968000000",
+      "instId": "LINK-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "0.0001"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "0.0001",
+      "fundingTime": "1777939200000",
+      "instId": "LINK-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "0.0001"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "0.0000454479844349",
+      "fundingTime": "1777910400000",
+      "instId": "LINK-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "0.0000454479844349"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "0.0001",
+      "fundingTime": "1777881600000",
+      "instId": "LINK-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "0.0001"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "0.0000533600217948",
+      "fundingTime": "1777852800000",
+      "instId": "LINK-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "0.0000533600217948"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "0.0001",
+      "fundingTime": "1777824000000",
+      "instId": "LINK-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "0.0001"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "-0.0000543291701048",
+      "fundingTime": "1777795200000",
+      "instId": "LINK-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "-0.0000543291701048"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "0.0001",
+      "fundingTime": "1777766400000",
+      "instId": "LINK-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "0.0001"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "0.0000568856719212",
+      "fundingTime": "1777737600000",
+      "instId": "LINK-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "0.0000568856719212"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "-0.0000791521018678",
+      "fundingTime": "1777708800000",
+      "instId": "LINK-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "-0.0000791521018678"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "-0.0000139683201012",
+      "fundingTime": "1777680000000",
+      "instId": "LINK-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "-0.0000139683201012"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "0.0001",
+      "fundingTime": "1777651200000",
+      "instId": "LINK-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "0.0001"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "0.0001",
+      "fundingTime": "1777622400000",
+      "instId": "LINK-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "0.0001"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "-0.0001493369050171",
+      "fundingTime": "1777593600000",
+      "instId": "LINK-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "-0.0001493369050171"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "-0.0000908533168556",
+      "fundingTime": "1777564800000",
+      "instId": "LINK-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "-0.0000908533168556"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "0.0000342804874937",
+      "fundingTime": "1777536000000",
+      "instId": "LINK-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "0.0000342804874937"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "-0.000119252537261",
+      "fundingTime": "1777507200000",
+      "instId": "LINK-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "-0.000119252537261"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "-0.0001151319707631",
+      "fundingTime": "1777478400000",
+      "instId": "LINK-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "-0.0001151319707631"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "0.0000884548167988",
+      "fundingTime": "1777449600000",
+      "instId": "LINK-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "0.0000884548167988"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "0.0000637165032593",
+      "fundingTime": "1777420800000",
+      "instId": "LINK-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "0.0000637165032593"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "0.0000284130844836",
+      "fundingTime": "1777392000000",
+      "instId": "LINK-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "0.0000284130844836"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "0.0000353568189602",
+      "fundingTime": "1777363200000",
+      "instId": "LINK-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "0.0000353568189602"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "0.0000167335562337",
+      "fundingTime": "1777334400000",
+      "instId": "LINK-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "0.0000167335562337"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "-0.0000215050491964",
+      "fundingTime": "1777305600000",
+      "instId": "LINK-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "-0.0000215050491964"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "-0.0000459680895466",
+      "fundingTime": "1777276800000",
+      "instId": "LINK-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "-0.0000459680895466"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "0.0000032825257793",
+      "fundingTime": "1777248000000",
+      "instId": "LINK-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "0.0000032825257793"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "0.0001",
+      "fundingTime": "1777219200000",
+      "instId": "LINK-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "0.0001"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "0.0000621521934016",
+      "fundingTime": "1777190400000",
+      "instId": "LINK-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "0.0000621521934016"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "-0.000070544562202",
+      "fundingTime": "1777161600000",
+      "instId": "LINK-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "-0.000070544562202"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "0.0000023998743736",
+      "fundingTime": "1777132800000",
+      "instId": "LINK-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "0.0000023998743736"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "0.0001",
+      "fundingTime": "1777104000000",
+      "instId": "LINK-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "0.0001"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "0.0001",
+      "fundingTime": "1777075200000",
+      "instId": "LINK-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "0.0001"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "0.0000066649278506",
+      "fundingTime": "1777046400000",
+      "instId": "LINK-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "0.0000066649278506"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "0.0000788024908329",
+      "fundingTime": "1777017600000",
+      "instId": "LINK-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "0.0000788024908329"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "-0.0000100484388419",
+      "fundingTime": "1776988800000",
+      "instId": "LINK-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "-0.0000100484388419"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "0.0000029808046821",
+      "fundingTime": "1776960000000",
+      "instId": "LINK-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "0.0000029808046821"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "-0.0001910178704838",
+      "fundingTime": "1776931200000",
+      "instId": "LINK-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "-0.0001910178704838"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "-0.0000844990163695",
+      "fundingTime": "1776902400000",
+      "instId": "LINK-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "-0.0000844990163695"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "0.0000821338897357",
+      "fundingTime": "1776873600000",
+      "instId": "LINK-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "0.0000821338897357"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "0.0001",
+      "fundingTime": "1776844800000",
+      "instId": "LINK-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "0.0001"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "0.0000145173299998",
+      "fundingTime": "1776816000000",
+      "instId": "LINK-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "0.0000145173299998"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "0.0000507589106131",
+      "fundingTime": "1776787200000",
+      "instId": "LINK-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "0.0000507589106131"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "0.0000646783239128",
+      "fundingTime": "1776758400000",
+      "instId": "LINK-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "0.0000646783239128"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "0.0000369079468761",
+      "fundingTime": "1776729600000",
+      "instId": "LINK-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "0.0000369079468761"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "0.0000448434088231",
+      "fundingTime": "1776700800000",
+      "instId": "LINK-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "0.0000448434088231"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "0.0000373781089415",
+      "fundingTime": "1776672000000",
+      "instId": "LINK-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "0.0000373781089415"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "0.0000069743340718",
+      "fundingTime": "1776643200000",
+      "instId": "LINK-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "0.0000069743340718"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "-0.0001047441289267",
+      "fundingTime": "1776614400000",
+      "instId": "LINK-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "-0.0001047441289267"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "-0.0000863352284345",
+      "fundingTime": "1776585600000",
+      "instId": "LINK-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "-0.0000863352284345"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "-0.0000348519097268",
+      "fundingTime": "1776556800000",
+      "instId": "LINK-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "-0.0000348519097268"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "-0.0000123601577437",
+      "fundingTime": "1776528000000",
+      "instId": "LINK-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "-0.0000123601577437"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "0.0000225093004126",
+      "fundingTime": "1776499200000",
+      "instId": "LINK-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "0.0000225093004126"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "0.0000897940125962",
+      "fundingTime": "1776470400000",
+      "instId": "LINK-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "0.0000897940125962"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "0.0000764294560574",
+      "fundingTime": "1776441600000",
+      "instId": "LINK-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "0.0000764294560574"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "0.0000860233694059",
+      "fundingTime": "1776412800000",
+      "instId": "LINK-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "0.0000860233694059"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "0.0001",
+      "fundingTime": "1776384000000",
+      "instId": "LINK-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "0.0001"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "0.0001",
+      "fundingTime": "1776355200000",
+      "instId": "LINK-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "0.0001"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "0.0001",
+      "fundingTime": "1776326400000",
+      "instId": "LINK-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "0.0001"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "0.0001",
+      "fundingTime": "1776297600000",
+      "instId": "LINK-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "0.0001"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "0.0001",
+      "fundingTime": "1776268800000",
+      "instId": "LINK-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "0.0001"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "0.0000424449357134",
+      "fundingTime": "1776240000000",
+      "instId": "LINK-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "0.0000424449357134"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "-0.0000890545976664",
+      "fundingTime": "1776211200000",
+      "instId": "LINK-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "-0.0000890545976664"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "0.0000181776087289",
+      "fundingTime": "1776182400000",
+      "instId": "LINK-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "0.0000181776087289"
+    },
+    {
+      "formulaType": "withRate",
+      "fundingRate": "0.0000860361771912",
+      "fundingTime": "1776153600000",
+      "instId": "LINK-USDT-SWAP",
+      "instType": "SWAP",
+      "method": "current_period",
+      "realizedRate": "0.0000860361771912"
+    }
+  ]
+}

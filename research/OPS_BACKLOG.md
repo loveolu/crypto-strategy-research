@@ -281,7 +281,24 @@ checked for date-identical overlap ("Like-for-like or void").
 
 ## A-004 — Decide whether the untracked review briefs are records or scratch
 
-**Status:** LOGGED, NOT ASSIGNED. Do not execute without explicit assignment.
+**Status:** ✅ **RESOLVED, 2026-08-01. Decision: RECORDS.** All six briefs are committed, together
+with the seven cycle reports, both raw-output directories, and the audits — 44 files, 18,621 lines.
+Byte counts at commit time matched this item's table exactly (9,326 / 12,437 / 8,723 / 11,943 /
+10,836 / 10,219), confirming no brief was altered between logging and resolution.
+
+**The manifest question, answered explicitly as this item requires: briefs and reports are protected
+by GIT HISTORY ALONE, and `scripts/data_manifest.py` remains DATA-ONLY BY DESIGN.** The manifest
+exists to detect tampering with market data that a research cycle is forbidden to modify at all —
+a tree where *any* change is a violation, so a hash mismatch is unambiguously a defect. Research
+text is different: it is *supposed* to change, by append, and a SHA over it would fire on every
+legitimate write. Git already gives these files what the manifest gives the data tree — an immutable
+baseline and a reviewable diff — which is precisely what they lacked while untracked.
+
+**Verdict record integrity is now enforced by commit history, not by hashes.** That is a weaker
+guarantee than the manifest's and is stated as such: a force-push or history rewrite could still
+alter them. This project does not rewrite history (see `research/probe/README.md`), which is what
+makes the weaker guarantee sufficient.
+
 **Logged:** 2026-07-29 (manual gap closure 5).
 **Class:** OPS / records. Zero trials. Does not advance the meta-review counter.
 
