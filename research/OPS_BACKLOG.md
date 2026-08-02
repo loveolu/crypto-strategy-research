@@ -393,6 +393,64 @@ formats the dict directly, which suggests an edit that was never re-run.
 
 ---
 
+## A-008 — phase_feargreed.py overwrites its own raw artifact on every run
+
+**Status:** LOGGED, NOT ASSIGNED. Do not execute without explicit assignment.
+**Logged:** 2026-08-01 (step-5 finding, fix 3).
+**Class:** OPS / data integrity. Zero trials. Does not advance the meta-review counter.
+
+### Problem
+
+`user_data/research/phase_feargreed.py:32` writes its raw artifact with:
+
+```python
+out_path = os.path.join(out_dir, "fng_raw.json")
+with open(out_path, "w") as f:
+    json.dump(fng_raw, f, indent=2)
+```
+
+There is **no existence check and no guard**. The script re-fetches the Fear & Greed API
+unconditionally and overwrites `user_data/research/data/fear_greed/fng_raw.json` in place on every
+run.
+
+This collides directly with the Independent Reviewer standard, which requires re-running the
+Engineer's scripts **unmodified**: performing the audit destroys the artifact the audit exists to
+byte-match. **It has already happened.** On 2026-08-01 a reviewer-probe run overwrote the file
+(347,198 B / mtime 2026-07-21 → 348,514 B / mtime 2026-08-01 20:39:53). The file had never been
+committed, so no baseline existed, and **the T-035 state is permanently unrecoverable** —
+reconstruction by truncation was tested and is arithmetically impossible (see the fix-4 report).
+
+Three tripwires missed it simultaneously: the tree is gitignored (`user_data/*`), the file was
+never committed, and `data_manifest.py` covers only `user_data/data/`.
+
+### Why this is logged rather than fixed
+
+`phase*.py` scripts are **frozen reproduction records** (`user_data/research/ARCHIVE_COST_NOTE.md`,
+rule 1). Editing one to add a guard would change the artifact that reproduces a completed cycle.
+The standard requiring the guard now applies to **all future fetch scripts** and is recorded in
+`PROJECT_OPERATOR_MANUAL.md`, "Data acquisition is not research" → carve-out. This item records
+that one frozen script predates it.
+
+### Scope, if assigned
+
+1. Decide whether the frozen-script exemption should yield here, given that the script is not merely
+   inert history — it is executable and destructive, and the Reviewer standard actively instructs
+   people to run it.
+2. If the exemption holds: add a prominent DO-NOT-RUN warning where a Reviewer would see it before
+   running (report section 13 convention, and/or a README in `user_data/research/`), rather than
+   editing the script.
+3. If the exemption yields: add an existence check that loads from disk, and record the edit in
+   `ARCHIVE_COST_NOTE.md` as a deliberate exception with its reason.
+4. Audit the other `phase*.py` scripts for the same pattern — any that fetch and write raw artifacts.
+
+### Explicit non-goals
+
+- Do not attempt to restore the lost `fng_raw.json` state. It is unrecoverable; this was determined,
+  not assumed.
+- Do not re-run `phase_feargreed.py` while investigating. That is the defect.
+
+---
+
 ## A-007 — Give the live harness callers explicit split_dates
 
 **Status:** LOGGED, NOT ASSIGNED. Do not execute without explicit assignment.

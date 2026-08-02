@@ -678,7 +678,26 @@ Permitted subject to **all** of:
 - the report prints the **LAST 10 raw records and the total record count**, so a Reviewer can
   byte-match them against the saved file — **the tail, never the head** (see below);
 - the **endpoint URL, fetch timestamp, and record count** are recorded;
+- the fetch script **REFUSES TO OVERWRITE AN EXISTING RAW ARTIFACT** (see below);
 - **`requests` is used, not `aiohttp`** — documented `aiodns`/`AsyncResolver` defect, T-026/T-027.
+
+**A fetch script must not overwrite an existing raw artifact.** It checks whether its raw output
+file already exists and, if it does, **loads from disk instead of re-fetching**. A refresh is an
+`A-XXX` ops task writing to an **explicit new filename** (`<axis>_raw_<YYYY-MM-DD>.json`), never an
+in-place overwrite.
+
+Rationale, recorded because the failure mode is non-obvious: the Independent Reviewer standard
+requires re-running the Engineer's scripts **unmodified**. If a fetch script re-fetches and
+overwrites on every run, then **performing the audit destroys the evidence the audit exists to
+check**. On **2026-08-01** this destroyed `user_data/research/data/fear_greed/fng_raw.json` during a
+reviewer-probe run: it was overwritten in place, it had never been committed, and the T-035 state is
+**permanently unrecoverable**. Three independent tripwires — `git status`, a commit baseline, and
+the data manifest — all missed it.
+
+This applies to **all future fetch scripts**. The frozen `phase*.py` reproduction artifacts are
+exempt from modification (`user_data/research/ARCHIVE_COST_NOTE.md` rule 1) and are **not** to be
+retrofitted; `phase_feargreed.py` lacks the guard and is logged as **A-008** in
+`research/OPS_BACKLOG.md`.
 
 **Byte-match the TAIL, never the head.** Most historical APIs return **newest-first**, so the head
 of the response shifts on every re-fetch while the tail is fixed by history. A head match is
