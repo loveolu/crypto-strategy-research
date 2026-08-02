@@ -43,12 +43,15 @@ Read the top of `research/research_index.md` first.
 3. `research/research_index.md` — one line per cycle. Your primary compressed memory.
 4. `knowledge_base/hypothesis_bank.md` — read only the region between
    `DIRECTOR-MANDATORY-BEGIN` and `DIRECTOR-MANDATORY-END` (the family ledger).
-5. The latest brief in `research/review_briefs/` — resolve by **highest Task ID
-   parsed from the filename**, not by modification time.
 
 **On-demand (open only if the mandatory set leaves a selection-relevant question
 genuinely ambiguous):**
 
+- **The latest brief in `research/review_briefs/`** — resolve by **highest Task ID parsed from the
+  filename**, not by modification time. **Demoted from mandatory 2026-08-01** (context budget; see
+  the manual). **Open it whenever the next hypothesis is adjacent to the last one** — it carries the
+  prior verdict and the Engineer's recommendations, and skipping it there means selecting blind to
+  why the last cycle failed. The index row carries the verdict and reason for a quick check.
 - `knowledge_base/master_index.md` and topic files — for grounding a mechanism.
 - `research/current_champion.md` — when orthogonality is genuinely at issue. Historical:
   it describes the spot champion, whose figures are void as perps evidence.
@@ -224,6 +227,11 @@ The latest review brief carries the Engineer's ground-level suggestions. Weigh t
 seriously — the Engineer saw things metrics don't show — but treat them as expert
 input, not instruction. Adopt, adapt, or reject each concrete suggestion. If you
 reject one, note why in one line in the prior-work check.
+
+**The brief is on-demand as of 2026-08-01, so this now requires a deliberate act:
+open it.** It is the only place those recommendations exist. If you do not open it,
+say so in "Environment notes" rather than leaving it ambiguous whether the
+Engineer's input was considered and rejected or simply never read.
 
 ---
 

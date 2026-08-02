@@ -62,6 +62,27 @@ and the program trial cap, none of which existed when 40 KB was chosen. At 48 KB
 narrative** — all narrative and rationale had already been compacted out. That is the condition under
 which the cap moves; a breach with narrative still in the region is not.
 
+> ### THE CAP WILL NOT BE RAISED AGAIN (pre-registered, operator decision 2026-08-01)
+>
+> 40 → 48 → 56 KB is a trend, and a fourth raise would make "raise the cap" the standing answer to
+> a full context set — which is how a mandatory read becomes unreadable. **56 KB is final.**
+>
+> **The next breach is resolved by DEMOTING, in this order, not by raising:**
+>
+> 1. **The latest review brief → on-demand.** *(Applied 2026-08-01 on the first breach after the
+>    freeze; it was the largest mandatory item at 4,044 B.)* The Director opens it when the prior
+>    verdict bears on selection — which is most cycles, but not all, and it is the only mandatory
+>    item that can be skipped without losing a **standard**. Cost of the demotion, stated honestly:
+>    a Director who does not open it loses automatic sight of the last cycle's verdict and the
+>    Engineer's recommendations. **Open it whenever the next hypothesis is adjacent to the last
+>    one.**
+> 2. If a further breach occurs, demote `research/research_index.md` to on-demand **except** its
+>    standing-constraints block, which is promoted into this manual.
+>
+> **The marked region is NOT to be compacted further.** All narrative and rationale have already
+> been removed across three passes; the next cut takes a standard, and a standard removed to save
+> bytes is a standard that stops being enforced.
+
 **MANDATORY (load every cycle, before selecting a hypothesis):**
 
 | File | Region |
@@ -70,7 +91,6 @@ which the cap moves; a breach with narrative still in the region is not.
 | `research/research_index.md` | whole file (compact by design — one line per cycle, current program only) |
 | `knowledge_base/hypothesis_bank.md` | **only** between `DIRECTOR-MANDATORY-BEGIN/END` markers (the FAMILY STATUS LEDGER) |
 | `research/STANDING_DIRECTIVES.md` | whole file — the accumulated binding directives from every meta-review |
-| `research/review_briefs/` (latest only) | whole file — capped at 4 KB by the Reviewer standard below |
 
 **The DIRECTOR-MANDATORY region contains exactly these fourteen sections.** The list is
 exhaustive on purpose: an earlier version named only eight, and three of the five it omitted
@@ -120,8 +140,13 @@ belongs in `research/STANDING_DIRECTIVES.md`. Narrative, rationale and history b
   perps evidence (`research/review_briefs/T-037_PERPS_TRANSITION_brief.md`).
 - `research/current_champion.md` — champion detail. The index carries the summary; open this when
   orthogonality to the champion is genuinely at issue.
-- `research/review_briefs/` (older than the latest) — the index row carries the verdict and reason;
-  open an older brief only when its specific reasoning bears on the next choice.
+- `research/review_briefs/` — **DEMOTED from mandatory to on-demand, 2026-08-01**, as the
+  pre-registered remedy for the first breach after the cap was frozen (see the box above). **Open
+  the latest brief whenever the next hypothesis is adjacent to the last one** — it carries the prior
+  verdict and the Engineer's recommendations, and skipping it there means selecting blind to why the
+  last cycle failed. The index row carries the verdict and reason for a quick check. Open an older
+  brief only when its specific reasoning bears on the next choice. Still capped at 4 KB by the
+  Reviewer standard, which now protects the Director's *optional* load rather than a mandatory one.
 - `research/meta_reviews/` (full text, any) — **on-demand**. Their binding directives are already
   mandatory via `research/STANDING_DIRECTIVES.md`; open a full meta-review only when a meta-review
   is due, or when the evidence behind a directive is being challenged.
@@ -983,8 +1008,10 @@ Per-seed values are carried on `Verdict.warnings`, so INSUFFICIENT cannot be rep
 
 ## Independent Reviewer output standard
 
-**A review brief must not exceed 4 KB (4,096 bytes).** The latest brief is MANDATORY Director
-context every cycle, so its size taxes every future hypothesis selection.
+**A review brief must not exceed 4 KB (4,096 bytes).** The cap stands even though the latest brief
+was demoted to on-demand on 2026-08-01: the Director should be able to open it *without* budget
+anxiety, and a brief that is cheap to read is one that actually gets read. The cap now protects an
+optional load rather than rationing a mandatory one.
 
 A brief contains: the verdict; the falsification condition and whether it fired; what the Reviewer
 independently reproduced and what they could not; any defect found, with its outcome-changing status
