@@ -950,3 +950,127 @@ moved and the cycle's arithmetic would have become unverifiable too.
 present; provenance can only be established from a baseline captured at the time. Losing the second
 is permanent in a way losing the first is not, and it is exactly what an uncommitted, unmanifested
 artifact guarantees. See the 2026-08-01 durable lesson above on guards that share an exclusion.
+
+## T-038 / H-BasketVolTarget-1h lessons (2026-08-01, REJECTED at pre-gate P2, zero trials)
+
+First perps research cycle, and the first cycle ever run on the 1h sample. Full evidence:
+`research/results/T-038_report.md`.
+
+> **Reviewer-verified (Independent Reviewer A, 2026-08-01).** Drafted by the Engineer (this file is
+> Reviewer bookkeeping — a minor boundary overstep, recorded rather than reverted). Every numeric
+> claim below was independently confirmed: the Engineer's three scripts re-run unmodified reproduced
+> all six raw artifacts **byte-identically**, and a separate Reviewer reimplementation sharing no code
+> path with them (own basket weight-drift loop, `scipy.stats.spearmanr`, numpy `searchsorted`
+> bucketing) re-derived every gating figure to 6 dp. Two qualifications the Engineer's text does not
+> state: (i) the P2 quintile means are **non-monotonic** — Q1 +0.393508, Q2 +0.339667, Q3 +0.196651,
+> Q4 +0.742229, Q5 +0.836413, so Q3 is the minimum and the finding is "Q4/Q5 carry everything", not a
+> smooth vol gradient; (ii) the moving-block bootstrap CI on Q1−Q5 **straddles zero**
+> ([−1.210815, +0.344539], share > 0 = 0.1705), so the *sign* is robust across burn-in exclusion,
+> three disjoint-window offsets and three calendar years while the *magnitude* is not precisely known.
+> Neither qualification changes the verdict: both KILL clauses fired independently.
+
+**1. Volatility-conditioned DE-RISKING selects out good bars in this asset class. Second
+independent confirmation, and it is now a pattern rather than a one-off.** H-IVSizing (spot,
+2026-07-12) found that days where *implied* vol exceeded *realized* had BETTER forward returns.
+T-038 finds that hours with high *realized* 1h vol have BETTER forward per-unit-risk returns:
+basket Q1−Q5 = **−0.442905** (gate: KILL if ≤ 0), and only **1 of 9** instruments on the
+hypothesised side (gate: KILL if < 5 of 9). Two different volatility measures, two resolutions,
+two venues, two cost models, two programs, same sign. **The next volatility-conditioned
+de-risking proposal should be presumed to fail its harm census unless it carries a specific
+reason why its volatility measure separates crash vol from rally vol** — the failure mechanism
+is that high-vol bars in a long-only crypto book are predominantly high-vol *rallies*. Realized
+basket Sharpe by trailing-sigma quintile over TRAIN+VAL: Q1 +0.62, Q2 −0.51, Q3 −0.26, Q4 +1.90,
+**Q5 +2.80**; Q5 alone carries +182.77% of the window's return.
+
+**2. Volatility-target sizing did NOT transfer from spot to perps.** It was the spot program's
+single most durable component across ~97 constructs and it does not survive its own zero-cost
+pre-gate at 1h on OKX perps. A mechanism's spot record is not evidence about perps even when the
+mechanism is structural rather than predictive — the T-037 transition brief's instruction to void
+spot numbers has now been paid for once, concretely.
+
+**3. P1 and P2 are orthogonal, demonstrated again in the strongest possible form.** This construct
+passed persistence as decisively as it failed harm: Spearman ρ(sigma_t, forward 24-bar realized
+vol) median **0.564**, minimum 0.434, all nine instruments well clear. **Passing a persistence
+test establishes that the estimator works, not that the trade works.** Do not let a strong P1
+soften a P2 threshold.
+
+**4. HARNESS DEFECT, unresolved — the reserved-holdout boundary and `split_by_dates()` are not
+hour-aware.** `validator.HOLDOUT_BOUNDARIES["perps"]` is `Timestamp("2025-09-19", tz="UTC")` —
+**midnight**. On daily bars the date label and the bar coincide. On 1h bars `assert_no_holdout()`
+rejects every bar after 00:00 and `split_by_dates()` truncates there, so the last 23 hours of each
+boundary date vanish. Concretely for promotion criterion 3: the guard-compliant TEST slice
+(2025-04-21 01:00 → 2025-09-19 00:00) daily-aggregates to **152** UTC dates with a 23-hour first
+day and a **1-hour last day**, against the benchmark's **151** complete days — the comparison is
+VOID by the task's own rule. The slice that yields 151 complete days (2025-04-22 00:00 →
+2025-09-19 23:00) is exactly the one `assert_no_holdout()` refuses. **T-038 never had to resolve
+this (P2 stopped the ladder first) and did not.** It is an operator/Director declaration — the
+boundary is FIXED and the benchmark has already been measured against it — and it will block the
+first 1h perps cycle that reaches a trial.
+
+**5. A no-trade band against a CAPPED signal effectively abolishes the uncapped state.** `m_raw`
+is below 1.0 on 58% of bars; `m_applied` on **97%**. Once the applied value parks at e.g. 0.94, a
+return to `m_raw = 1.0` is a 0.06 drift and never triggers the 0.10 band. The *magnitude* of
+reduction is barely affected (both below 0.9 on ~44–46% of bars) — it is "fully invested" that
+disappears. Any future band-based rebalance rule against a capped signal should state whether that
+is intended.
+
+**6. Data note:** BNB's 1h history begins at **06:00** on 2022-12-23, not 00:00. Six union bars
+therefore lack a leg and are not bars of a nine-instrument basket: 24,019 basket bars, not 24,025.
+Any future 1h basket work on the nine meets the same six bars.
+
+## FAMILY-LEVEL FINDING — volatility-conditioned de-risking is INVERTED on this market
+
+**Recorded 2026-08-02 by the Independent Reviewer, after T-038. Binding form:
+`research/STANDING_DIRECTIVES.md` directive 10 — that is the rule; this is the evidence.**
+
+**The finding.** Reducing exposure as trailing volatility rises does not merely fail to help on
+this market — it removes the bars that carry the returns. The mechanism is present with the
+**opposite sign** to the one every vol-target construct assumes.
+
+**T-038 evidence** (perps, 1h, equal-weight 9-instrument basket, EWMA sigma half-life 48 bars,
+quintiles of trailing sigma, TRAIN+VAL = 20,370 basket bars, 2022-12-23 → 2025-04-21):
+
+- Basket **Q1 − Q5 = −0.442905** in forward 24-bar per-unit-risk return (gate: KILL if ≤ 0).
+  High-trailing-vol hours had **better** forward per-unit-risk returns.
+- **1 of 9** instruments on the hypothesised side (gate: KILL if < 5 of 9). ADA alone, and it is
+  the only instrument whose Q5 mean is negative at all.
+- Realized basket Sharpe by trailing-sigma quintile: **+0.62 / −0.51 / −0.26 / +1.90 / +2.80**.
+  The Q5 bars alone compound to **+182.8%** over TRAIN+VAL — Q2 and Q3 are outright negative.
+
+**What is robust and what is not — state both when citing this.**
+
+- **Sign: robust.** Negative across three disjoint-forward-window subsamples (offsets 0/8/16),
+  all three calendar years (2023 −0.044, 2024 −1.303, 2025-to-April −1.095), with the 96 burn-in
+  bars excluded (−0.434), through an independent numpy recomputation, and on a realized-Sharpe
+  cross-check sharing no forward-window construction with the gating statistic.
+- **Magnitude: NOT established.** The moving-block bootstrap 90% CI on Q1−Q5 **straddles zero**
+  ([−1.210815, +0.344539], share > 0 = 0.1705), and the quintile means are **non-monotonic** —
+  Q3 is the minimum, not Q1. The correct reading is **"Q4/Q5 carry everything"**, NOT a smooth
+  volatility gradient. Do not quote −0.44 as a calibrated effect size.
+
+**Second independent confirmation.** H-IVSizing (spot, daily, implied-vs-realized vol,
+2026-07-12) found the same direction on a **different volatility measure, resolution and venue**:
+days where implied exceeded realized had *better* forward returns (VRP positive-carry). Two
+constructs, two programs, two measures, two resolutions, two cost models — same sign. This is a
+pattern, not a one-off.
+
+**Tension with the spot record, stated honestly.** The spot program called volatility-target
+sizing its single most durable non-signal component across ~97 constructs. **That does not
+reproduce on perps 1h.** Either it was an artifact of the pre-2026-07-31 harness (whose truncated
+indicator warmup systematically depressed val/test metrics — see the 2026-07-31 directive 8), or
+it was specific to the regimes and instruments the spot program happened to test. Both readings
+are open; neither is established. Cite the tension, not one side of it.
+
+**Do NOT close the volatility family on this evidence.** What is falsified is *de-risking on a
+volatility LEVEL signal in a long-only crypto book*. Untested: any measure that separates
+**downside** from upside volatility (semivariance, downside deviation, drawdown-conditioned
+exposure) — and the whole failure mechanism here is that high-vol bars in this book are
+predominantly high-vol *rallies*, which such a measure might separate. The Reviewer scoped the
+`hypothesis_bank.md` entry to the **basket-exposure form only** for exactly this reason; Kaufman's
+original card describes a *trend-following futures* portfolio, not an unhedged long-only basket.
+
+**A trap worth naming.** The same decomposition that killed this construct guarantees that the
+*inverted* construct (scale UP in high vol) looks excellent in-sample on this window. It is an
+unhedged leveraged long on a 2023–2025 crypto bull sample, and the deleveraging episode that
+would price it is not present in the window. If it is ever tested it must be pre-gated on a crash
+sample this dataset does not contain.

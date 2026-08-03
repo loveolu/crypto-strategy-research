@@ -215,6 +215,24 @@ theme exhausted (with Task ID evidence) and pivot to a different family.
    only when no bank entry fits the rubric.
 8. **Parked revival is valid** when the new evidence it asked for now exists.
 
+### Pre-gate design: a gate must be capable of failing for the right reason
+
+A gate must be capable of failing for the reason the hypothesis is wrong. Before
+assigning any pre-gate, ask whether its pass condition could be satisfied by
+arithmetic alone rather than by the hypothesized mechanism. A gate that passes by
+construction is not evidence.
+
+Concrete instance from T-038: a multiplier `m = min(1, target/sigma)` with a median
+target holds less exposure in high-volatility bars, which lowers realized volatility
+more than mean return on any volatility-clustered series — raising Sharpe whether or
+not the mechanism exists. The remedy is a matched control that preserves the
+construct's distribution while destroying the property under test (block-shuffle,
+sign-flip, label-permutation), with the real value required to beat a stated
+percentile of the control distribution.
+
+State in `NEXT_TASK.md`, for each pre-gate, what would make it pass in the absence of
+the mechanism, and why that cannot happen as specified.
+
 ### RESEARCH:OPS ratio
 
 `research_metrics.md` tracks this per program. If the perps program's ratio is below

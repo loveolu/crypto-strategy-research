@@ -926,6 +926,23 @@ controls (VaR, etc.).
 single-instrument version of this same idea), Equal-Risk Portfolio Weighting.
 **Source attribution**: Kaufman Ch.24; `06_volatility.md`, `12_portfolio_construction.md`.
 
+**Status: TESTED (basket-exposure form) — REJECTED (2026-08-01, Task T-038 / H-BasketVolTarget-1h,
+Independent Reviewer A-verified, zero trials spent).** The portfolio-level VF overlay with a
+drift-threshold rebalance rule — exactly this card's construction — was tested on OKX perps at **1h**:
+equal-weight 9-perp long basket scaled by `m_t = min(1, sigma_target/sigma_t)`, EWMA half-life 48
+bars, TRAIN-median target, 0.10 no-trade band, taker 9.0 bps/side. **Killed at the zero-cost harm
+census (P2) on both clauses**: basket Q1−Q5 forward per-unit-risk return **−0.442905** (KILL if ≤ 0)
+and **1 of 9** instruments on the hypothesised side (KILL if < 5 of 9). The mechanism is **inverted**
+on this data — high-trailing-volatility hours had *better* forward per-unit-risk returns, because
+high-vol bars in a long-only crypto book are predominantly high-vol *rallies*. Persistence (P1)
+passed decisively (ρ median 0.564373), so the volatility *forecast* is sound; what fails is the claim
+that the forecast is worth acting on. **What this does and does not close:** it falsifies *de-risking
+on a volatility LEVEL signal in a long-only crypto perp book* (second independent confirmation after
+H-IVSizing, T-022/2026-07-12, on implied vol). It does **not** close the card generally — Kaufman's
+construction is a *trend-following futures* portfolio, this basket is unhedged long-only, and no
+downside-vol-discriminating measure has been tested. See `research/results/T-038_report.md` and
+`research/review_briefs/T-038_brief.md`.
+
 ### Equal-Risk (Volatility-Parity) Portfolio Weighting
 
 **Description**: Weight each asset in a portfolio inversely to its own volatility so each contributes

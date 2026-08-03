@@ -3,7 +3,7 @@
 > **Format: one line per completed cycle, no detailed analysis.** Pre-2026-07-28 narrative is in
 > `research/archive/index_narrative_pre_2026-07-28.md`.
 
-**Cycles since meta-review #1 (2026-07-18): 16 of 25** — not due.
+**Cycles since meta-review #1 (2026-07-18): 17 of 25** — not due.
 
 ## Standing constraints
 
@@ -44,8 +44,7 @@ survivorship-biased — both bias the bar upward. Spent no trial. Record:
 | Task ID | Hypothesis | Verdict | Primary reason |
 |---|---|---|---|
 | T-037 | Perps program transition (not a cycle) | **PROGRAM BOUNDARY, 2026-07-29** | Venue, cost model and trial ledger changed; spot results void as perps evidence. See `research/review_briefs/T-037_PERPS_TRANSITION_brief.md` |
-
-*(First perps research cycle is T-038. Rows append below as cycles complete.)*
+| T-038 | H-BasketVolTarget-1h — EWMA vol-target exposure scaling of the 9-perp basket | **REJECT (pre-gate P2), 2026-08-01** | Harm census inverted: basket Q1−Q5 = −0.442905 (KILL if ≤0), breadth 1/9 (KILL if <5). High-vol 1h bars have BETTER forward per-unit-risk returns. P1 passed (ρ median 0.564). Zero trials; **perps n_trials stays 0** |
 
 > **T-035 audit-status note (2026-08-01).** The T-035 raw artifact
 > (`user_data/research/data/fear_greed/fng_raw.json`) is **permanently lost**. It was never

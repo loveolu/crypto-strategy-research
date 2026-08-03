@@ -4,7 +4,20 @@
 > (increment counts, append to the DSR-trend table, refresh indicator-usage tally). This file is
 > aggregate/statistical; narrative belongs in `strategy_iteration_log.md`, current status belongs
 > in `research_index.md`. 
-> Last updated: 2026-08-01, **A-005 / perps program benchmark + criterion 3 — COMPLETE**.
+> Last updated: 2026-08-01, **T-038 / H-BasketVolTarget-1h — REJECT at pre-gate P2 (Independent
+> Reviewer A)**. First perps RESEARCH cycle and the first cycle ever run on the 1h sample. EWMA
+> vol-target exposure scaling of the 9-perp equal-weight basket killed by the harm census on **both**
+> clauses: basket Q1−Q5 forward per-unit-risk return **−0.442905** (KILL if ≤ 0) and breadth **1 of 9**
+> instruments positive (KILL if < 5 of 9). The mechanism is **inverted** — high-trailing-vol 1h bars had
+> *better* forward per-unit-risk returns (realized quintile Sharpes Q1 +0.6150 … Q5 +2.8015). P1
+> (persistence) passed decisively, ρ median 0.564373 / min 0.434160. **Zero trials spent — perps
+> `n_trials` stays 0** of the 30-trial cap; trial ledger stays at 0 rows; no DSR computed. Reviewer
+> reproduced all six raw artifacts **byte-identically** and re-derived every gating figure through an
+> independent reimplementation. Audit findings (none outcome-changing): five section-7 diagnostics were
+> untraceable to any raw artifact but recomputed correct to the digit; the three `phase_t038_*.py`
+> scripts are gitignored/untracked (operator action). See `research/results/T-038_report.md` and
+> `research/review_briefs/T-038_brief.md`.
+> Previous update: 2026-08-01, **A-005 / perps program benchmark + criterion 3 — COMPLETE**.
 > Equal-weight **monthly-rebalanced** long basket of the 9 `config_perp.json` perps, committed on the
 > frozen split triple (train_end 2024-11-22 / val_end 2025-04-21 / test_end 2025-09-19): TEST Sharpe
 > **+0.123321 per-period** (+2.3560 annualised, **positive** — so criterion 3 binds rather than
@@ -132,10 +145,12 @@ scheme and is not counted.
 
 | Metric | Value |
 |---|---|
-| RESEARCH cycles | **0** |
+| RESEARCH cycles | **1** — T-038 (H-BasketVolTarget-1h, REJECT at pre-gate P2, 2026-08-01) |
 | OPS/INFRASTRUCTURE cycles | **1** — A-005 (perps program benchmark, 2026-08-01) |
-| Ratio | n/a — below the 6-cycle threshold |
+| Ratio | **1 : 1** — reported only; below the 6-cycle threshold |
 | Floor status | **Not yet in force** |
+| Perps `n_trials` | **0** of the 30-trial cap (T-038 stopped at a zero-cost pre-gate) |
+| Perps trials spent to date | **0** — `research/trial_sharpe_ledger.csv` holds 0 rows |
 
 **The 2:1 floor applies only after 6 completed perps cycles.** Below that count the ratio is
 statistically meaningless — a single early ops task would read as a catastrophic breach and trigger a
@@ -148,6 +163,10 @@ rather than invisible.
 
 ## Rejection / promotion rate
 
+- **Perps program (2026-08-01, after T-038): no rate is computable yet — 0 trials spent.** T-038 was
+  rejected at a zero-cost pre-gate, which by the manual's definition tests no construct against
+  `n_trials`. Perps cycles completed: 1 RESEARCH (rejected) + 1 OPS. The figures below are the
+  **closed spot program's** final values and do not carry across the program boundary.
 - **Rejection rate: ~96%** (96 rejected of 100 total tested constructs).
 - **Promotion rate: ~1%** (1 of 100) — and that single promotion remains formally **unproven**
   (DSR 0.62 vs. the 0.95 bar for a statistically credible edge), not a confirmed success.

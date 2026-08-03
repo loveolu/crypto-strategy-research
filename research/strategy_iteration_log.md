@@ -1526,3 +1526,60 @@ contrarian/reactive-confirmation use rather than an anticipatory veto).
 - `dryrun_monitor.py` v2.1 hard-failed on stale data (BTC feather last bar 2026-07-18, 8 days old).
 - Trade count: 0 (champion in flat regime — M1 parity would only test "correctly stayed flat").
 - 0 trials spent. n_trials remains 100.
+
+### Iteration 41 (T-038 / H-BasketVolTarget-1h)
+**Date:** 2026-08-01
+**Program:** perps (first perps RESEARCH cycle; first cycle ever run on the 1h sample)
+**Hypothesis:** Scale the equal-weight monthly-rebalanced 9-perp long basket by
+`m_t = min(1, sigma_target/sigma_t)` (EWMA half-life 48 bars, TRAIN-median target, 0.10 no-trade
+band), 1h bars, OKX taker 9.0 bps/side.
+**Executed by:** Research Engineer. **Audited by:** Independent Reviewer A.
+**Verdict:** **REJECT at pre-gate P2 — zero trials spent. Perps `n_trials` stays 0.**
+
+**Decisive evidence.** P1 (volatility persistence) PASSED decisively — Spearman rho(sigma_t, forward
+24-bar realized vol) median **0.564373**, minimum **0.434160** (BTC), all nine well clear of the
+0.30/0.15 thresholds. P2 (harm census) then FAILED on **both** KILL clauses: basket
+**Q1 - Q5 = -0.442905** (KILL if <= 0) and breadth **1 of 9** instruments positive (KILL if < 5).
+The mechanism is not merely absent — it is **inverted**: high-trailing-volatility hours had *better*
+forward per-unit-risk returns. Realized basket Sharpe by trailing-sigma quintile over TRAIN+VAL:
+Q1 +0.6150, Q2 -0.5135, Q3 -0.2596, Q4 +1.9012, **Q5 +2.8015**. De-risking into high 1h vol would
+have removed the bars carrying essentially all of the basket's return.
+
+**Reviewer reproduction.** All three Engineer scripts re-run **unmodified**: byte-identical stdout
+and JSON across all six raw artifacts. Additionally reproduced through a **fully independent
+Reviewer reimplementation** (own basket weight-drift loop, `scipy.stats.spearmanr`, numpy
+quantile/`searchsorted` bucketing — sharing no code path with the Engineer's) which returned every
+gating figure to 6 dp: Q1-Q5 -0.442905, breadth 1/9, P1 median 0.564373, sigma_target 0.540308,
+33 rebalances, mean turnover 0.100571, 24,019 basket bars. Data tree clean before and after;
+manifest verify OK (52 files); no bypass; `check_dsr_entrypoint.py` 0 violations; no DSR computed
+and no ledger row, correctly, since no trial was spent.
+
+**Findings (none outcome-changing).**
+- Five section-7 construct diagnostics (mean `m_raw` 0.8597 / `m_applied` 0.8288, shares < 0.9
+  0.4399 / 0.4567, 249 exposure changes, sum|dm| 30.207) appear in **no** saved raw artifact,
+  contradicting the report's section-13 claim that every figure is traceable. The Reviewer
+  recomputed all five independently — **all correct to the digit**. Documentation gap, not
+  fabrication.
+- The three `phase_t038_*.py` scripts are **gitignored** (`.gitignore:7 user_data/*`) and untracked,
+  so the deliverable-2 reproduction artifacts have no git baseline. Prior cycles' scripts were
+  force-added. Operator action.
+- The T-038 section of `strategy_research_notes.md` was written by the Engineer; that file is
+  Reviewer bookkeeping. Content verified accurate and retained.
+- Boolean transcription checked line-by-line against every falsification condition: `and`/`or`,
+  `>=`/`>` all exact. No spec deviation.
+
+**Observations.** The P2 quintile means are **non-monotonic** (Q3 is the minimum, not Q1) — the
+finding is "Q4/Q5 carry everything", not a smooth vol gradient. The moving-block bootstrap CI on
+Q1-Q5 straddles zero ([-1.210815, +0.344539], share>0 0.1705) and was correctly reported as
+non-gating; the *sign* is stable across burn-in exclusion, three disjoint-window offsets, three
+calendar years, and the independent realized-Sharpe cross-check, while the *magnitude* is not
+precisely known.
+
+**Confirmed harness issue for future 1h cycles.** The Reviewer independently verified the report's
+blocking note: `HOLDOUT_BOUNDARIES["perps"]` is midnight-valued, so the guard-compliant 1h TEST
+slice spans **152** distinct UTC dates against the benchmark CSV's **151** rows. It will void
+criterion 3 for the first 1h perps candidate that reaches a trial. Correctly not resolved inside
+this cycle — it is a Director/operator declaration.
+
+**Decision:** REJECT CONFIRMED. Zero trials spent; **perps `n_trials` stays 0** (30-trial cap
+untouched). A correct, cheap, well-evidenced negative result.
