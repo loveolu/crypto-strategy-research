@@ -810,9 +810,41 @@ def yearly_pnl_dollar_concentration(returns: pd.DataFrame, starting: float = 1.0
 #
 #  THE BOUNDARY IS FIXED. It may not be moved after any perps result has been
 #  measured against it (PROJECT_OPERATOR_MANUAL.md, "Reserved holdout").
+#
+#  RESOLUTION-AWARENESS — operator decision 2026-08-02, after T-038.
+#
+#  The boundary is a CALENDAR DATE, and the last COMPLETE bar of that date is
+#  included at whatever resolution the series carries. Storing it as a bare
+#  Timestamp meant midnight, which is right for daily bars (the date label IS the
+#  bar) and wrong for every sub-daily resolution: on 1h bars the guard dropped the
+#  last 23 hours of the boundary date at EVERY split edge.
+#
+#  T-038 (first 1h cycle) surfaced the consequence, confirmed independently by both
+#  reviewers: the guard-compliant 1h TEST slice ran 2025-04-21 01:00 -> 2025-09-19
+#  00:00, which daily-aggregates to 152 dates with a 23-hour first day and a
+#  ONE-HOUR last day, against the committed benchmark's 151 complete days. Promotion
+#  criterion 3 requires date-identical overlap, so the comparison would have been
+#  VOID for the first 1h candidate to reach a trial - a harness artifact, not a
+#  property of any candidate.
+#
+#  The effective inclusive instant is therefore  date + 1 day - one bar interval:
+#      1d  -> 2025-09-19 00:00   (unchanged; the daily bar IS the date)
+#      4h  -> 2025-09-19 20:00
+#      1h  -> 2025-09-19 23:00
+#     15m  -> 2025-09-19 23:45
+#  A daily series and an hourly series both end on the same calendar date with
+#  their last complete bar included, which is the invariant that was missing.
+#
+#  THIS VOIDS NO RECORDED RESULT. Every perps figure on record was measured on
+#  DAILY bars, where the resolved instant is midnight - byte-identical to the old
+#  behaviour. The committed benchmark's TEST window is still exactly 151 dates
+#  (2025-04-22 .. 2025-09-19). The boundary DATE is untouched; only its sub-daily
+#  interpretation is now specified rather than accidental.
 # --------------------------------------------------------------------------- #
 
-#: Program-scoped holdout boundaries. Bars STRICTLY AFTER the value are reserved.
+#: Program-scoped holdout boundary DATES. Bars after the last complete bar of this
+#: calendar date are reserved. Resolve with holdout_boundary(program, freq=...) —
+#: the bare value here is the midnight/daily reading.
 HOLDOUT_BOUNDARIES = {
     "perps": pd.Timestamp("2025-09-19", tz="UTC"),
     "spot":  pd.Timestamp("2026-05-27", tz="UTC"),
@@ -821,15 +853,64 @@ HOLDOUT_BOUNDARIES = {
 #: The program this harness is currently validating for.
 ACTIVE_PROGRAM = "perps"
 
+#: Longest bar interval treated as "sub-daily" for boundary resolution.
+_ONE_DAY = pd.Timedelta("1D")
 
-def holdout_boundary(program: Optional[str] = None) -> pd.Timestamp:
-    """Reserved-holdout boundary for a program. Defaults to ACTIVE_PROGRAM."""
+
+def infer_bar_interval(obj) -> Optional[pd.Timedelta]:
+    """Modal spacing of a DatetimeIndex, or None if it cannot be determined.
+
+    The MODE, not the min or the mean: real feathers carry occasional gaps, and a
+    single missing bar must not reclassify an hourly series as 2-hourly.
+    """
+    idx = obj.index if hasattr(obj, "index") else obj
+    if idx is None or len(idx) < 2:
+        return None
+    try:
+        deltas = pd.Series(pd.DatetimeIndex(idx).sort_values()).diff().dropna()
+    except (TypeError, ValueError):
+        return None
+    deltas = deltas[deltas > pd.Timedelta(0)]
+    if deltas.empty:
+        return None
+    step = deltas.mode()
+    return None if step.empty else pd.Timedelta(step.iloc[0])
+
+
+def _resolve_boundary(date_boundary: pd.Timestamp,
+                      step: Optional[pd.Timedelta]) -> pd.Timestamp:
+    """Inclusive last instant of `date_boundary` at bar interval `step`.
+
+    Daily-or-coarser (or unknown) resolution keeps the historical midnight
+    reading, so no recorded daily result changes.
+    """
+    if step is None or step >= _ONE_DAY:
+        return date_boundary
+    return date_boundary + _ONE_DAY - step
+
+
+def holdout_boundary(program: Optional[str] = None,
+                     freq=None) -> pd.Timestamp:
+    """Reserved-holdout boundary for a program, INCLUSIVE.
+
+    `freq` may be a pandas offset alias ("1h", "4h"), a Timedelta, or a
+    DatetimeIndex/DataFrame/Series to infer the resolution from. Omitting it
+    returns the daily (midnight) reading, which is what every pre-2026-08-02
+    caller expects.
+    """
     prog = ACTIVE_PROGRAM if program is None else program
     if prog not in HOLDOUT_BOUNDARIES:
         raise ValueError(
             f"unknown program {prog!r}; known: {sorted(HOLDOUT_BOUNDARIES)}. The "
             f"holdout boundary is program-scoped and has no global default.")
-    return HOLDOUT_BOUNDARIES[prog]
+    base = HOLDOUT_BOUNDARIES[prog]
+    if freq is None:
+        return base
+    if isinstance(freq, (str, pd.Timedelta)):
+        step = pd.Timedelta(freq) if isinstance(freq, str) else freq
+    else:
+        step = infer_bar_interval(freq)
+    return _resolve_boundary(base, step)
 
 
 #: Convenience alias for the ACTIVE_PROGRAM boundary. Prefer holdout_boundary()
@@ -850,19 +931,27 @@ def assert_no_holdout(obj, label: str = "window",
     Accepts a DataFrame, Series, or DatetimeIndex. Called on every train, val,
     test and walk-forward window, because a boundary that is only checked at the
     top level is not a boundary.
+
+    The boundary is RESOLUTION-AWARE (operator decision 2026-08-02): the last
+    complete bar of the boundary DATE is included, so an hourly series may legally
+    end at 23:00 on that date while a daily series ends at 00:00. Passing an
+    explicit `boundary` overrides this and is taken literally.
     """
-    bound = holdout_boundary(program) if boundary is None else pd.Timestamp(boundary)
     idx = obj.index if hasattr(obj, "index") else obj
     if len(idx) == 0:
         return
     if getattr(idx, "tz", None) is None:
         idx = idx.tz_localize("UTC")
+    if boundary is None:
+        bound = holdout_boundary(program, freq=idx)
+    else:
+        bound = pd.Timestamp(boundary)
     offending = idx[idx > bound]
     if len(offending):
         raise HoldoutViolation(
             f"{label}: {len(offending)} bar(s) fall past the reserved-holdout "
-            f"boundary {bound.date()} "
-            f"({offending.min().date()} .. {offending.max().date()}). "
+            f"boundary {bound} "
+            f"({offending.min()} .. {offending.max()}). "
             f"Holdout bars may not appear in ANY evaluation window - not train, "
             f"val, test, or walk-forward. Pin the split dates so they end on or "
             f"before {bound.date()} (see split_by_dates), or trim the input. "
@@ -876,6 +965,13 @@ def split_by_dates(df: pd.DataFrame, train_end, val_end, test_end):
     Mandated by PROJECT_OPERATOR_MANUAL.md, "Reserved holdout": splits must be
     pinned by DATE, not by fraction, so extending the data cannot move them.
     Anything after `test_end` is dropped, which is how holdout stays out.
+
+    Each end date is INCLUSIVE OF ITS LAST COMPLETE BAR at the series' own
+    resolution (operator decision 2026-08-02). On daily bars that is midnight, so
+    behaviour is unchanged; on 1h bars a split ending 2025-04-21 now runs through
+    2025-04-21 23:00 instead of stopping at 00:00 and silently discarding 23 bars
+    at every edge. A caller passing a timestamp with a nonzero time component is
+    taken literally, so an explicit intra-day cut is still possible.
     """
     t_end, v_end, s_end = (pd.Timestamp(x) for x in (train_end, val_end, test_end))
     t_end, v_end, s_end = (x.tz_localize("UTC") if x.tz is None else x
@@ -885,6 +981,11 @@ def split_by_dates(df: pd.DataFrame, train_end, val_end, test_end):
             f"split dates must be strictly increasing, got train_end={t_end.date()} "
             f"val_end={v_end.date()} test_end={s_end.date()}")
     idx = df.index
+    step = infer_bar_interval(idx)
+    # Only extend values that are bare dates; an explicit time is honoured as given.
+    t_end, v_end, s_end = (
+        _resolve_boundary(x, step) if x == x.normalize() else x
+        for x in (t_end, v_end, s_end))
     return (df.loc[idx <= t_end],
             df.loc[(idx > t_end) & (idx <= v_end)],
             df.loc[(idx > v_end) & (idx <= s_end)])

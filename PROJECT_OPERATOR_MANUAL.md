@@ -659,6 +659,34 @@ Moving it afterwards converts held-out bars into in-sample ones retroactively an
 already scored against the old line. If it must change, that is a new declaration, stated as such,
 and every prior result on the old boundary is void — not rebased.
 
+### The boundary is a DATE, resolved to the last COMPLETE bar (operator decision 2026-08-02)
+
+**The boundary DATE is unchanged; only its sub-daily reading is now specified.** Daily and hourly
+series must both end on the **same calendar date with their last complete bar included** — inclusive
+instant = `date + 1 day − one bar interval`. Perps: 1d → 2025-09-19 **00:00** (unchanged, the daily
+bar *is* the date); 1h → **23:00**; 4h → 20:00; 15m → 23:45.
+
+**Why.** As a bare midnight `Timestamp` the guard dropped the last 23 hours of the boundary date at
+**every split edge** on sub-daily bars. T-038 (first 1h cycle) hit it, both reviewers confirming
+independently: the 1h TEST slice ran 2025-04-21 01:00 → 2025-09-19 00:00, aggregating to **152** dates
+with a 23-hour first day and a **one-hour** last day against the benchmark's **151** complete days.
+Criterion 3 needs date-identical overlap, so it would have been **VOID for any 1h candidate reaching a
+trial** — a harness artifact, not a property of any candidate.
+
+**This voids NO recorded result — hence a declaration, not a boundary move.** Every perps figure on
+record is daily, where the resolved instant is midnight, i.e. the old behaviour. Verified by
+regenerating the committed benchmark under the fix: all five artifacts **byte-identical** (TEST Sharpe
++0.123321, N = 151, MaxDD −25.02%).
+
+Implemented as `validator.holdout_boundary(program, freq=...)`, `infer_bar_interval()`, and
+resolution-aware `assert_no_holdout()` / `split_by_dates()`; an explicit intra-day timestamp is still
+honoured literally. `scripts/test_validator.py` asserts the 1h TEST slice gives exactly 151 complete
+daily dates and that nothing past the boundary date survives.
+
+**T-038's archived figures predate this fix.** Re-run under it the census shifts trivially — Q1−Q5
+−0.442905 → **−0.438872**, P1 median ρ 0.564373 → 0.564232, breadth **1/9 either way** — REJECT
+unchanged. The committed raw artifacts stand as the record of what was run.
+
 **Pin splits by DATE, not by fraction.** `split_70_15_15()` is deprecated and warns; it computes
 boundaries as percentages of whatever it is handed, so a data top-up slides the TEST window forward
 with no error. Use `split_by_dates(df, train_end, val_end, test_end)`.

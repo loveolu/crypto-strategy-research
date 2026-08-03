@@ -768,6 +768,130 @@ def test_accepts_pandas_series_and_aligns_on_nothing_implicitly():
         raise AssertionError("non-identical indexes must raise")
 
 
+# --------------------------------------------------------------------------- #
+#  Resolution-aware reserved holdout (operator decision 2026-08-02, after T-038)
+#
+#  The boundary is a calendar DATE and the last COMPLETE bar of that date is
+#  included at whatever resolution the series carries. Before this, the bare
+#  midnight Timestamp silently dropped the last 23 hours of the boundary date on
+#  1h bars at every split edge, which made the T-038-era 1h TEST slice aggregate
+#  to 152 daily dates (last day one hour long) against the benchmark's 151 and
+#  would have VOIDED promotion criterion 3 for the first 1h candidate at trial.
+# --------------------------------------------------------------------------- #
+
+_PERPS_TRAIN_END, _PERPS_VAL_END, _PERPS_TEST_END = "2024-11-22", "2025-04-21", "2025-09-19"
+
+
+def _hourly_frame_through_holdout(program: str = "perps") -> pd.DataFrame:
+    """1h series running well past the boundary date, so slicing is what trims it."""
+    base = V.HOLDOUT_BOUNDARIES[program]
+    idx = pd.date_range(pd.Timestamp("2022-12-23", tz="UTC"),
+                        base + pd.Timedelta(days=30), freq="h")
+    return pd.DataFrame({"close": np.linspace(100.0, 200.0, len(idx))}, index=idx)
+
+
+def test_holdout_boundary_is_resolution_aware():
+    base = V.HOLDOUT_BOUNDARIES["perps"]
+    # Daily and coarser keep the historical midnight reading — no recorded daily
+    # result may change.
+    assert V.holdout_boundary("perps") == base
+    assert V.holdout_boundary("perps", freq="1D") == base
+    # Sub-daily includes the last complete bar of the same calendar date.
+    assert V.holdout_boundary("perps", freq="1h") == base + pd.Timedelta(hours=23)
+    assert V.holdout_boundary("perps", freq="4h") == base + pd.Timedelta(hours=20)
+    assert V.holdout_boundary("perps", freq="15min") == base + pd.Timedelta(minutes=1425)
+    # Same calendar date at every resolution — the invariant that was missing.
+    for f in ("1D", "4h", "1h", "15min"):
+        assert V.holdout_boundary("perps", freq=f).date() == base.date()
+
+
+def test_hourly_series_may_end_at_2300_on_the_boundary_date():
+    """The exact case the guard used to refuse."""
+    base = V.HOLDOUT_BOUNDARIES["perps"]
+    idx = pd.date_range(pd.Timestamp("2025-09-01", tz="UTC"),
+                        base + pd.Timedelta(hours=23), freq="h")
+    df = pd.DataFrame({"close": 1.0}, index=idx)
+    V.assert_no_holdout(df, label="hourly-through-2300", program="perps")  # must not raise
+    assert df.index.max() == base + pd.Timedelta(hours=23)
+
+
+def test_holdout_guard_still_rejects_the_next_bar_after_the_boundary_date():
+    """Resolution-awareness must not become a leak: 00:00 of the NEXT day is holdout."""
+    base = V.HOLDOUT_BOUNDARIES["perps"]
+    idx = pd.date_range(pd.Timestamp("2025-09-01", tz="UTC"),
+                        base + pd.Timedelta(days=1), freq="h")
+    df = pd.DataFrame({"close": 1.0}, index=idx)
+    try:
+        V.assert_no_holdout(df, label="leaky", program="perps")
+    except V.HoldoutViolation as exc:
+        assert "leaky" in str(exc)
+    else:
+        raise AssertionError("guard accepted bars past the boundary date")
+
+
+def test_hourly_test_split_aggregates_to_exactly_151_daily_dates():
+    """The T-038 finding, as a regression test.
+
+    The 1h TEST slice must daily-aggregate to exactly the benchmark's 151 dates
+    (2025-04-22 .. 2025-09-19), every one of them a COMPLETE 24-bar day, and no
+    bar may survive past the boundary date.
+    """
+    df = _hourly_frame_through_holdout("perps")
+    tr, vl, te = V.split_by_dates(df, _PERPS_TRAIN_END, _PERPS_VAL_END, _PERPS_TEST_END)
+
+    dates = te.index.normalize().unique()
+    assert len(dates) == 151, f"expected 151 daily dates in TEST, got {len(dates)}"
+    assert str(dates.min().date()) == "2025-04-22"
+    assert str(dates.max().date()) == "2025-09-19"
+
+    # Every TEST day complete — no 23-hour first day, no 1-hour last day.
+    per_day = te.groupby(te.index.normalize()).size()
+    assert set(per_day.unique()) == {24}, f"incomplete days present: {per_day.value_counts()}"
+    assert len(te) == 151 * 24
+
+    # No bar after 2025-09-19 survives, at any hour.
+    assert te.index.max() == pd.Timestamp("2025-09-19 23:00", tz="UTC")
+    assert not (te.index.normalize() > pd.Timestamp("2025-09-19", tz="UTC")).any()
+
+    # And the guard agrees with the slicer.
+    for lbl, seg in (("train", tr), ("val", vl), ("test", te)):
+        V.assert_no_holdout(seg, label=lbl, program="perps")
+
+    # Splits are contiguous and non-overlapping.
+    assert tr.index.max() < vl.index.min() < vl.index.max() < te.index.min()
+
+
+def test_daily_splits_are_byte_identical_to_the_pre_2026_08_02_behaviour():
+    """Resolution-awareness must void no recorded result — all of which are daily."""
+    idx = pd.date_range("2022-12-23", "2025-09-19", freq="D", tz="UTC")
+    df = pd.DataFrame({"close": np.linspace(100.0, 200.0, len(idx))}, index=idx)
+    tr, vl, te = V.split_by_dates(df, _PERPS_TRAIN_END, _PERPS_VAL_END, _PERPS_TEST_END)
+    # Exactly the legacy midnight-inclusive arithmetic.
+    assert tr.index.max() == pd.Timestamp(_PERPS_TRAIN_END, tz="UTC")
+    assert vl.index.max() == pd.Timestamp(_PERPS_VAL_END, tz="UTC")
+    assert te.index.max() == pd.Timestamp(_PERPS_TEST_END, tz="UTC")
+    # The committed benchmark's TEST window: 151 daily bars, unchanged.
+    assert len(te) == 151
+    assert str(te.index.min().date()) == "2025-04-22"
+
+
+def test_split_by_dates_honours_an_explicit_intraday_cut():
+    """A caller passing a real time component is taken literally, not extended."""
+    df = _hourly_frame_through_holdout("perps")
+    cut = pd.Timestamp("2025-04-21 06:00", tz="UTC")
+    _, vl, _ = V.split_by_dates(df, _PERPS_TRAIN_END, cut, _PERPS_TEST_END)
+    assert vl.index.max() == cut
+
+
+def test_infer_bar_interval_survives_gaps():
+    """A missing bar must not reclassify an hourly series as 2-hourly."""
+    idx = pd.date_range("2025-01-01", periods=500, freq="h", tz="UTC").delete([17, 200, 201])
+    assert V.infer_bar_interval(idx) == pd.Timedelta("1h")
+    daily = pd.date_range("2025-01-01", periods=100, freq="D", tz="UTC")
+    assert V.infer_bar_interval(daily) == pd.Timedelta("1D")
+    assert V.infer_bar_interval(pd.DatetimeIndex([])) is None
+
+
 TESTS = [v for k, v in sorted(globals().items()) if k.startswith("test_") and callable(v)]
 
 
