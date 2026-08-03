@@ -108,3 +108,33 @@ Not a meta-review, but binding on the same terms. Numbering continues the global
    The two honest responses are to raise sample resolution or to accept that a daily-bar programme
    terminates at its trial cap with a negative result — not to lower a bar because the data cannot
    clear it.
+
+---
+
+## Directives from the 2026-08-02 T-038 family-level finding
+
+Not a meta-review, but binding on the same terms. Numbering continues the global sequence
+(the 2026-08-01 statistical-power finding ended at 9).
+
+10. **Volatility-conditioned de-risking is INVERTED on this market, not merely absent. Any
+    construct that reduces exposure as trailing volatility rises must state why it escapes this
+    finding before it may be assigned.**
+
+    T-038 (perps, 1h, basket EWMA-sigma quintiles, TRAIN+VAL, 20,370 bars): high trailing-vol
+    hours had **BETTER** forward per-unit-risk returns — **Q1−Q5 = −0.442905**, **1 of 9**
+    instruments on the hypothesised side, realized Sharpe by quintile **+0.62 / −0.51 / −0.26 /
+    +1.90 / +2.80** with Q5's bars alone compounding **+182.8%**; H-IVSizing (spot, daily,
+    implied-vs-realized vol) is a second confirmation on a different measure/resolution/venue.
+
+    **Sign robust, magnitude NOT — cite both:** the sign holds across three disjoint subsamples and
+    all three calendar years, but the bootstrap CI straddles zero ([−1.21, +0.34]) and the quintile
+    means are **non-monotonic** (Q3 is the minimum), so the finding is **"Q4/Q5 carry everything"**,
+    not a smooth gradient — never quote −0.44 as an effect size.
+
+    **Scope:** cite alongside this the tension with spot, which called vol-target sizing its most
+    durable non-signal component across ~97 constructs and does **not** reproduce here (either a
+    pre-repair-harness artifact, directive 8, or regime-specific — both open); and **do NOT close
+    the volatility family**, since no downside-vol/semivariance measure has been tested and the
+    failure mechanism (high-vol bars here are predominantly *rallies*) is what such a measure might
+    separate — the `hypothesis_bank.md` entry is scoped to the **basket-exposure form only**.
+    Evidence and the inverted-construct trap: `strategy_research_notes.md`, "FAMILY-LEVEL FINDING".
