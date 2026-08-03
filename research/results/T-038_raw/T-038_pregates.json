@@ -1,0 +1,422 @@
+{
+  "P0": {
+    "pass": true,
+    "per_instrument": {
+      "BTC/USDT:USDT": {
+        "exists": true,
+        "raw_bars": 38587,
+        "raw_first": "2022-01-01 00:00:00+00:00",
+        "raw_last": "2026-05-27 18:00:00+00:00",
+        "covers_boundary": true,
+        "duplicate_timestamps": false,
+        "window_bars": 24025,
+        "window_first": "2022-12-23 00:00:00+00:00",
+        "window_last": "2025-09-19 00:00:00+00:00",
+        "worst_internal_gap": "0 days 01:00:00",
+        "n_gaps_over_24h": 0
+      },
+      "ETH/USDT:USDT": {
+        "exists": true,
+        "raw_bars": 38612,
+        "raw_first": "2022-01-01 00:00:00+00:00",
+        "raw_last": "2026-05-28 19:00:00+00:00",
+        "covers_boundary": true,
+        "duplicate_timestamps": false,
+        "window_bars": 24025,
+        "window_first": "2022-12-23 00:00:00+00:00",
+        "window_last": "2025-09-19 00:00:00+00:00",
+        "worst_internal_gap": "0 days 01:00:00",
+        "n_gaps_over_24h": 0
+      },
+      "SOL/USDT:USDT": {
+        "exists": true,
+        "raw_bars": 38612,
+        "raw_first": "2022-01-01 00:00:00+00:00",
+        "raw_last": "2026-05-28 19:00:00+00:00",
+        "covers_boundary": true,
+        "duplicate_timestamps": false,
+        "window_bars": 24025,
+        "window_first": "2022-12-23 00:00:00+00:00",
+        "window_last": "2025-09-19 00:00:00+00:00",
+        "worst_internal_gap": "0 days 01:00:00",
+        "n_gaps_over_24h": 0
+      },
+      "BNB/USDT:USDT": {
+        "exists": true,
+        "raw_bars": 30062,
+        "raw_first": "2022-12-23 06:00:00+00:00",
+        "raw_last": "2026-05-28 19:00:00+00:00",
+        "covers_boundary": true,
+        "duplicate_timestamps": false,
+        "window_bars": 24019,
+        "window_first": "2022-12-23 06:00:00+00:00",
+        "window_last": "2025-09-19 00:00:00+00:00",
+        "worst_internal_gap": "0 days 01:00:00",
+        "n_gaps_over_24h": 0
+      },
+      "XRP/USDT:USDT": {
+        "exists": true,
+        "raw_bars": 38612,
+        "raw_first": "2022-01-01 00:00:00+00:00",
+        "raw_last": "2026-05-28 19:00:00+00:00",
+        "covers_boundary": true,
+        "duplicate_timestamps": false,
+        "window_bars": 24025,
+        "window_first": "2022-12-23 00:00:00+00:00",
+        "window_last": "2025-09-19 00:00:00+00:00",
+        "worst_internal_gap": "0 days 01:00:00",
+        "n_gaps_over_24h": 0
+      },
+      "ADA/USDT:USDT": {
+        "exists": true,
+        "raw_bars": 38612,
+        "raw_first": "2022-01-01 00:00:00+00:00",
+        "raw_last": "2026-05-28 19:00:00+00:00",
+        "covers_boundary": true,
+        "duplicate_timestamps": false,
+        "window_bars": 24025,
+        "window_first": "2022-12-23 00:00:00+00:00",
+        "window_last": "2025-09-19 00:00:00+00:00",
+        "worst_internal_gap": "0 days 01:00:00",
+        "n_gaps_over_24h": 0
+      },
+      "AVAX/USDT:USDT": {
+        "exists": true,
+        "raw_bars": 38612,
+        "raw_first": "2022-01-01 00:00:00+00:00",
+        "raw_last": "2026-05-28 19:00:00+00:00",
+        "covers_boundary": true,
+        "duplicate_timestamps": false,
+        "window_bars": 24025,
+        "window_first": "2022-12-23 00:00:00+00:00",
+        "window_last": "2025-09-19 00:00:00+00:00",
+        "worst_internal_gap": "0 days 01:00:00",
+        "n_gaps_over_24h": 0
+      },
+      "DOT/USDT:USDT": {
+        "exists": true,
+        "raw_bars": 38612,
+        "raw_first": "2022-01-01 00:00:00+00:00",
+        "raw_last": "2026-05-28 19:00:00+00:00",
+        "covers_boundary": true,
+        "duplicate_timestamps": false,
+        "window_bars": 24025,
+        "window_first": "2022-12-23 00:00:00+00:00",
+        "window_last": "2025-09-19 00:00:00+00:00",
+        "worst_internal_gap": "0 days 01:00:00",
+        "n_gaps_over_24h": 0
+      },
+      "LINK/USDT:USDT": {
+        "exists": true,
+        "raw_bars": 38612,
+        "raw_first": "2022-01-01 00:00:00+00:00",
+        "raw_last": "2026-05-28 19:00:00+00:00",
+        "covers_boundary": true,
+        "duplicate_timestamps": false,
+        "window_bars": 24025,
+        "window_first": "2022-12-23 00:00:00+00:00",
+        "window_last": "2025-09-19 00:00:00+00:00",
+        "worst_internal_gap": "0 days 01:00:00",
+        "n_gaps_over_24h": 0
+      }
+    },
+    "union_bars": 24025,
+    "basket_bars": 24019,
+    "boundary": "2025-09-19 00:00:00+00:00",
+    "window_start": "2022-12-23 00:00:00+00:00"
+  },
+  "splits": {
+    "mode": "date_pinned via validator.split_by_dates",
+    "dates": [
+      "2024-11-22",
+      "2025-04-21",
+      "2025-09-19"
+    ],
+    "holdout_after": "2025-09-19 00:00:00+00:00",
+    "bars": {
+      "full": 24019,
+      "train": 16795,
+      "val": 3600,
+      "test": 3624,
+      "train_val": 20395
+    },
+    "edges": {
+      "full": [
+        "2022-12-23 06:00:00+00:00",
+        "2025-09-19 00:00:00+00:00"
+      ],
+      "train": [
+        "2022-12-23 06:00:00+00:00",
+        "2024-11-22 00:00:00+00:00"
+      ],
+      "val": [
+        "2024-11-22 01:00:00+00:00",
+        "2025-04-21 00:00:00+00:00"
+      ],
+      "test": [
+        "2025-04-21 01:00:00+00:00",
+        "2025-09-19 00:00:00+00:00"
+      ]
+    }
+  },
+  "construct": {
+    "n_rebalances": 33,
+    "mean_rebalance_turnover": 0.10057103876635796,
+    "total_basket_cost_fraction": 0.0038869598513608314,
+    "sigma_target_annualised": 0.540308354122266,
+    "n_train_sigma_obs": 16699,
+    "train_sigma_min": 0.2066186975943054,
+    "train_sigma_max": 1.6145077620504862,
+    "half_life": 48,
+    "lambda": 0.9856631986401876,
+    "burn_in": 96,
+    "band": 0.1,
+    "cap": 1.0,
+    "lag_bars": 2,
+    "per_side_cost": 0.0009
+  },
+  "P1": {
+    "pass": true,
+    "median_rho": 0.5643734275035577,
+    "min_rho": 0.43415995377591676,
+    "min_rho_instrument": "BTC/USDT:USDT",
+    "per_instrument": {
+      "BTC/USDT:USDT": {
+        "n": 20369,
+        "rho_forward": 0.43415995377591676,
+        "rho_reversed": 0.7051253386693065
+      },
+      "ETH/USDT:USDT": {
+        "n": 20369,
+        "rho_forward": 0.5252407359121333,
+        "rho_reversed": 0.743694723876222
+      },
+      "SOL/USDT:USDT": {
+        "n": 20369,
+        "rho_forward": 0.5409472982708382,
+        "rho_reversed": 0.7598790102524253
+      },
+      "BNB/USDT:USDT": {
+        "n": 20369,
+        "rho_forward": 0.55936274086933,
+        "rho_reversed": 0.7685574179558984
+      },
+      "XRP/USDT:USDT": {
+        "n": 20369,
+        "rho_forward": 0.5719004233031615,
+        "rho_reversed": 0.7732860901291331
+      },
+      "ADA/USDT:USDT": {
+        "n": 20369,
+        "rho_forward": 0.6178735481771145,
+        "rho_reversed": 0.7913526669406049
+      },
+      "AVAX/USDT:USDT": {
+        "n": 20369,
+        "rho_forward": 0.6123592319893899,
+        "rho_reversed": 0.788018300326341
+      },
+      "DOT/USDT:USDT": {
+        "n": 20369,
+        "rho_forward": 0.6385221199887362,
+        "rho_reversed": 0.8013844542999804
+      },
+      "LINK/USDT:USDT": {
+        "n": 20369,
+        "rho_forward": 0.5643734275035577,
+        "rho_reversed": 0.7649744006490856
+      }
+    },
+    "thresholds": {
+      "median_min": 0.3,
+      "every_min": 0.15
+    },
+    "sanity_identical_censuses": []
+  },
+  "P2": {
+    "pass": false,
+    "basket_q1_minus_q5": -0.4429045833094619,
+    "basket_q_means": {
+      "1": 0.3935083430525791,
+      "2": 0.339666570830877,
+      "3": 0.19665074581762662,
+      "4": 0.7422287602919082,
+      "5": 0.836412926362041
+    },
+    "basket_q_counts": {
+      "1": 4074,
+      "2": 4074,
+      "3": 4074,
+      "4": 4074,
+      "5": 4074
+    },
+    "sigma_quintile_edges": [
+      0.003547739408691898,
+      0.4309936522944208,
+      0.527737497614346,
+      0.62959176561605,
+      0.7948769350776022,
+      1.7462580350308847
+    ],
+    "bootstrap_ci_90": {
+      "p5": -1.2108152819590656,
+      "p50": -0.44433600159255093,
+      "p95": 0.3445390318498123,
+      "n_resamples": 2000,
+      "block": 168,
+      "seed": 7,
+      "share_positive": 0.1705
+    },
+    "one_bar_diagnostic": {
+      "q_mean_fwd_logret": {
+        "1": -1.7996563305158505e-05,
+        "2": -2.6782939188679337e-05,
+        "3": -3.429192698590642e-05,
+        "4": 9.026126301837732e-05,
+        "5": 0.0003071863498693807
+      },
+      "q_mean_fwd_over_sigma": {
+        "1": -0.00017817499626856964,
+        "2": -5.1344315633237376e-05,
+        "3": -5.2493931484664874e-05,
+        "4": 0.00010857399293084042,
+        "5": 0.00027290766961495747
+      },
+      "q1_minus_q5_raw": -0.00032518291317453916,
+      "q1_minus_q5_scaled": -0.00045108266588352714
+    },
+    "per_instrument": {
+      "BTC/USDT:USDT": {
+        "q1_minus_q5": -0.5184585967243197,
+        "q_means": {
+          "1": 0.2897971207522979,
+          "2": 0.1563749127771114,
+          "3": 0.22437615060592686,
+          "4": 0.4713589991332539,
+          "5": 0.8082557174766176
+        },
+        "n": 20369
+      },
+      "ETH/USDT:USDT": {
+        "q1_minus_q5": -0.19962763504188963,
+        "q_means": {
+          "1": 0.2530808595259634,
+          "2": -0.21958703181751704,
+          "3": 0.35142984463107035,
+          "4": -0.05078184637423636,
+          "5": 0.452708494567853
+        },
+        "n": 20369
+      },
+      "SOL/USDT:USDT": {
+        "q1_minus_q5": -0.6497273526403636,
+        "q_means": {
+          "1": -0.1235239544619362,
+          "2": 0.1518363158889213,
+          "3": -0.2850671677506588,
+          "4": 0.5639774715476875,
+          "5": 0.5262033981784274
+        },
+        "n": 20369
+      },
+      "BNB/USDT:USDT": {
+        "q1_minus_q5": -0.8260572412488002,
+        "q_means": {
+          "1": 0.16987427398774738,
+          "2": -0.22058113302887145,
+          "3": 0.32341226738244644,
+          "4": 0.10909952782641001,
+          "5": 0.9959315152365475
+        },
+        "n": 20369
+      },
+      "XRP/USDT:USDT": {
+        "q1_minus_q5": -0.1787334111585078,
+        "q_means": {
+          "1": 0.21081301393970195,
+          "2": -0.3433831096197039,
+          "3": -0.02947379154844082,
+          "4": 0.3061928070110528,
+          "5": 0.38954642509820975
+        },
+        "n": 20369
+      },
+      "ADA/USDT:USDT": {
+        "q1_minus_q5": 0.18178509649398747,
+        "q_means": {
+          "1": 0.15465126805646714,
+          "2": -0.33644555471795273,
+          "3": 0.011712433436534692,
+          "4": 0.46543929338357715,
+          "5": -0.027133828437520317
+        },
+        "n": 20369
+      },
+      "AVAX/USDT:USDT": {
+        "q1_minus_q5": -0.6496435710031045,
+        "q_means": {
+          "1": -0.14784521625774802,
+          "2": -0.14540908685300724,
+          "3": -0.22379204202048056,
+          "4": -0.1331554370310185,
+          "5": 0.5017983547453565
+        },
+        "n": 20369
+      },
+      "DOT/USDT:USDT": {
+        "q1_minus_q5": -0.18700254164240146,
+        "q_means": {
+          "1": 0.04470194135335027,
+          "2": -0.0614769687173998,
+          "3": 0.047306292944170804,
+          "4": 0.13546604169201956,
+          "5": 0.23170448299575172
+        },
+        "n": 20369
+      },
+      "LINK/USDT:USDT": {
+        "q1_minus_q5": -0.252100179424825,
+        "q_means": {
+          "1": -0.10719737349144248,
+          "2": 0.19746016077901435,
+          "3": 0.07519498526486976,
+          "4": 0.31141283896156496,
+          "5": 0.14490280593338248
+        },
+        "n": 20369
+      }
+    },
+    "n_instruments_positive": 1,
+    "breadth_threshold": 5
+  },
+  "verdict": "REJECT at P2 (zero trials)",
+  "cost_model": {
+    "venue": "okx_usdt_perp",
+    "fee_tier": "regular (non-VIP, no fee discounts)",
+    "maker": 0.0002,
+    "taker": 0.0005,
+    "slippage_bps": 3.0,
+    "spread_bps": 2.0,
+    "fill_assumption": "taker",
+    "rates_as_of": "2026-07-28",
+    "slippage_spread_basis": "estimate - not calibrated against realized fills",
+    "adverse_selection_bps": null,
+    "adverse_selection_basis": null,
+    "per_side_cost": 0.0009,
+    "round_trip_cost": 0.0018,
+    "summary": "okx_usdt_perp / regular (non-VIP, no fee discounts) / fill=taker: maker 2.0bps, taker 5.0bps, slippage 3.0bps/side, spread 2.0bps, adverse selection unset -> 9.00bps/side, 18.00bps round trip"
+  },
+  "data_integrity": {
+    "ok": true,
+    "built_utc": "2026-07-29T07:58:59Z",
+    "checked_count": 52,
+    "recorded_count": 52,
+    "modified": [],
+    "missing": [],
+    "extra": [],
+    "bypassed": false
+  },
+  "warnings": [
+    "COST MODEL NOTE - slippage (3.0 bps/side) and spread (2.0 bps) are estimates, not calibrated against realized fills. Fee rates are published OKX regular (non-VIP, no fee discounts) rates for okx_usdt_perp as of 2026-07-28."
+  ]
+}

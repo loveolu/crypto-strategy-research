@@ -1,0 +1,17 @@
+{
+  "task_id": "T-038",
+  "reviewer": "b",
+  "model": "Composer",
+  "executed": true,
+  "verdict": "REJECT",
+  "primary_reason": "P2 harm census inverted — mechanism absent",
+  "gates_failed": ["P2", "falsification_condition_2"],
+  "spec_deviations": [],
+  "reproduced": true,
+  "reproduced_values": {"dsr": null, "sharpe": null},
+  "reported_values": {"dsr": null, "sharpe": null},
+  "data_clean": true,
+  "manifest_verified": true,
+  "bypass_detected": false,
+  "notes": "Zero trials spent; pre-gate ladder stopped at P2. Independently re-ran phase_t038_bvt.py, phase_t038_diag_p2_verify.py, and phase_t038_diag_lookahead.py — all match report raw artifacts. P2 basket Q1−Q5 = −0.442905 (report −0.442905); breadth 1/9 positive (report 1/9); P1 median Spearman ρ = 0.564373 (report 0.564373). Independent numpy P2 path (V1) also −0.442905. DSR and TEST Sharpe N/A — trial never ran. Cost model via validator: per_side_cost('taker')=0.0009, round_trip=0.0018, fill=taker. Splits use split_by_dates at frozen dates 2024-11-22/2025-04-21/2025-09-19; split_70_15_15 absent. Variant budget 1/0 optimization — 0 variants consumed. Falsification condition 2 fired; P2 code uses strict >0 primary and >=5 breadth with and-combined pass — matches spec, non-outcome-changing. Lookahead L1–L5 all PASS. trial_sharpe_ledger.csv unchanged (0 rows). Report §12 hourly-boundary vs 151-day benchmark pairing is unresolved but immaterial to this verdict (P2 stop precedes trial). n_trials remains 0."
+}

@@ -1,0 +1,34 @@
+{
+  "task_id": "T-038",
+  "reviewer": "a",
+  "verdict": "REJECT",
+  "primary_reason": "failed pre-gate P2 — harm-census mechanism absent and sign-inverted",
+  "gates_failed": [
+    "P2 primary: basket Q1-Q5 forward per-unit-risk return = -0.442905 (KILL if <= 0)",
+    "P2 secondary: breadth 1 of 9 instruments positive (KILL if < 5 of 9)"
+  ],
+  "spec_deviations": [],
+  "reproduced": true,
+  "data_clean": true,
+  "manifest_verified": true,
+  "bypass_detected": false,
+  "trials_spent": 0,
+  "n_trials_after": 0,
+  "trial_var_source": "n/a — no DSR computed, no trial spent",
+  "reproduction_method": "all three Engineer scripts re-run unmodified: byte-identical stdout AND JSON on all six artifacts; plus a fully independent Reviewer reimplementation (own basket loop, scipy.stats.spearmanr, numpy quantile/searchsorted bucketing) reproducing every gating figure to 6 dp",
+  "audit_findings_non_outcome_changing": [
+    "Five section-7 construct diagnostics (mean m_raw 0.8597, mean m_applied 0.8288, share<0.9 0.4399/0.4567, 249 exposure changes, sum|dm| 30.207) appear in NO saved raw artifact, contradicting section 13's 'every figure is traceable'. Reviewer recomputed all five independently: all correct to the digit. Documentation gap, not fabrication.",
+    "The three phase_t038_*.py scripts are gitignored (.gitignore:7 'user_data/*') and untracked, so deliverable-2 artifacts have no git baseline. Prior cycles' scripts were force-added and are tracked. Operator action; not outcome-changing since the Reviewer reproduced everything.",
+    "The T-038 lessons section in research/strategy_research_notes.md was written by the Engineer; that file is Reviewer bookkeeping (Reviewer prompt Phase 3 step 4). Content independently verified accurate and retained."
+  ],
+  "observations": [
+    "P2 quintile means are NON-monotonic (Q1 +0.393508, Q2 +0.339667, Q3 +0.196651, Q4 +0.742229, Q5 +0.836413) — Q3 is the minimum. The relation is 'Q4/Q5 carry everything', not a monotone vol gradient. Gate reads Q1-Q5 only; verdict unaffected.",
+    "Moving-block bootstrap CI on Q1-Q5 straddles zero ([-1.210815, +0.344539], share>0 = 0.1705) — correctly reported as non-gating. Magnitude is imprecise; sign is stable across V2, three disjoint-window offsets, three calendar years, and an independent realized-Sharpe cross-check.",
+    "Reviewer independently CONFIRMED the report's forward-looking harness finding: the guard-compliant 1h TEST slice (2025-04-21 01:00 -> 2025-09-19 00:00) spans 152 distinct UTC dates against the benchmark CSV's 151 rows (2025-04-22..2025-09-19). Genuine, unresolved, correctly not resolved inside this cycle."
+  ],
+  "falsification_condition_fired": "condition 2 (P2 mechanism absent) — fired; report does not argue around it",
+  "meta_review_due": false,
+  "program_cap_reached": false,
+  "cycles_since_meta_review_1": 17,
+  "reviewed_utc": "2026-08-01"
+}

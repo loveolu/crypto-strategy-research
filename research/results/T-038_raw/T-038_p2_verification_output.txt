@@ -1,0 +1,90 @@
+
+==============================================================================
+T-038 — P2 VERIFICATION (independent recomputation + artifact probes)
+==============================================================================
+cost model : okx_usdt_perp / regular (non-VIP, no fee discounts) / fill=taker: maker 2.0bps, taker 5.0bps, slippage 3.0bps/side, spread 2.0bps, adverse selection unset -> 9.00bps/side, 18.00bps round trip
+data gate  : {'ok': True, 'built_utc': '2026-07-29T07:58:59Z', 'checked_count': 52, 'recorded_count': 52, 'modified': [], 'missing': [], 'extra': [], 'bypassed': False}
+
+==============================================================================
+P0 — REACHABILITY (environment check, not a hypothesis verdict)
+==============================================================================
+holdout boundary (validator.HOLDOUT_BOUNDARIES['perps']) : 2025-09-19 00:00:00+00:00
+window start                                                : 2022-12-23 00:00:00+00:00
+
+  BTC/USDT:USDT      raw  38587 bars  2022-01-01 .. 2026-05-27 | window  24025 bars  2022-12-23 00:00:00+00:00 .. 2025-09-19 00:00:00+00:00 | worst gap  0 days 01:00:00 | gaps>24h 0 | dup False
+  ETH/USDT:USDT      raw  38612 bars  2022-01-01 .. 2026-05-28 | window  24025 bars  2022-12-23 00:00:00+00:00 .. 2025-09-19 00:00:00+00:00 | worst gap  0 days 01:00:00 | gaps>24h 0 | dup False
+  SOL/USDT:USDT      raw  38612 bars  2022-01-01 .. 2026-05-28 | window  24025 bars  2022-12-23 00:00:00+00:00 .. 2025-09-19 00:00:00+00:00 | worst gap  0 days 01:00:00 | gaps>24h 0 | dup False
+  BNB/USDT:USDT      raw  30062 bars  2022-12-23 .. 2026-05-28 | window  24019 bars  2022-12-23 06:00:00+00:00 .. 2025-09-19 00:00:00+00:00 | worst gap  0 days 01:00:00 | gaps>24h 0 | dup False
+  XRP/USDT:USDT      raw  38612 bars  2022-01-01 .. 2026-05-28 | window  24025 bars  2022-12-23 00:00:00+00:00 .. 2025-09-19 00:00:00+00:00 | worst gap  0 days 01:00:00 | gaps>24h 0 | dup False
+  ADA/USDT:USDT      raw  38612 bars  2022-01-01 .. 2026-05-28 | window  24025 bars  2022-12-23 00:00:00+00:00 .. 2025-09-19 00:00:00+00:00 | worst gap  0 days 01:00:00 | gaps>24h 0 | dup False
+  AVAX/USDT:USDT     raw  38612 bars  2022-01-01 .. 2026-05-28 | window  24025 bars  2022-12-23 00:00:00+00:00 .. 2025-09-19 00:00:00+00:00 | worst gap  0 days 01:00:00 | gaps>24h 0 | dup False
+  DOT/USDT:USDT      raw  38612 bars  2022-01-01 .. 2026-05-28 | window  24025 bars  2022-12-23 00:00:00+00:00 .. 2025-09-19 00:00:00+00:00 | worst gap  0 days 01:00:00 | gaps>24h 0 | dup False
+  LINK/USDT:USDT     raw  38612 bars  2022-01-01 .. 2026-05-28 | window  24025 bars  2022-12-23 00:00:00+00:00 .. 2025-09-19 00:00:00+00:00 | worst gap  0 days 01:00:00 | gaps>24h 0 | dup False
+
+union index bars              : 24025
+all-nine-present bars (basket): 24019
+bars dropped for missing legs : 6
+basket window                 : 2022-12-23 06:00:00+00:00 .. 2025-09-19 00:00:00+00:00
+  NOTE: bars with a missing leg were dropped from the basket index.
+
+P0 VERDICT: PASS
+
+==============================================================================
+V1 — INDEPENDENT RECOMPUTATION (numpy ranks, no pandas cut/groupby)
+==============================================================================
+  n = 20370   unconditional mean per-unit-risk return = 0.501693
+  Q1  n=  4074  mean = +0.393508
+  Q2  n=  4074  mean = +0.339667
+  Q3  n=  4074  mean = +0.196651
+  Q4  n=  4074  mean = +0.742229
+  Q5  n=  4074  mean = +0.836413
+  Q1 - Q5 = -0.442905
+  phase_t038_bvt.py reported -0.442905 — agreement to 6dp: True
+
+==============================================================================
+V2 — BURN-IN EXCLUSION (first 96 bars: expanding EWMA, sigma near zero)
+==============================================================================
+  burn-in sigma min/median/max : 0.003548 / 0.199660 / 0.271620
+  n = 20275
+  Q1  mean = +0.401724
+  Q2  mean = +0.359917
+  Q3  mean = +0.188344
+  Q4  mean = +0.750836
+  Q5  mean = +0.836174
+  Q1 - Q5 = -0.434451   sign unchanged: True
+
+==============================================================================
+V3 — NON-OVERLAPPING FORWARD WINDOWS (every 24th bar)
+==============================================================================
+  The gating census evaluates a 24-bar forward window on EVERY bar, so
+  adjacent observations share 23 of 24 returns. Taking every 24th bar
+  makes the forward windows disjoint at the cost of 1/24 of the sample.
+  offset  0:  n =   848   Q1 = +0.366778   Q5 = +0.972056   Q1-Q5 = -0.605279
+  offset  8:  n =   849   Q1 = +0.501371   Q5 = +0.885739   Q1-Q5 = -0.384368
+  offset 16:  n =   849   Q1 = +0.348057   Q5 = +0.706570   Q1-Q5 = -0.358513
+
+==============================================================================
+V4 — PER CALENDAR YEAR (is the sign one episode?)
+==============================================================================
+  year         n          Q1          Q5       Q1-Q5
+  2022       210   (fewer than 500 bars — not reported)
+  2023      8760    0.899492    0.943666   -0.044174
+  2024      8784   -0.099273    1.203433   -1.302706
+  2025      2617   -1.348737   -0.253761   -1.094976
+
+==============================================================================
+CROSS-CHECK — realised basket Sharpe restricted to each sigma quintile
+==============================================================================
+  Uses no forward window and no per-unit-risk ratio: it asks directly
+  whether the bars the construct would de-risk were good or bad bars.
+  quintile         n      mean ret          sd   Sharpe(ann)    total ret
+  Q1            4079    0.00003012    0.004584        0.6150      +0.0832
+  Q2            4078   -0.00003135    0.005713       -0.5135      -0.1771
+  Q3            4078   -0.00001690    0.006093       -0.2596      -0.1349
+  Q4            4078    0.00016034    0.007893        1.9012      +0.6933
+  Q5            4079    0.00030795    0.010288        2.8015      +1.8277
+
+  Reading: if the mechanism existed, Q5 (highest trailing vol) would show
+  the WORST per-unit-risk return — a lower Sharpe and/or negative total.
+
+JSON written: C:\Users\Comec\Projects\freqtrade\research\results\T-038_raw\T-038_p2_verification.json

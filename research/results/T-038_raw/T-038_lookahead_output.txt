@@ -1,0 +1,82 @@
+
+==============================================================================
+T-038 — LOOK-AHEAD / LEAKAGE VERIFICATION
+==============================================================================
+
+==============================================================================
+P0 — REACHABILITY (environment check, not a hypothesis verdict)
+==============================================================================
+holdout boundary (validator.HOLDOUT_BOUNDARIES['perps']) : 2025-09-19 00:00:00+00:00
+window start                                                : 2022-12-23 00:00:00+00:00
+
+  BTC/USDT:USDT      raw  38587 bars  2022-01-01 .. 2026-05-27 | window  24025 bars  2022-12-23 00:00:00+00:00 .. 2025-09-19 00:00:00+00:00 | worst gap  0 days 01:00:00 | gaps>24h 0 | dup False
+  ETH/USDT:USDT      raw  38612 bars  2022-01-01 .. 2026-05-28 | window  24025 bars  2022-12-23 00:00:00+00:00 .. 2025-09-19 00:00:00+00:00 | worst gap  0 days 01:00:00 | gaps>24h 0 | dup False
+  SOL/USDT:USDT      raw  38612 bars  2022-01-01 .. 2026-05-28 | window  24025 bars  2022-12-23 00:00:00+00:00 .. 2025-09-19 00:00:00+00:00 | worst gap  0 days 01:00:00 | gaps>24h 0 | dup False
+  BNB/USDT:USDT      raw  30062 bars  2022-12-23 .. 2026-05-28 | window  24019 bars  2022-12-23 06:00:00+00:00 .. 2025-09-19 00:00:00+00:00 | worst gap  0 days 01:00:00 | gaps>24h 0 | dup False
+  XRP/USDT:USDT      raw  38612 bars  2022-01-01 .. 2026-05-28 | window  24025 bars  2022-12-23 00:00:00+00:00 .. 2025-09-19 00:00:00+00:00 | worst gap  0 days 01:00:00 | gaps>24h 0 | dup False
+  ADA/USDT:USDT      raw  38612 bars  2022-01-01 .. 2026-05-28 | window  24025 bars  2022-12-23 00:00:00+00:00 .. 2025-09-19 00:00:00+00:00 | worst gap  0 days 01:00:00 | gaps>24h 0 | dup False
+  AVAX/USDT:USDT     raw  38612 bars  2022-01-01 .. 2026-05-28 | window  24025 bars  2022-12-23 00:00:00+00:00 .. 2025-09-19 00:00:00+00:00 | worst gap  0 days 01:00:00 | gaps>24h 0 | dup False
+  DOT/USDT:USDT      raw  38612 bars  2022-01-01 .. 2026-05-28 | window  24025 bars  2022-12-23 00:00:00+00:00 .. 2025-09-19 00:00:00+00:00 | worst gap  0 days 01:00:00 | gaps>24h 0 | dup False
+  LINK/USDT:USDT     raw  38612 bars  2022-01-01 .. 2026-05-28 | window  24025 bars  2022-12-23 00:00:00+00:00 .. 2025-09-19 00:00:00+00:00 | worst gap  0 days 01:00:00 | gaps>24h 0 | dup False
+
+union index bars              : 24025
+all-nine-present bars (basket): 24019
+bars dropped for missing legs : 6
+basket window                 : 2022-12-23 06:00:00+00:00 .. 2025-09-19 00:00:00+00:00
+  NOTE: bars with a missing leg were dropped from the basket index.
+
+P0 VERDICT: PASS
+
+==============================================================================
+L1 — sigma_t uses only bars <= t (truncation test)
+==============================================================================
+  i=   200  2022-12-31 14:00:00+00:00  truncated 0.363275915761  full 0.363275915761  identical=True
+  i=  1000  2023-02-02 22:00:00+00:00  truncated 0.740841627298  full 0.740841627298  identical=True
+  i=  8000  2023-11-21 14:00:00+00:00  truncated 0.717183860725  full 0.717183860725  identical=True
+  i= 19019  2025-02-22 17:00:00+00:00  truncated 0.627218557850  full 0.627218557850  identical=True
+  i= 24018  2025-09-19 00:00:00+00:00  truncated 0.461670174102  full 0.461670174102  identical=True
+  L1: PASS
+
+==============================================================================
+L2 — forward 24-bar window covers t+1..t+24 and excludes t
+==============================================================================
+  i=   500  sum manual +0.1218787306 vs rolling +0.1218787306 (True)   std 0.0106876059 vs 0.0106876059 (True)
+  i=  5000  sum manual +0.0235054146 vs rolling +0.0235054146 (True)   std 0.0073863696 vs 0.0073863696 (True)
+  i= 15000  sum manual +0.0153928886 vs rolling +0.0153928886 (True)   std 0.0048515329 vs 0.0048515329 (True)
+  perturbing bar t: |change in the forward window at t| = 4.163e-17 (pandas accumulator noise; threshold 1e-14) -> unchanged=True
+  independent numpy slice reference, same perturbation: exactly 0.0
+  windows that DID move: 24 == 24 expected, and they are exactly t-24..t-1: True
+  L2: PASS
+
+==============================================================================
+L3 — no censused forward window reaches into TEST
+==============================================================================
+  last censused bar        : 2025-04-20 00:00:00+00:00
+  its forward window ends  : 2025-04-21 00:00:00+00:00
+  last TRAIN+VAL bar       : 2025-04-21 00:00:00+00:00
+  first TEST bar           : 2025-04-21 01:00:00+00:00
+  L3: PASS
+
+==============================================================================
+L4 — sigma computed once on the full pre-holdout series, then sliced
+==============================================================================
+  max |sigma(recomputed on TEST only) - sigma(full series, sliced)| = 0.23654044
+  A nonzero difference is EXPECTED and is the point: recomputing per split
+  restarts the EWMA warmup inside the split (Standing Directive 8). This
+  pipeline uses the full-series value; the number above quantifies the
+  defect that would have been introduced by the other choice.
+  first-bar difference: nan
+
+==============================================================================
+L5 — reserved holdout untouched
+==============================================================================
+  assert_no_holdout(closes ) OK   last bar 2025-09-19 00:00:00+00:00
+  assert_no_holdout(basket ) OK   last bar 2025-09-19 00:00:00+00:00
+  assert_no_holdout(sigma  ) OK   last bar 2025-09-19 00:00:00+00:00
+  assert_no_holdout(train  ) OK   last bar 2024-11-22 00:00:00+00:00
+  assert_no_holdout(val    ) OK   last bar 2025-04-21 00:00:00+00:00
+  assert_no_holdout(test   ) OK   last bar 2025-09-19 00:00:00+00:00
+  boundary: bars strictly after 2025-09-19 00:00:00+00:00 are reserved
+  L5: PASS
+
+JSON written: C:\Users\Comec\Projects\freqtrade\research\results\T-038_raw\T-038_lookahead.json

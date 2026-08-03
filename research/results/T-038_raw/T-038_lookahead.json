@@ -1,0 +1,94 @@
+{
+  "L1_sigma_causal": {
+    "pass": true,
+    "probes": [
+      {
+        "i": 200,
+        "ts": "2022-12-31 14:00:00+00:00",
+        "truncated": 0.3632759157610962,
+        "full_series": 0.3632759157610962,
+        "bit_identical": true
+      },
+      {
+        "i": 1000,
+        "ts": "2023-02-02 22:00:00+00:00",
+        "truncated": 0.7408416272984457,
+        "full_series": 0.7408416272984457,
+        "bit_identical": true
+      },
+      {
+        "i": 8000,
+        "ts": "2023-11-21 14:00:00+00:00",
+        "truncated": 0.717183860725453,
+        "full_series": 0.717183860725453,
+        "bit_identical": true
+      },
+      {
+        "i": 19019,
+        "ts": "2025-02-22 17:00:00+00:00",
+        "truncated": 0.6272185578501459,
+        "full_series": 0.6272185578501459,
+        "bit_identical": true
+      },
+      {
+        "i": 24018,
+        "ts": "2025-09-19 00:00:00+00:00",
+        "truncated": 0.46167017410169237,
+        "full_series": 0.46167017410169237,
+        "bit_identical": true
+      }
+    ]
+  },
+  "L2_forward_window": {
+    "pass": true,
+    "probes": [
+      {
+        "i": 500,
+        "manual_sum": 0.12187873059221574,
+        "rolling_sum": 0.12187873059221574,
+        "manual_std": 0.010687605876938523,
+        "rolling_std": 0.010687605876938525,
+        "sum_match": true,
+        "std_match": true
+      },
+      {
+        "i": 5000,
+        "manual_sum": 0.023505414563481944,
+        "rolling_sum": 0.023505414563481927,
+        "manual_std": 0.0073863696049659335,
+        "rolling_std": 0.007386369604965946,
+        "sum_match": true,
+        "std_match": true
+      },
+      {
+        "i": 15000,
+        "manual_sum": 0.015392888577957752,
+        "rolling_sum": 0.015392888577957719,
+        "manual_std": 0.004851532936385126,
+        "rolling_std": 0.004851532936385112,
+        "sum_match": true,
+        "std_match": true
+      }
+    ],
+    "perturbation_noise_at_t": 4.163336342344337e-17,
+    "numpy_reference_delta_at_t": 0.0,
+    "n_windows_moved": 24,
+    "moved_windows_are_t_minus_24_to_t_minus_1": true
+  },
+  "L3_census_containment": {
+    "pass": true,
+    "last_censused_bar": "2025-04-20 00:00:00+00:00",
+    "forward_window_ends": "2025-04-21 00:00:00+00:00",
+    "last_train_val_bar": "2025-04-21 00:00:00+00:00",
+    "first_test_bar": "2025-04-21 01:00:00+00:00"
+  },
+  "L4_warmup": {
+    "max_abs_deviation_if_recomputed_per_split": 0.2365404356007278,
+    "policy": "computed once on full pre-holdout series, then sliced"
+  },
+  "L5_holdout": {
+    "pass": true,
+    "boundary": "2025-09-19 00:00:00+00:00",
+    "last_bar_evaluated": "2025-09-19 00:00:00+00:00"
+  }
+}

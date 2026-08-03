@@ -1,0 +1,123 @@
+
+==============================================================================
+T-038 — H-BasketVolTarget-1h — ZERO-COST PRE-GATE LADDER
+==============================================================================
+cost model : okx_usdt_perp / regular (non-VIP, no fee discounts) / fill=taker: maker 2.0bps, taker 5.0bps, slippage 3.0bps/side, spread 2.0bps, adverse selection unset -> 9.00bps/side, 18.00bps round trip
+data gate  : {'ok': True, 'built_utc': '2026-07-29T07:58:59Z', 'checked_count': 52, 'recorded_count': 52, 'modified': [], 'missing': [], 'extra': [], 'bypassed': False}
+program    : perps   active in validator: perps
+splits     : train_end 2024-11-22  val_end 2025-04-21  test_end 2025-09-19
+EWMA       : half-life 48 bars, lambda 0.985663199, burn-in 96, annualised at 8760
+band 0.1   cap 1.0   lag 2 bars
+whitelist  : ['BTC/USDT:USDT', 'ETH/USDT:USDT', 'SOL/USDT:USDT', 'BNB/USDT:USDT', 'XRP/USDT:USDT', 'ADA/USDT:USDT', 'AVAX/USDT:USDT', 'DOT/USDT:USDT', 'LINK/USDT:USDT']
+
+==============================================================================
+P0 — REACHABILITY (environment check, not a hypothesis verdict)
+==============================================================================
+holdout boundary (validator.HOLDOUT_BOUNDARIES['perps']) : 2025-09-19 00:00:00+00:00
+window start                                                : 2022-12-23 00:00:00+00:00
+
+  BTC/USDT:USDT      raw  38587 bars  2022-01-01 .. 2026-05-27 | window  24025 bars  2022-12-23 00:00:00+00:00 .. 2025-09-19 00:00:00+00:00 | worst gap  0 days 01:00:00 | gaps>24h 0 | dup False
+  ETH/USDT:USDT      raw  38612 bars  2022-01-01 .. 2026-05-28 | window  24025 bars  2022-12-23 00:00:00+00:00 .. 2025-09-19 00:00:00+00:00 | worst gap  0 days 01:00:00 | gaps>24h 0 | dup False
+  SOL/USDT:USDT      raw  38612 bars  2022-01-01 .. 2026-05-28 | window  24025 bars  2022-12-23 00:00:00+00:00 .. 2025-09-19 00:00:00+00:00 | worst gap  0 days 01:00:00 | gaps>24h 0 | dup False
+  BNB/USDT:USDT      raw  30062 bars  2022-12-23 .. 2026-05-28 | window  24019 bars  2022-12-23 06:00:00+00:00 .. 2025-09-19 00:00:00+00:00 | worst gap  0 days 01:00:00 | gaps>24h 0 | dup False
+  XRP/USDT:USDT      raw  38612 bars  2022-01-01 .. 2026-05-28 | window  24025 bars  2022-12-23 00:00:00+00:00 .. 2025-09-19 00:00:00+00:00 | worst gap  0 days 01:00:00 | gaps>24h 0 | dup False
+  ADA/USDT:USDT      raw  38612 bars  2022-01-01 .. 2026-05-28 | window  24025 bars  2022-12-23 00:00:00+00:00 .. 2025-09-19 00:00:00+00:00 | worst gap  0 days 01:00:00 | gaps>24h 0 | dup False
+  AVAX/USDT:USDT     raw  38612 bars  2022-01-01 .. 2026-05-28 | window  24025 bars  2022-12-23 00:00:00+00:00 .. 2025-09-19 00:00:00+00:00 | worst gap  0 days 01:00:00 | gaps>24h 0 | dup False
+  DOT/USDT:USDT      raw  38612 bars  2022-01-01 .. 2026-05-28 | window  24025 bars  2022-12-23 00:00:00+00:00 .. 2025-09-19 00:00:00+00:00 | worst gap  0 days 01:00:00 | gaps>24h 0 | dup False
+  LINK/USDT:USDT     raw  38612 bars  2022-01-01 .. 2026-05-28 | window  24025 bars  2022-12-23 00:00:00+00:00 .. 2025-09-19 00:00:00+00:00 | worst gap  0 days 01:00:00 | gaps>24h 0 | dup False
+
+union index bars              : 24025
+all-nine-present bars (basket): 24019
+bars dropped for missing legs : 6
+basket window                 : 2022-12-23 06:00:00+00:00 .. 2025-09-19 00:00:00+00:00
+  NOTE: bars with a missing leg were dropped from the basket index.
+
+P0 VERDICT: PASS
+
+==============================================================================
+SPLITS (date-pinned; assert_no_holdout passed on every frame)
+==============================================================================
+  full     24019 bars   2022-12-23 06:00:00+00:00 .. 2025-09-19 00:00:00+00:00
+  train    16795 bars   2022-12-23 06:00:00+00:00 .. 2024-11-22 00:00:00+00:00
+  val       3600 bars   2024-11-22 01:00:00+00:00 .. 2025-04-21 00:00:00+00:00
+  test      3624 bars   2025-04-21 01:00:00+00:00 .. 2025-09-19 00:00:00+00:00
+  TRAIN+VAL 20395 bars (P1-P3 census window)
+
+==============================================================================
+CONSTRUCT (built once on the full pre-holdout series, then split)
+==============================================================================
+  basket rebalances (month-end 1h bars) : 33
+  mean rebalance turnover               : 0.100571
+  total basket cost over window         : 0.003887 of notional
+  sigma_target = TRAIN median of sigma_t (burn-in 96 excluded)
+    n TRAIN sigma obs used              : 16699
+    sigma_target (annualised)           : 0.540308
+    TRAIN sigma  min/median/max         : 0.206619 / 0.540308 / 1.614508
+  m_raw    share < 1.0 (full window)    : 0.5797
+  m_applied share < 1.0 (full window)   : 0.9698
+
+==============================================================================
+P1 — VOLATILITY PERSISTENCE (lead/lag analog), TRAIN+VAL, per instrument
+==============================================================================
+census bars per instrument: TRAIN+VAL minus the last 24 (forward window
+must lie inside TRAIN+VAL, so no forward window peeks into TEST)
+
+instrument               n   rho(sigma_t, fwd rv)   rho(trailing rv, sigma_t+24)
+  BTC/USDT:USDT      20369               0.434160                       0.705125
+  ETH/USDT:USDT      20369               0.525241                       0.743695
+  SOL/USDT:USDT      20369               0.540947                       0.759879
+  BNB/USDT:USDT      20369               0.559363                       0.768557
+  XRP/USDT:USDT      20369               0.571900                       0.773286
+  ADA/USDT:USDT      20369               0.617874                       0.791353
+  AVAX/USDT:USDT     20369               0.612359                       0.788018
+  DOT/USDT:USDT      20369               0.638522                       0.801384
+  LINK/USDT:USDT     20369               0.564373                       0.764974
+
+sanity (a) forward vs reversed census identical on: none — OK
+sanity (b) correlations exact to 4dp on: none — OK
+
+median rho across 9 : 0.564373   (threshold >= 0.3)  -> PASS
+minimum rho         : 0.434160  (BTC/USDT:USDT)  (threshold >  0.15)  -> PASS
+P1 VERDICT: PASS
+
+==============================================================================
+P2 — MECHANISM EXISTENCE (harm census), TRAIN+VAL
+==============================================================================
+PRIMARY — basket level, quintiles of sigma_t (edges from TRAIN+VAL)
+  sigma quintile edges (annualised): [0.003548, 0.430994, 0.527737, 0.629592, 0.794877, 1.746258]
+  quintile          n     mean fwd 24-bar per-unit-risk return
+  Q1             4074                                 0.393508
+  Q2             4074                                 0.339667
+  Q3             4074                                 0.196651
+  Q4             4074                                 0.742229
+  Q5             4074                                 0.836413
+  Q1 - Q5 = -0.442905   KILL if <= 0
+  moving-block bootstrap 90% CI on Q1-Q5 (block 168, 2000 resamples, seed 7): [-1.210815, 0.344539]  median -0.444336  share>0 0.1705   (REPORTED, NOT GATING)
+
+  1-bar-forward diagnostic (per-unit-risk undefined at k=1; both analogues shown)
+  quintile     mean fwd 1-bar log ret   mean (fwd 1-bar / sigma_t)
+  Q1                      -0.00001800                  -0.00017817
+  Q2                      -0.00002678                  -0.00005134
+  Q3                      -0.00003429                  -0.00005249
+  Q4                       0.00009026                   0.00010857
+  Q5                       0.00030719                   0.00027291
+  Q1 - Q5 raw    = -0.00032518
+  Q1 - Q5 scaled = -0.00045108
+
+SECONDARY — per instrument, per-asset quintile edges
+  instrument                n      Q1 mean      Q5 mean        Q1-Q5  sign
+  BTC/USDT:USDT       20369     0.289797     0.808256    -0.518459  -
+  ETH/USDT:USDT       20369     0.253081     0.452708    -0.199628  -
+  SOL/USDT:USDT       20369    -0.123524     0.526203    -0.649727  -
+  BNB/USDT:USDT       20369     0.169874     0.995932    -0.826057  -
+  XRP/USDT:USDT       20369     0.210813     0.389546    -0.178733  -
+  ADA/USDT:USDT       20369     0.154651    -0.027134     0.181785  +
+  AVAX/USDT:USDT      20369    -0.147845     0.501798    -0.649644  -
+  DOT/USDT:USDT       20369     0.044702     0.231704    -0.187003  -
+  LINK/USDT:USDT      20369    -0.107197     0.144903    -0.252100  -
+
+primary  basket Q1-Q5 = -0.442905       KILL if <= 0                  -> FAIL
+secondary breadth     = 1/9 positive  KILL if < 5/9   -> FAIL
+P2 VERDICT: FAIL -> hypothesis REJECTED at P2, zero trials
+
+JSON written: C:\Users\Comec\Projects\freqtrade\research\results\T-038_raw\T-038_pregates.json
