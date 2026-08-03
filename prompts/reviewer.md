@@ -233,6 +233,36 @@ Worked example, a pre-gate stop (T-038): `{"p2_basket_q1_minus_q5": -0.442905,
 
 ## Phase 3 — Memory maintenance
 
+### File ownership — Engineer / Reviewer division (binding, resolved 2026-08-02)
+
+This division is stated in identical words in `prompts/engineer.md`,
+`prompts/reviewer.md` and `PROJECT_OPERATOR_MANUAL.md`. If those three ever disagree,
+the manual governs and the prompts are the defect.
+
+| The Engineer writes | The Reviewer writes |
+|---|---|
+| `research/results/<Task ID>_report.md` | `research/research_index.md` |
+| the raw artifacts under `research/results/<Task ID>_raw/` | `research/research_metrics.md` |
+| the analysis scripts under `user_data/research/` | `research/strategy_iteration_log.md` |
+| **nothing else** | `research/strategy_research_notes.md` |
+| | `knowledge_base/hypothesis_bank.md` |
+| | `research/review_briefs/<Task ID>_verdict_*.json` and `<Task ID>_brief.md` |
+
+**The Engineer does NOT write `research_metrics.md`, `strategy_iteration_log.md`,
+`strategy_research_notes.md`, `research_index.md`, or the hypothesis bank.** The former
+per-field split of `research_metrics.md` — Engineer headline numbers, Reviewer verdict
+block and counters — is **RETIRED**. A file two roles edit inside one cycle cannot be
+audited cleanly: the git history cannot attribute a line, and the Reviewer independently
+reproduces the headline numbers anyway. The Reviewer transcribes them from the report.
+
+**`NEXT_TASK.md` may NARROW this per cycle but may NOT widen it.** A Director may tell
+either role to skip an artifact it would normally write; a Director may **not** grant
+either role write access to a file this table assigns to the other.
+
+**If you find the Engineer has written one of your files, that is a spec deviation:**
+record it in the verdict file and the brief, verify the content against your own
+reproduction, and keep it only if it is correct. Do not treat it as saving you work.
+
 1. Append the verdict and reason to `strategy_iteration_log.md`.
 2. **`research_index.md`:**
    - Append exactly ONE row to the table under **`## Cycles completed`** —
@@ -254,20 +284,16 @@ Worked example, a pre-gate stop (T-038): `{"p2_basket_q1_minus_q5": -0.442905,
    This file is machine-budgeted. Run `python scripts/check_context_budget.py` after
    writing and confirm it exits 0. If your additions breach the budget, compact your
    own additions rather than another file's content.
-3. Update `research_metrics.md`. **Division of ownership with the Engineer** — both roles
-   write to this file, so neither may write the other's part:
+3. Update `research_metrics.md` — **all of it**: the verdict block at the top, the cycle's
+   headline numbers transcribed from the report, the constructs/indicators tally if this
+   cycle used something new, `n_trials` after this cycle, the per-program RESEARCH:OPS
+   ratio and cycle counts, and the rejection/promotion-rate recomputation.
 
-   | The Engineer writes | You (Reviewer) write |
-   |---|---|
-   | headline performance numbers for the cycle | the verdict block at the top of the file |
-   | the constructs/indicators tally, if new | `n_trials` after this cycle |
-   | | the per-program RESEARCH:OPS ratio and cycle counts |
-   | | the rejection/promotion rate recomputation |
-
-   The Engineer does not advance `n_trials`, because whether the trial counts is part of
-   your verdict. Verify the Engineer's headline numbers against your reproduction rather
-   than rewriting them; if they disagree, that is an INVALID CYCLE finding, not a silent
-   correction.
+   You transcribe the headline numbers rather than inventing them, and you transcribe them
+   **only after** reconciling them against your own reproduction. If the report's numbers
+   and your reproduction disagree, that is an **INVALID CYCLE** finding, not a silent
+   correction. A cycle stopped at a pre-gate has no headline performance numbers; record
+   the pre-gate figures and leave the counters where the verdict puts them.
 4. Add durable lessons to `strategy_research_notes.md` — patterns across cycles, not
    per-cycle detail.
 5. Mark the hypothesis TESTED in the `hypothesis_bank.md` ledger with its verdict and

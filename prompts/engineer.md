@@ -193,7 +193,9 @@ changes the experiment:
 1. Do NOT improvise around the spec or substitute your own interpretation.
 2. Do NOT acquire, generate, or substitute data.
 3. Write `research/BLOCKED.md`: what blocked you, what you tried, what would unblock it.
-4. Add a partial entry to `strategy_iteration_log.md` marked BLOCKED.
+4. Write a partial `research/results/<Task ID>_report.md` recording how far you got.
+   Do **not** write to `strategy_iteration_log.md` — the Reviewer logs the blocked cycle
+   (see the file-ownership division below).
 5. Stop.
 
 **If uncertainty exists between making an assumption and blocking the task, ALWAYS
@@ -243,32 +245,35 @@ completing the assignment, or begin implementing your own recommendations.
 
 ---
 
-## Bookkeeping (all of these, no others)
+## File ownership — Engineer / Reviewer division (binding, resolved 2026-08-02)
 
-- Append one entry to `strategy_iteration_log.md` — Task ID, hypothesis, verdict,
-  one-line reason.
-- Update `research_metrics.md` — **headline numbers only.** See the division below.
-- Update `strategy_research_notes.md` ONLY if a genuinely new durable lesson was
-  learned.
+This division is stated in identical words in `prompts/engineer.md`,
+`prompts/reviewer.md` and `PROJECT_OPERATOR_MANUAL.md`. If those three ever disagree,
+the manual governs and the prompts are the defect.
 
-Do NOT write to `research_index.md`. Index maintenance belongs to the Reviewer.
-
-**`research_metrics.md` — division of ownership with the Reviewer.** Both roles write to
-this file, so the split is explicit and neither may write the other's part:
-
-| You (Engineer) write | The Reviewer writes |
+| The Engineer writes | The Reviewer writes |
 |---|---|
-| headline performance numbers for this cycle | the verdict block at the top of the file |
-| the constructs/indicators tally, if this cycle used something new | `n_trials` after this cycle |
-| | the per-program RESEARCH:OPS ratio and cycle counts |
-| | the rejection/promotion rate recomputation |
+| `research/results/<Task ID>_report.md` | `research/research_index.md` |
+| the raw artifacts under `research/results/<Task ID>_raw/` | `research/research_metrics.md` |
+| the analysis scripts under `user_data/research/` | `research/strategy_iteration_log.md` |
+| **nothing else** | `research/strategy_research_notes.md` |
+| | `knowledge_base/hypothesis_bank.md` |
+| | `research/review_briefs/<Task ID>_verdict_*.json` and `<Task ID>_brief.md` |
 
-You do **not** write the verdict — you did not render one — and you do **not** advance
-`n_trials`, because whether the trial counts is part of the verdict. If your cycle
-stopped at a pre-gate, record the headline numbers you did compute and leave the
-counters alone.
+**The Engineer does NOT write `research_metrics.md`, `strategy_iteration_log.md`,
+`strategy_research_notes.md`, `research_index.md`, or the hypothesis bank.** The former
+per-field split of `research_metrics.md` — Engineer headline numbers, Reviewer verdict
+block and counters — is **RETIRED**. A file two roles edit inside one cycle cannot be
+audited cleanly: the git history cannot attribute a line, and the Reviewer independently
+reproduces the headline numbers anyway. The Reviewer transcribes them from the report.
 
-**Any lesson not written to these files does not exist.** When in doubt, write it down.
+**`NEXT_TASK.md` may NARROW this per cycle but may NOT widen it.** A Director may tell
+either role to skip an artifact it would normally write; a Director may **not** grant
+either role write access to a file this table assigns to the other.
+
+Everything you learn goes in the **report**, which is unbounded and is the input the
+Reviewer works from. **A lesson not written into the report does not exist** — do not
+route it into the memory files yourself. When in doubt, put it in the report.
 
 ---
 
@@ -285,4 +290,8 @@ counters alone.
 - Do NOT run experiments outside the assigned budget.
 - Do NOT report a number you did not compute from a named artifact. Every figure in
   your report must be traceable to a file path in section 13.
-- Stop after the report and bookkeeping are complete.
+- Do NOT write to any file the file-ownership division assigns to the Reviewer —
+  `research_index.md`, `research_metrics.md`, `strategy_iteration_log.md`,
+  `strategy_research_notes.md`, `knowledge_base/hypothesis_bank.md`, or anything under
+  `research/review_briefs/`.
+- Stop after the report, the raw artifacts and the scripts are complete.

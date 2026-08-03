@@ -663,29 +663,24 @@ and every prior result on the old boundary is void — not rebased.
 
 **The boundary DATE is unchanged; only its sub-daily reading is now specified.** Daily and hourly
 series must both end on the **same calendar date with their last complete bar included** — inclusive
-instant = `date + 1 day − one bar interval`. Perps: 1d → 2025-09-19 **00:00** (unchanged, the daily
-bar *is* the date); 1h → **23:00**; 4h → 20:00; 15m → 23:45.
+instant = `date + 1 day − one bar interval`. Perps: 1d → **00:00** (unchanged, the daily bar *is* the
+date); 4h → 20:00; **1h → 23:00**; 15m → 23:45.
 
 **Why.** As a bare midnight `Timestamp` the guard dropped the last 23 hours of the boundary date at
-**every split edge** on sub-daily bars. T-038 (first 1h cycle) hit it, both reviewers confirming
-independently: the 1h TEST slice ran 2025-04-21 01:00 → 2025-09-19 00:00, aggregating to **152** dates
-with a 23-hour first day and a **one-hour** last day against the benchmark's **151** complete days.
-Criterion 3 needs date-identical overlap, so it would have been **VOID for any 1h candidate reaching a
-trial** — a harness artifact, not a property of any candidate.
+**every split edge** on sub-daily bars. T-038 (first 1h cycle) hit it: its 1h TEST slice aggregated to
+**152** dates — 23-hour first day, **one-hour** last day — against the benchmark's **151** complete
+days, which would have made criterion 3 **VOID for any 1h candidate reaching a trial**. A harness
+artifact, not a property of any candidate.
 
 **This voids NO recorded result — hence a declaration, not a boundary move.** Every perps figure on
-record is daily, where the resolved instant is midnight, i.e. the old behaviour. Verified by
-regenerating the committed benchmark under the fix: all five artifacts **byte-identical** (TEST Sharpe
-+0.123321, N = 151, MaxDD −25.02%).
+record is daily, where the resolved instant is midnight, i.e. the old behaviour. Verified: the
+committed benchmark regenerates **byte-identically** under the fix (TEST Sharpe +0.123321, N = 151).
 
 Implemented as `validator.holdout_boundary(program, freq=...)`, `infer_bar_interval()`, and
 resolution-aware `assert_no_holdout()` / `split_by_dates()`; an explicit intra-day timestamp is still
-honoured literally. `scripts/test_validator.py` asserts the 1h TEST slice gives exactly 151 complete
-daily dates and that nothing past the boundary date survives.
-
-**T-038's archived figures predate this fix.** Re-run under it the census shifts trivially — Q1−Q5
-−0.442905 → **−0.438872**, P1 median ρ 0.564373 → 0.564232, breadth **1/9 either way** — REJECT
-unchanged. The committed raw artifacts stand as the record of what was run.
+honoured literally, and `scripts/test_validator.py` asserts the 1h TEST slice gives exactly 151
+complete daily dates. **T-038's archived figures predate the fix**; re-run under it the census shifts
+trivially (Q1−Q5 −0.442905 → −0.438872, breadth 1/9 either way) and REJECT is unchanged.
 
 **Pin splits by DATE, not by fraction.** `split_70_15_15()` is deprecated and warns; it computes
 boundaries as percentages of whatever it is handed, so a data top-up slides the TEST window forward
@@ -1033,6 +1028,27 @@ answer you want, and it invalidates the cycle. If a construct comes back INSUFFI
 re-run is a new, pre-registered cycle.
 
 Per-seed values are carried on `Verdict.warnings`, so INSUFFICIENT cannot be reported otherwise.
+
+## File ownership — Engineer / Reviewer division (resolved 2026-08-02)
+
+**This manual is primary**; the same division appears in identical words in
+`prompts/engineer.md` and `prompts/reviewer.md`, and if they disagree they are the defect.
+
+- **Engineer writes:** `research/results/<Task ID>_report.md`, the raw artifacts under
+  `research/results/<Task ID>_raw/`, the analysis scripts under `user_data/research/`.
+  **Nothing else.**
+- **Reviewer writes:** `research_index.md`, `research_metrics.md`,
+  `strategy_iteration_log.md`, `strategy_research_notes.md`,
+  `knowledge_base/hypothesis_bank.md`, and both `research/review_briefs/` outputs.
+
+The per-field split of `research_metrics.md` is **RETIRED**: a file two roles edit in one
+cycle cannot be audited — git cannot attribute a line — and the Reviewer reproduces the
+headline numbers anyway, so it transcribes them from the report after reconciling.
+Report-vs-reproduction disagreement is an **INVALID CYCLE** finding, never a silent fix.
+
+**`NEXT_TASK.md` may NARROW this per cycle but may NOT widen it.** A Director may tell a
+role to skip an artifact, but may not grant either role write access to the other's files.
+An Engineer writing a Reviewer-owned file is a **spec deviation**, recorded as such.
 
 ## Independent Reviewer output standard
 
