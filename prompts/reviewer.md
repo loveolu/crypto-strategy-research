@@ -187,6 +187,8 @@ Write `research/review_briefs/<Task ID>_verdict_a.json`:
   "gates_failed": [],
   "spec_deviations": [],
   "reproduced": true,
+  "reproduced_values": {"<figure name>": "<value YOU computed>"},
+  "reported_values":   {"<figure name>": "<value the REPORT claims>"},
   "data_clean": true,
   "manifest_verified": true,
   "bypass_detected": false,
@@ -194,6 +196,23 @@ Write `research/review_briefs/<Task ID>_verdict_a.json`:
   "n_trials_after": 0
 }
 ```
+
+**`reproduced_values` / `reported_values` must carry EVERY figure the verdict turned on.**
+Any key names shown here are EXAMPLES, not the schema — the schema is the *shape*
+`{name: value}`. Record the pre-gate statistics, census differences, correlations, breadth
+counts, DSR, Sharpe, MaxDD — whatever actually gated this cycle. They exist so the two
+reviewers' numbers can be diffed mechanically, which is the point of running two.
+
+- A cycle that stopped at a **pre-gate** records the **pre-gate figures**. `{"dsr": null,
+  "sharpe": null}` on a pre-gate stop says nothing and destroys the comparison.
+- Use `null` **only** where the quantity genuinely does not exist (no trial ran, so no DSR).
+  Never as a placeholder for a figure you did compute.
+- **Stripping a figure you reproduced in order to match a literal example schema is a spec
+  violation** — it silently discards the evidence and turns two independent reproductions
+  into unverifiable agreement. Invent an accurate key rather than dropping the number.
+
+Worked example, a pre-gate stop (T-038): `{"p2_basket_q1_minus_q5": -0.442905,
+"p2_breadth_positive": "1/9", "p1_median_rho": 0.564373, "dsr": null, "sharpe": null}`.
 
 - **PROMOTE** — every promotion criterion in `NEXT_TASK.md` affirmatively met, the
   audit reconciled, and the candidate beats the champion under the manual's comparison

@@ -83,8 +83,8 @@ Write **only** `research/review_briefs/<Task ID>_verdict_b.json`:
   "gates_failed": [],
   "spec_deviations": [],
   "reproduced": true,
-  "reproduced_values": {"dsr": null, "sharpe": null},
-  "reported_values": {"dsr": null, "sharpe": null},
+  "reproduced_values": {"<figure name>": "<value YOU computed>"},
+  "reported_values":   {"<figure name>": "<value the REPORT claims>"},
   "data_clean": true,
   "manifest_verified": true,
   "bypass_detected": false,
@@ -95,6 +95,34 @@ Write **only** `research/review_briefs/<Task ID>_verdict_b.json`:
 Every field is required. A missing or malformed verdict file is treated by the
 orchestrator as a hard failure, not as agreement — do not omit fields you are unsure
 about, state your uncertainty in `notes` instead.
+
+### `reproduced_values` / `reported_values` — carry EVERY gating figure
+
+**`dsr` and `sharpe` are EXAMPLES, not the schema.** These two objects must carry **every
+figure this cycle's verdict actually turned on**, whatever those figures are, keyed by name:
+pre-gate statistics, census differences, correlations, breadth counts, DSR, Sharpe, MaxDD —
+whatever gated. They exist so the orchestrator can diff *reproduced* against *reported*
+mechanically, which is the entire point of running two reviewers.
+
+- A cycle that stopped at a **pre-gate** records the **pre-gate figures**. It does not record
+  `{"dsr": null, "sharpe": null}` — that says nothing and destroys the comparison.
+- Use `null` **only** for a quantity that genuinely does not exist (no trial ran, so no DSR).
+  Never as a placeholder for a figure you did compute.
+
+**Stripping a figure you reproduced in order to match the literal example schema is a spec
+violation.** It is the one failure mode this field cannot tolerate: the merge silently loses
+the evidence and two independent reproductions become unverifiable agreement. If a figure
+does not fit a key name shown above, invent an accurate key — the schema is the *shape*
+(`{name: value}`), not the specific names.
+
+Worked example, a pre-gate stop (T-038):
+
+```json
+"reproduced_values": {"p2_basket_q1_minus_q5": -0.442905, "p2_breadth_positive": "1/9",
+                      "p1_median_rho": 0.564373, "dsr": null, "sharpe": null},
+"reported_values":   {"p2_basket_q1_minus_q5": -0.442905, "p2_breadth_positive": "1/9",
+                      "p1_median_rho": 0.564373, "dsr": null, "sharpe": null}
+```
 
 ---
 
