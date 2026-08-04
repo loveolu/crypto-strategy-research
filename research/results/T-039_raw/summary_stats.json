@@ -1,0 +1,44 @@
+{
+  "verdict": "REJECT",
+  "cells_total": 72,
+  "cells_passing_all_five": 0,
+  "status_counts": {
+    "FAIL": 66,
+    "TEST-ABSENT": 6
+  },
+  "gate_pass_counts": {
+    "G1": 72,
+    "G2": 1,
+    "G3": 66,
+    "G4": 0,
+    "G5": 66
+  },
+  "max_abs_excess_bps": 36.51757186231681,
+  "max_abs_excess_cell": "vol_ratio h=24 BOT",
+  "cells_clearing_G2a_abs_excess_ge_2rt": [
+    "vol_ratio h=24 BOT (excess -36.5176 bps)"
+  ],
+  "cells_clearing_G2_both_clauses": [
+    "vol_ratio h=24 BOT"
+  ],
+  "C1a_2x_round_trip_bps": 36.0,
+  "C1b_1x_round_trip_bps": 18.0,
+  "P95_M_bps": 47.21997703092096,
+  "binding_constraint": "placebo noise floor P95(M)",
+  "excess_required_to_clear_G2a_and_G4_bps": 47.21997703092096,
+  "excess_required_in_round_trips": 2.6233320572733865,
+  "execution_lag_effect_on_excess_bps": {
+    "mean": 0.3524145763467629,
+    "median": 0.257171782438973,
+    "max_abs": 3.4923336918645127
+  },
+  "pooled_trainval_bars_before_trim": 252162,
+  "pooled_census_bars_after_trim": 251946,
+  "trim_bars": 24,
+  "max_bar_read_by_any_executable_forward_return": "2025-04-22 00:00:00+00:00",
+  "g5_test_absent_cells": [
+    "illiq TOP (19 of 151 dates)"
+  ],
+  "sensitivity_trainval_thresholds_status_changes": 0,
+  "sensitivity_trim25_status_changes": 0
+}

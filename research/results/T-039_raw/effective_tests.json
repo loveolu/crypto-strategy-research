@@ -1,0 +1,17 @@
+{
+  "eigenvalues": [
+    0.2197856144726289,
+    0.5969899550155604,
+    0.6971941593400599,
+    1.000448313997801,
+    1.4252633788475235,
+    2.0603185783264246
+  ],
+  "m_eff_li_ji": 4.999999999999998,
+  "m_eff_cheverud_nyholt": 5.638672068200266,
+  "raw_variables": 6,
+  "max_abs_offdiag_rho": 0.7699704472002697,
+  "pairs_over_0_90": [],
+  "effective_cells_li_ji_variable_axis_only": 59.99999999999998,
+  "effective_cells_cheverud_variable_axis_only": 67.66406481840319
+}

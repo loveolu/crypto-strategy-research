@@ -1,0 +1,17 @@
+{
+  "draws": 1000,
+  "seed": 20260803,
+  "n_min": 20394,
+  "k_low": 720,
+  "k_high": 19674,
+  "mean_M_bps": 29.922831275226994,
+  "sd_M_bps": 9.897188615738767,
+  "P50_M_bps": 28.788383738436796,
+  "P95_M_bps": 47.21997703092096,
+  "P99_M_bps": 57.26351028856834,
+  "min_M_bps": 7.982472426611947,
+  "max_M_bps": 80.17894472540209,
+  "assertion_sd_and_p95_positive": true,
+  "assertion_shift_changes_cells": true,
+  "cells_differing_on_draw1": 72
+}

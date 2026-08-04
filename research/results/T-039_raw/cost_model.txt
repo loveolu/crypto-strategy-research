@@ -1,0 +1,4 @@
+okx_usdt_perp / regular (non-VIP, no fee discounts) / fill=taker: maker 2.0bps, taker 5.0bps, slippage 3.0bps/side, spread 2.0bps, adverse selection unset -> 9.00bps/side, 18.00bps round trip
+per_side_cost('taker')=0.0009 (9.0000 bps)
+round_trip_cost('taker')=0.0018 (18.0000 bps)
+G2 C1a=36.0000 bps ; G2 C1b=18.0000 bps

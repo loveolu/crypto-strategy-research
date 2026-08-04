@@ -1,0 +1,13 @@
+variable,tail,test_dates_total,pooled_fired_dates,min_instrument_fired_dates,median_instrument_fired_dates,dates_BTC,dates_ETH,dates_SOL,dates_BNB,dates_XRP,dates_ADA,dates_AVAX,dates_DOT,dates_LINK
+mom_24,TOP,151,95,23,46,23,58,29,38,46,52,42,49,53
+mom_24,BOT,151,72,17,37,17,36,24,29,45,46,37,44,49
+vol_ratio,TOP,151,75,24,26,24,25,27,27,27,26,24,26,35
+vol_ratio,BOT,151,60,19,22,23,27,20,20,19,22,22,23,32
+volume_z,TOP,151,147,103,109,112,117,111,108,105,104,113,109,103
+volume_z,BOT,151,145,82,97,82,99,97,93,93,99,85,109,100
+range_pos,TOP,151,138,95,99,102,98,103,98,99,97,101,100,95
+range_pos,BOT,151,130,84,92,91,84,92,88,97,98,94,93,89
+cs_mom_rank,TOP,151,151,50,69,70,104,50,69,52,82,62,74,55
+cs_mom_rank,BOT,151,151,63,73,96,73,66,63,71,100,78,101,69
+illiq,TOP,151,19,0,0,0,0,0,0,0,0,0,19,0
+illiq,BOT,151,151,4,128,149,150,150,91,128,136,49,4,70
