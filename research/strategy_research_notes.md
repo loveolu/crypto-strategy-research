@@ -1074,3 +1074,63 @@ original card describes a *trend-following futures* portfolio, not an unhedged l
 unhedged leveraged long on a 2023–2025 crypto bull sample, and the deleveraging episode that
 would price it is not present in the window. If it is ever tested it must be pre-gated on a crash
 sample this dataset does not contain.
+
+## Evidence displaced from STANDING_DIRECTIVES.md by the 4 KB cap (2026-08-02)
+
+`research/STANDING_DIRECTIVES.md` is capped at 4,096 bytes and each directive is limited to the
+binding rule, one clause of decisive evidence, and its scope limit. The supporting evidence for
+directives 8, 9 and 10 is preserved **verbatim** below and is pointed to from each directive. **No
+rule text was moved here** — only evidence and caveat prose. Nothing is retired: directives are
+retired only by an explicit superseding directive naming them.
+
+### Directive 8 — evidence (2026-07-31 validation-harness repair)
+
+Every archived TEST-split and walk-forward figure predating 2026-07-31 was computed with
+**truncated indicator warmup**: `validate()` recomputed `signal_fn` on each split slice and
+`walk_forward()` on each OOS window, restarting every indicator inside the window. This
+**systematically DEPRESSED val and test metrics** — train is long enough to absorb its own warmup,
+the later splits are not. Measured on BTC 1d with an SMA200, the champion's own core: TEST Sharpe
+**−1.2159 → +0.2129** and val **−0.1302 → +0.6345** after the fix, same data, same strategy. Where
+warmup exceeded the split length the affected split reported **0 trades and Sharpe 0.0000 regardless
+of merit**.
+
+The champion's recorded **TEST Sharpe 0.41** is one of these figures. So is the *"no
+signal-prediction edge survives OOS, only regime avoidance transfers"* conclusion and the *"~1.2–1.3
+Sharpe ceiling"*, both of which rest on comparing strong train numbers against weak test numbers —
+and the test side was biased downward by an unknown amount.
+
+**What this does and does not overturn.** Rejections stand *a fortiori*: a construct that failed on a
+pessimistically-biased TEST would also have failed on an unbiased one, and the pre-gate stops never
+used TEST metrics at all. What is not established is the **magnitude** of the OOS collapse, and
+therefore how much of the train→test decay was overfitting versus warmup truncation. Re-measuring any
+of it costs fresh trials under the current cost model and is a pre-registered cycle, not a free
+correction.
+
+### Directive 9 — evidence (2026-08-01 statistical-power finding)
+
+Standard error on an annualised Sharpe scales as approximately `sqrt(bars_per_year / N)`. Measured on
+this repository's actual data:
+
+| sample | N | SE(annualised Sharpe) |
+|---|---:|---:|
+| TEST split, daily | 151 | **1.555** |
+| full window, daily | 1,002 | 0.604 |
+| BTC daily, all history | 2,339 | 0.395 |
+| **1h pooled across the 9 perps** | **338,933** | **0.161** |
+
+**The perps benchmark's TEST Sharpe of 2.356 carries an SE of 1.555.** The do-nothing baseline's own
+headline number is not distinguishable from zero on this sample. Promotion criterion 3 asks a
+candidate to resolve a difference of **0.24** with an instrument whose resolution is **1.55**.
+
+**DSR ≥ 0.95 was never cleared in the spot program for an ARITHMETIC reason, not a discipline one.**
+A 151-bar daily TEST split cannot supply the evidence the promotion rule requires, from any
+construct, however good. Reaching SE 0.25 on daily bars would need roughly 16 years of history;
+crypto perps began in 2020. The two honest responses are to raise sample resolution or to accept that
+a daily-bar programme terminates at its trial cap with a negative result — **not** to lower a bar
+because the data cannot clear it.
+
+### Directive 10 — evidence
+
+See "FAMILY-LEVEL FINDING — volatility-conditioned de-risking is INVERTED on this market" above:
+the full quintile decomposition, the robustness views (V1–V4, disjoint windows, per-year), the
+bootstrap CI, the spot-record tension, and the inverted-construct trap.

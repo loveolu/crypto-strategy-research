@@ -92,7 +92,7 @@ which the cap moves; a breach with narrative still in the region is not.
 | `knowledge_base/hypothesis_bank.md` | **only** between `DIRECTOR-MANDATORY-BEGIN/END` markers (the FAMILY STATUS LEDGER) |
 | `research/STANDING_DIRECTIVES.md` | whole file — the accumulated binding directives from every meta-review |
 
-**The DIRECTOR-MANDATORY region contains exactly these fourteen sections.** The list is
+**The DIRECTOR-MANDATORY region contains exactly these sixteen sections.** The list is
 exhaustive on purpose: an earlier version named only eight, and three of the five it omitted
 (Monte Carlo gate, Independent Reviewer output standard, Falsification conditions) are precisely
 the standards the role prompts in `prompts/` were later found to have got wrong. An incomplete
@@ -111,8 +111,10 @@ or removing a section inside the markers must update this list in the same edit.
 10. Zero-cost pre-gate ladder
 11. **Falsification conditions must be transcribed literally**
 12. **Monte Carlo gate**
-13. **Independent Reviewer output standard**
-14. Champion Classification & Progression Pipeline
+13. **File ownership — Engineer / Reviewer division**
+14. **Independent Reviewer output standard**
+15. **STANDING_DIRECTIVES.md is capped**
+16. Champion Classification & Progression Pipeline
 
 **"Latest" means highest ID, never most recent mtime.** The latest review brief is the one with the
 highest Task ID parsed from its filename (`T-035_brief.md` → 35); the latest meta-review is the
@@ -1056,6 +1058,24 @@ in 4 KB, the excess is analysis — put it in the report and cite it from the br
 
 Enforced by `scripts/check_context_budget.py`, which counts the highest-Task-ID file in
 `research/review_briefs/` against the mandatory budget.
+
+## STANDING_DIRECTIVES.md is capped
+
+**`research/STANDING_DIRECTIVES.md` is capped at 4,096 bytes.** Each directive is at most **three
+sentences**: the binding rule, the decisive evidence in one clause, and the scope limit. Evidence,
+derivations and caveats live in `research/strategy_research_notes.md`, which is off-budget and
+unbounded; the directive carries a pointer.
+
+**When the cap is reached, the Meta-Reviewer consolidates** — merging directives that express one
+rule, and retiring any superseded by an explicit naming directive. **Directives are never renumbered
+and gaps are preserved.** **Raising the cap is not an available remedy:** a directives file too long
+to be read every cycle is not binding on anyone.
+
+**Why this exists.** The file is fully mandatory, grows monotonically, and every meta-review adds to
+it. It reached 8,899 B at ten directives and was the second-largest mandatory item — on track to
+consume the Director's context budget by itself, which is the fourth budget crisis this project has
+had. It was compacted to the cap on 2026-08-02 with no rule text lost; the displaced evidence is in
+`strategy_research_notes.md`, "Evidence displaced from STANDING_DIRECTIVES.md".
 
 ## Champion Classification & Progression Pipeline
 
