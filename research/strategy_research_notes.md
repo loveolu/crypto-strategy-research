@@ -1168,6 +1168,47 @@ fee plus spread alone.
 Source: `research/results/T-039_raw/economics_by_horizon.csv` and `matrix_executable.csv`;
 Reviewer-reproduced independently 2026-08-04.
 
+### Directive 12 — evidence (2026-08-04, T-039 family-wise control)
+
+**The control.** 1,000 draws, seed **20260803**. Each draw takes one integer offset
+`k ~ Uniform[720, N_min − 720]` (`N_min` = 20,394, so k ∈ [720, 19674]), applies **the same k to all
+nine instruments**, circularly shifts each instrument's six state-variable series forward by k,
+leaves the return series in place, re-estimates decile thresholds, and records
+`M_draw = max |excess| over all 72 cells`. It preserves each variable's marginal distribution, each
+return series' autocorrelation and volatility clustering, and the panel's cross-sectional alignment,
+destroying only the **variable↔return alignment**. Taking the max over all 72 cells per draw is what
+makes the threshold family-wise.
+
+| statistic | bps |
+|---|---:|
+| mean(M) | **29.9228** |
+| sd(M) | **9.8972** |
+| P50(M) | 28.7884 |
+| **P95(M)** | **47.2200** |
+| P99(M) | 57.2635 |
+
+**The scan's own noise floor exceeds both its best finding and its success criterion.** The largest
+|excess| anywhere in the real matrix is **36.5176 bps** (`vol_ratio` h=24 BOT), which cleared the
+economic gate on both clauses with **9/9** breadth — and **22.1% of the null draws reach or exceed
+it**, i.e. **empirical family-wise p = 0.221**. That is an ordinary draw from the null, not a
+marginal miss. P95(M) = 47.22 bps also sits **above the 36.0 bps economic bar itself**, so on this
+panel a 72-cell scan cannot clear its own selection noise: **width is expensive here**, and a narrow
+pre-registered single-cell test faces a far lower bar than the same cell found by scanning.
+
+**Why this is now binding.** Without the control, T-039 would have reported `vol_ratio` h=24 BOT as
+a passing cell and handed it to a follow-on cycle to build and backtest — one trial, and probably a
+cycle, spent on noise. Two sanity assertions are mandatory for any future control and both passed
+here: `sd(M) > 0` and `P95(M) > 0`, and at least one cell's shifted |excess| must differ from its
+unshifted value (**72/72 differed on draw 1**, max difference 24.4153 bps) — exact equality across
+all cells is a bug signature meaning the shift did not take effect, not a result. Report the
+effective number of independent tests alongside the raw count (here **M_eff 5.00 of 6** variables,
+Li & Ji; max off-diagonal Spearman 0.77): correlated variables *lower* P95(M) and make the gate
+**easier**, which is the opposite of the usual multiple-comparison reflex.
+
+Source: `research/results/T-039_raw/placebo_summary.json`, `placebo_draws.csv`,
+`placebo_argmax_by_draw.csv`. **The p = 0.221 figure is a Reviewer computation from the committed
+draws, not an Engineer-reported number** — the report gave only the P95 comparison.
+
 ---
 
 ## T-039 / H-IntradayEdgeFloor-1h lessons (2026-08-04, REJECT at pre-gate, zero trials)

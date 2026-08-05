@@ -40,3 +40,7 @@ Compacted 2026-08-02 and 08-04 — **no rule lost**; missing 4 = source gap.
     cost before any selection penalty (T-039). **A Director must
     state the expected per-trade gross edge against round-trip cost before assigning any construct
     holding positions under 8 hours.** **Scope:** six variables, nine perps, 1h — NOT "intraday is dead".
+12. **A census-style scan must price its own width.** T-039's 72-cell scan has a family-wise null of
+    **P95 47.22 bps**; its best cell (`vol_ratio` h=24 BOT, 36.52 bps, 9/9) sits at **empirical
+    p = 0.221** — ordinary, not marginal. **Any census-style scan must carry a
+    family-wise control built the same way; a max cell reported without one is not evidence.**
