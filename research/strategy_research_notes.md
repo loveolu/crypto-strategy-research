@@ -1134,3 +1134,131 @@ because the data cannot clear it.
 See "FAMILY-LEVEL FINDING — volatility-conditioned de-risking is INVERTED on this market" above:
 the full quintile decomposition, the robustness views (V1–V4, disjoint windows, per-year), the
 bootstrap CI, the spot-record tension, and the inverted-construct trap.
+
+### Directive 11 — evidence (2026-08-04, T-039 cost-wall census)
+
+Gross conditional edge divided by the **18.0 bps taker round trip**, best cell per horizon, from a
+72-cell census (6 causal 1h OHLCV+volume variables × 6 horizons × 2 decile tails) over **251,946
+pooled TRAIN+VAL bars** on the nine OKX USDT perps, every cost resolved from `COST_MODEL`:
+
+| h (bars) | best gross per-trade cell | `d·mu_cell` bps | **edge ÷ 18.0 bps** | net/trade bps | round trips/yr | annual cost drag |
+|---|---|---:|---:|---:|---:|---:|
+| 1 | mom_24 BOT | 2.7756 | **0.15x** | −15.2244 | 8,760 | 1,576.8% |
+| 2 | mom_24 BOT | 4.8390 | **0.27x** | −13.1610 | 4,380 | 788.4% |
+| 4 | mom_24 BOT | 8.3511 | **0.46x** | −9.6489 | 2,190 | 394.2% |
+| 8 | mom_24 BOT | 16.1349 | **0.90x** | −1.8651 | 1,095 | 197.1% |
+| 12 | vol_ratio BOT | 21.4246 | **1.19x** | +3.4246 | 730 | 131.4% |
+| 24 | vol_ratio BOT | 39.8100 | **2.21x** | +21.8100 | 365 | 65.7% |
+
+**At h ≤ 8 the best in-sample edge available from six causal 1h variables, on either tail, is below
+one round trip** — before any selection penalty is applied, and before slippage error, adverse
+selection or implementation shortfall. Each figure is a **maximum over 12 in-sample cells** at that
+horizon, so these are upper bounds, not expectations. Gross edge first exceeds one round trip at
+h=12 and the pre-registered 2x bar only at h=24 — the one-round-trip-per-day boundary case, which is
+not the operator's target frequency.
+
+**Scope, stated so the directive is not over-read.** This measures **these six variables on these
+nine perps at 1h**, as univariate decile-conditioned mean differences. It does **not** establish
+"intraday is dead". Untested and not closed by it: variable *interactions*, non-decile functional
+forms, rolling-percentile rather than level conditioners, conditional volatility or skew targets
+rather than mean returns, and sub-hourly resolutions. For the best h=8 cell to clear 2x, a round trip
+would have to cost under **~8 bps** — roughly half the current all-in taker cost, and below exchange
+fee plus spread alone.
+
+Source: `research/results/T-039_raw/economics_by_horizon.csv` and `matrix_executable.csv`;
+Reviewer-reproduced independently 2026-08-04.
+
+---
+
+## T-039 / H-IntradayEdgeFloor-1h lessons (2026-08-04, REJECT at pre-gate, zero trials)
+
+Cross-cycle patterns only; the per-cycle detail is in `research/results/T-039_report.md` and
+`research/strategy_iteration_log.md` Iteration 42.
+
+### 1. The cost wall is now a measured number, and it is the binding fact about intraday here
+
+Every prior intraday rejection in this project was a *construct* failing. T-039 measured the
+**ceiling** instead: across 6 causal 1h OHLCV+volume variables × 6 horizons × 2 tails, 251,946
+pooled bars, the best gross conditional per-trade return at h ≤ 8 is **16.13 bps against an 18.0 bps
+round trip (0.90×)** — and that is the maximum over in-sample cells with no selection penalty. Edge
+scales roughly with √h; cost is fixed per round trip. So the affordable holding period is arithmetic,
+not a modelling question. **Stop testing constructs at h ≤ 4 (max |excess| 8.88 bps vs 18.0 bps of
+cost) until either the cost model changes or someone explains which of those numbers is wrong.**
+
+### 2. A wide scan can be unable to clear its own selection noise — measure the floor before believing the max
+
+The single most transferable result: the family-wise max-statistic null for a 72-cell scan on this
+panel has **P95(M) = 47.22 bps**, which is *above* the 36.0 bps economic bar the scan was asked to
+clear. **The scan's noise floor exceeded its best finding (36.52 bps) and its own success criterion.**
+Consequences for design, not just for this cycle:
+
+- **Width is expensive on this panel.** Adding cells raises the bar you must clear. A narrow,
+  pre-registered single-cell test faces a far lower hurdle than the same cell discovered by scanning.
+- Report the effective number of independent tests (`M_eff` 5.00 of 6 variables here, Li & Ji;
+  max off-diagonal Spearman 0.77). Correlated variables *lower* P95(M) and make the gate **easier** —
+  the intuition runs the opposite way to the usual multiple-comparison reflex.
+- The useful summary statistic is not "does it clear P95" but **where the finding sits in the null**:
+  22.1% of draws reached 36.52 bps, i.e. family-wise empirical p ≈ 0.22. Record that number.
+
+### 3. A placebo control on a decile-conditional mean is not ceremony — it flipped this verdict
+
+`vol_ratio` h=24 BOT cleared the economic gate on both clauses with **9/9** breadth. Under a design
+without G4 it would have been reported as a passing cell and handed to a follow-on cycle to build and
+backtest, spending a trial on noise. The construction that worked: shift the *variable* series
+circularly by one shared offset across all instruments, leave the *returns* in place, re-estimate
+thresholds, take the **max over all cells per draw**. It preserves marginal distributions,
+autocorrelation, volatility clustering and cross-sectional alignment, and destroys only the
+variable↔return alignment. **Every future census of this shape should carry one.** Related: lesson 20
+(a suspiciously clean diagnostic is a bug signal) — assert that the shifted and unshifted matrices
+actually differ, or a no-op shift will read as a null.
+
+### 4. Breadth across a correlated panel is nearly free and is not independent corroboration
+
+**66 of 72 cells** cleared the 5-of-9 breadth gate, including cells whose |excess| is under 4 bps and
+which are unambiguously noise. On a panel this correlated, breadth is a useful floor against
+single-instrument artifacts and **almost nothing else**. Do not read 9/9 breadth as nine independent
+confirmations — T-039's best cell had perfect breadth and still sat inside the null.
+
+### 5. Level-based thresholds silently expire out-of-sample; a TEST-presence gate is what catches it
+
+`illiq` TOP fired on **19 of 151** TEST dates and on **zero** for the median instrument, because perp
+quote volumes rose between TRAIN+VAL and TEST — the in-sample "most illiquid" state stopped
+occurring. No error is raised by this; a construct trained on it would simply have had nothing to
+trade. **Any conditioner whose cut is a *level* rather than a *rolling percentile* needs a
+TEST-presence check**, and the fix for a future cycle is to re-express it as a rolling percentile.
+
+### 6. Paradigms do not carry across a change of resolution with their sign intact
+
+`mom_24` TOP excess is **negative at all six horizons** and BOT **positive at all six**: 1h momentum
+on these perps is a **reversal** effect, not a trend effect. Time-series momentum was the one paradigm
+that survived the daily spot program (as the champion's regime gate). It inverts at 1h. Intuitions
+inherited from the daily program are not evidence at intraday resolution, in either direction.
+
+### 7. Directive 10's inversion now has a second, methodologically stronger measurement
+
+T-038 found high-trailing-vol 1h bars had *better* forward per-unit-risk returns as a **sizing**
+result with no control. T-039 finds the same sign at **entry**, on both tails, with a placebo control:
+`vol_ratio` BOT excess is monotone in h (−1.66 → −36.52 bps), breadth 8–9 of 9 at every horizon, and
+**all nine instruments negative at h=24** (BTC −19.3 … ADA −75.8) — no single instrument carries it.
+Two independent measurements, different layers, same direction. **It remains a sign and never an
+effect size, and it is still not harvestable** (fails G4; every horizon below 24 is under the cost
+wall). A third cycle does not need to rediscover it.
+
+### 8. Process: an off-by-one in the *assignment* is the Engineer's to disclose, not to patch
+
+The assignment specified a 24-bar census trim with the rationale "so that no forward return reads a
+TEST bar". Under the mandated executable anchor (`fwd_h(t) = log(c_{t+1+h}) − log(c_{t+1})`) the
+correct trim is `max(h) + 1` = 25; at 24, each instrument's last h=24 observation reads the first TEST
+bar. The Engineer **executed the literal pre-registered number, disclosed the defect, and put the
+25-bar matrix on disk** (0 of 72 status changes, ≤0.0546 bps) rather than silently substituting its
+own reading. That is the correct handling of a spec whose instruction and rationale disagree, and it
+is what let the Reviewer confirm the defect was immaterial instead of having to reconstruct it.
+**Future 1h censuses must trim `max(h) + 1`.**
+
+### 9. Two prior-cycle process findings were acted on and did not recur
+
+T-038's audit recorded (a) five diagnostics traceable to no raw artifact and (b) analysis scripts left
+untracked because `user_data/*` is gitignored. In T-039 every spot-checked figure recomputed from a
+named artifact, and the script was committed with `git add -f`. Also, no Reviewer-owned file was
+written by the Engineer. Recorded because the corrective loop closing is itself the evidence that
+writing these findings down works.
