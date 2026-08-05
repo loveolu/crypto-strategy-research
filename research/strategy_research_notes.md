@@ -1209,6 +1209,46 @@ Source: `research/results/T-039_raw/placebo_summary.json`, `placebo_draws.csv`,
 `placebo_argmax_by_draw.csv`. **The p = 0.221 figure is a Reviewer computation from the committed
 draws, not an Engineer-reported number** — the report gave only the P95 comparison.
 
+### Directive 13 — evidence (2026-08-04, the three 1h inversions)
+
+**Everything the spot program established on daily bars inverts at 1h on perps.** Three
+measurements, two cycles, two different layers of the stack.
+
+**(a) Vol-target sizing fails at the SIZING level.** T-038 (perps, 1h, nine-instrument basket):
+basket **Q1−Q5 = −0.438872**, breadth **1 of 9** instruments on the hypothesised side.
+High-trailing-vol 1h bars had *better* forward per-unit-risk returns. **Two figures exist for this
+quantity and both are correct**: −0.438872 is the re-run under the resolution-aware holdout boundary
+(`5cbd7617a`, 151 TEST dates) and is the figure carried in directive 13; **−0.442905** is the as-run
+headline on the pre-fix 152-date slice and remains the number of record in `research_index.md`,
+`research_metrics.md`, the hypothesis bank and directive 10. Both fire both KILL clauses; the verdict
+is identical either way. Do not read them as a discrepancy.
+
+**(b) Volatility inverts at the ENTRY level too.** T-039: `vol_ratio` BOT excess is negative and
+**monotone across all six horizons** (−1.66 / −3.54 / −6.86 / −12.56 / −19.85 / −36.52 bps at
+h = 1/2/4/8/12/24), breadth **8–9 of 9 at every horizon**, and **all nine instruments negative at
+h=24** — BTC −19.3, ETH −31.9, SOL −61.7, BNB −22.1, XRP −43.3, ADA −75.8, AVAX −25.5, DOT −25.7,
+LINK −19.0 bps — so no single instrument carries the pooled figure. It supplies **six of the seven
+highest |excess|/SE ratios in the entire 72-cell matrix** (3.2924–4.0520). **Low trailing relative
+volatility predicts materially worse forward returns across the panel.**
+
+This corroborates (a) **with a control neither prior test had**, and it still **fails G4** (36.52 bps
+against a family-wise P95 of 47.22). The *sign* now rests on two independent measurements at two
+different layers; the *magnitude* rests on neither. It is **not harvestable**: every horizon below 24
+sits under the cost wall (directive 11) and the h=24 cell is inside the null (directive 12).
+
+**(c) 1h momentum is REVERSAL, not trend.** `mom_24` TOP excess is negative at **all six** horizons
+(−0.44 / −0.47 / −1.55 / −5.14 / −9.57 / −6.38 bps) and `mom_24` BOT positive at **all six**
+(+2.91 / +5.11 / +8.88 / +17.18 / +17.77 / +19.19 bps), breadth 6–9 of 9. Time-series momentum was
+the one paradigm that survived the daily spot program — it is the champion's own regime gate — and
+its sign inverts at this resolution.
+
+**The rule this supports:** a Director must not carry a daily-bar finding to 1h without re-testing
+it. Directive 10's specific requirement on de-risking constructs is unaffected and stands unreplaced.
+
+Source: `research/results/T-039_raw/matrix_executable.csv` (per-instrument excess columns),
+`research/results/T-038_raw/T-038_pregates.json`, and the T-038 brief's post-cycle boundary note.
+All figures Reviewer-reproduced 2026-08-04.
+
 ---
 
 ## T-039 / H-IntradayEdgeFloor-1h lessons (2026-08-04, REJECT at pre-gate, zero trials)

@@ -44,3 +44,9 @@ Compacted 2026-08-02 and 08-04 — **no rule lost**; missing 4 = source gap.
     **P95 47.22 bps**; its best cell (`vol_ratio` h=24 BOT, 36.52 bps, 9/9) sits at **empirical
     p = 0.221** — ordinary, not marginal. **Any census-style scan must carry a
     family-wise control built the same way; a max cell reported without one is not evidence.**
+13. **Everything the spot program established on daily bars inverts at 1h on perps**: vol-target
+    sizing failed at the **sizing** level (T-038, Q1−Q5 **−0.438872** post-fix, 1/9); volatility
+    inverts at the **entry** level too (T-039 `vol_ratio` BOT negative, monotone across all six
+    horizons, 8–9/9) — with a control neither had, though it fails G4; and **1h momentum
+    is reversal, not trend** (`mom_24` TOP negative at all six horizons, BOT positive at all six).
+    **A Director must not carry a daily-bar finding to 1h without re-testing it.** D10 stands.
