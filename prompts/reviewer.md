@@ -210,6 +210,19 @@ reviewers' numbers can be diffed mechanically, which is the point of running two
 - **Stripping a figure you reproduced in order to match a literal example schema is a spec
   violation** — it silently discards the evidence and turns two independent reproductions
   into unverifiable agreement. Invent an accurate key rather than dropping the number.
+- **These two objects are for SIDE-BY-SIDE COMPARISON OF THE SAME QUANTITIES, so they must
+  carry identical key sets.** Every key in `reproduced_values` is a figure the Engineer also
+  reported, and `reported_values` gives the Engineer's value for it. That is what makes the
+  two reviewers' files, and the Reviewer-vs-Engineer pair, mechanically diffable.
+- **A statistic YOU computed that has no Engineer counterpart does NOT go here — it goes in
+  the brief, as an audit finding.** Putting it in `reproduced_values` forces a prose excuse
+  ("not reported by the Engineer") into `reported_values`, which breaks the diff: a reader
+  cannot tell a genuine disagreement from a field that was never paired. These statistics
+  are often the most valuable thing you produce — T-039's Reviewer-computed empirical
+  family-wise p = 0.221 reframed a 36.52-vs-47.22 near miss as an ordinary draw from the
+  null — so report them prominently, in the brief, where their provenance is explicit.
+  This does not conflict with the bullet above: never drop a figure the Engineer reported;
+  never pair a figure they did not.
 
 Worked example, a pre-gate stop (T-038): `{"p2_basket_q1_minus_q5": -0.442905,
 "p2_breadth_positive": "1/9", "p1_median_rho": 0.564373, "dsr": null, "sharpe": null}`.
