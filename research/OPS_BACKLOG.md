@@ -535,3 +535,95 @@ On today's BTC 1d feather (52 bars past the boundary) every one of these raises.
 - No `enforce_holdout=False` anywhere in the repository.
 - No remaining `split_70_15_15()` calls outside `phase*.py`.
 - The chosen split dates recorded in one place and identical across callers.
+
+---
+
+## A-009 — Establish whether funding-rate history is reachable back to 2022, or close the axis at the data layer
+
+**Status:** LOGGED, NOT ASSIGNED. Do not execute without explicit assignment.
+**Logged:** 2026-08-04 by Independent Reviewer A, as directed by `research/NEXT_TASK.md` (T-039,
+"Environment notes"). The Director was explicitly barred from writing this file that cycle.
+**Class:** OPS / data reachability. Zero trials. Does not advance the meta-review counter.
+
+### Problem
+
+Funding rate is the **natively-perp mechanism** — the one economic term that exists on this venue and
+nowhere in the spot program — and it is currently unusable. All nine
+`user_data/data/okx/futures/*-1h-funding_rate.feather` files span **2026-02-26/28 → 2026-05-28**
+(266–273 rows each): entirely **after** the TEST window ends (2025-09-19) and entirely **inside** the
+reserved holdout. Zero overlap with any evaluable window on the frozen split triple. A-005 excluded
+funding from the perps benchmark for exactly this reason, and T-039's Director rejected a
+funding/carry hypothesis at reachability rather than on its merits.
+
+T-031 separately established OKX serves roughly **97 days** of funding history. If that is the real
+ceiling across reachable venues, the axis is not "not yet fetched" — it is **permanently unavailable
+to this program**, and it should be recorded as closed at the data layer instead of being
+re-proposed, re-investigated and re-rejected by every future Director.
+
+### Scope
+
+1. Determine OKX's actual funding-history retention limit from the API, not from memory. Record the
+   endpoint, the parameters, and the oldest timestamp actually returned.
+2. Check whether any other reachable venue serves funding history back to 2022 for these nine
+   instruments. T-025's forensics established that **raw REST/curl to OKX works from this environment
+   while the ccxt-async client fails** — test the raw path before concluding a venue is unreachable.
+   Binance/Bybit were geo-blocked as of T-031; re-confirm rather than assume, and record which.
+3. If a source exists: state the exact coverage and cost, and stop. **Do not download anything under
+   this task** — acquisition is a separate assignment and is gated on A-002.
+4. If no source exists: record the funding axis as **CLOSED AT THE DATA LAYER** in
+   `research_metrics.md`'s data-axis table with the evidence, so it stops consuming Director cycles.
+
+### Acceptance criteria
+
+- A stated retention figure per venue tried, each traceable to a saved raw response.
+- A yes/no answer on 2022-back availability, with the evidence, not an impression.
+- `user_data/data/` untouched; nothing downloaded.
+- Whichever way it resolves, the data-axis table is updated so the question is not re-asked.
+
+### Explicit non-goals
+
+- Do not fetch, backfill, or extend any funding series under this task.
+- Do not re-run or revise A-005's benchmark — its funding exclusion is correct either way.
+
+---
+
+## A-010 — Two 1h data-coverage facts recorded by T-039, unresolved
+
+**Status:** LOGGED, NOT ASSIGNED. Do not execute without explicit assignment.
+**Logged:** 2026-08-04 by Independent Reviewer A, from the T-039 Engineer's recommendations 6(b)
+and 7. Both are Reviewer-verified from `research/results/T-039_raw/g0_coverage.csv`.
+**Class:** OPS / data hygiene. Zero trials. Does not advance the meta-review counter.
+
+### Problem
+
+Neither item affects any recorded result — both sit inside the reserved holdout or are handled
+correctly by current code. They are logged so the next cycle does not rediscover them as bugs in its
+own code.
+
+1. **BTC's 1h series is 25 bars short of the other eight.** BTC ends **2026-05-27 18:00** with 38,587
+   bars; the other seven full-history instruments end **2026-05-28 19:00** with 38,612 (BNB 30,062
+   from its later start). Entirely inside the reserved holdout, so it affects nothing measured to
+   date — but it will matter the first time a cycle evaluates on the holdout, and a ragged panel edge
+   is the kind of thing that silently changes a pooled statistic.
+2. **Eight of the nine instruments carry exactly 9 zero-volume 1h bars each; BNB carries 0.** The
+   count being *identical* across eight instruments points to a venue-wide outage rather than
+   per-instrument gaps. T-039 handled them correctly by construction (`illiq` treats a zero-quote-
+   volume bar as NaN and the affected 24-bar windows drop out), and no project file records them.
+
+### Scope
+
+1. Identify the timestamps of the 9 zero-volume bars and confirm the venue-outage reading by checking
+   whether they share timestamps across the eight instruments.
+2. Establish whether BTC's 25-bar shortfall is a fetch gap or genuine venue absence.
+3. Record both in `research/research_index.md`'s standing constraints — this is the cheap outcome and
+   probably the right one.
+4. **Only if a repair is proposed:** it touches `user_data/data/`, so it is an operator-authorised
+   data action, never a research cycle. `PROJECT_OPERATOR_MANUAL.md`, "Data acquisition is not
+   research" governs; the manifest must be rebuilt deliberately and the change recorded.
+
+### Explicit non-goals
+
+- Do not modify, backfill, interpolate or rebuild any feather while merely investigating. A cycle
+  whose diff touches `user_data/data/` is INVALID.
+- Do not treat the zero-volume bars as a defect to patch. They are a real property of the venue's
+  history; the correct outcome may well be to document them and change nothing.

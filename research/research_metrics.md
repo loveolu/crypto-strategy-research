@@ -4,7 +4,35 @@
 > (increment counts, append to the DSR-trend table, refresh indicator-usage tally). This file is
 > aggregate/statistical; narrative belongs in `strategy_iteration_log.md`, current status belongs
 > in `research_index.md`. 
-> Last updated: 2026-08-01, **T-038 / H-BasketVolTarget-1h — REJECT at pre-gate P2 (Independent
+> Last updated: 2026-08-04, **T-039 / H-IntradayEdgeFloor-1h — REJECT at pre-gate (Independent
+> Reviewer A)**. Second perps RESEARCH cycle. A 72-cell conditional-mean census (6 causal 1h
+> OHLCV+volume variables × 6 horizons × 2 decile tails) on the nine OKX perps, **251,946 pooled
+> TRAIN+VAL bars**, at the real `COST_MODEL` (9.0 bps/side, **18.0 bps taker round trip**), plus a
+> pre-registered 1,000-draw family-wise circular-shift placebo (seed 20260803). **0 of 72 cells**
+> clear G1∧G2∧G3∧G4∧G5 — gate counts G1 72 · G2 **1** · G3 66 · **G4 0** · G5 66. **The cycle's
+> objective figure: at the operator's target frequency (h ≤ 8) the best gross conditional per-trade
+> return from any variable on either tail is 16.1349 bps against an 18.0 bps round trip — 0.90×**,
+> and that is the best of 12 in-sample cells at that horizon with no selection penalty. Edge-to-cost
+> by horizon: 0.15× / 0.27× / 0.46× / 0.90× / 1.19× / 2.21× at h = 1/2/4/8/12/24. **The placebo
+> changed the verdict**: `vol_ratio` h=24 BOT cleared G2 (d·excess 36.5176 ≥ 36.0, d·mu_cell 39.8100
+> ≥ 18.0) with 9/9 breadth and failed only G4 — **P95(M) = 47.2200 bps**, above both the largest real
+> |excess| and the 36.0 bps bar; the Reviewer added the statistic the report lacked: **22.1% of the
+> 1,000 null draws reach 36.5176 bps** (family-wise empirical p ≈ 0.22). Both sanity assertions
+> passed (sd(M) 9.8972; 72/72 cells differ on draw 1). **Zero trials spent — perps `n_trials` stays
+> 0** of 30; ledger stays at 0 data rows; no DSR, no MC, no candidate (none assigned). Reviewer
+> reproduced **all 20 raw artifacts byte-identically** AND independently reimplemented the matrix
+> from the spec text (max diff **7.1e-15 bps**, 0 breadth/n_bucket mismatches) and the placebo with a
+> true `np.roll` + re-estimated thresholds (first 60 draws identical to 1e-10 bps). Reviewer B
+> (composer-2.5) returned REJECT with identical figures. Audit findings, none outcome-changing:
+> the assignment's 24-bar census trim is off by one under the executable anchor (reads one TEST bar
+> at h=24; 25-bar trim changes 0 of 72 statuses, ≤0.0546 bps) — an assignment defect the Engineer
+> disclosed and measured rather than silently patching; G5's pooled-vs-per-instrument reading was
+> unspecified and the permissive pooled reading was applied with all nine per-instrument counts
+> reported; `cs_mom_rank` tails are 0.1120–0.1797 of valid bars rather than true deciles. **T-038's
+> two process findings did not recur** — the script was committed with `git add -f` and no
+> Reviewer-owned file was written by the Engineer. See `research/results/T-039_report.md` and
+> `research/review_briefs/T-039_brief.md`.
+> Previous update: 2026-08-01, **T-038 / H-BasketVolTarget-1h — REJECT at pre-gate P2 (Independent
 > Reviewer A)**. First perps RESEARCH cycle and the first cycle ever run on the 1h sample. EWMA
 > vol-target exposure scaling of the 9-perp equal-weight basket killed by the harm census on **both**
 > clauses: basket Q1−Q5 forward per-unit-risk return **−0.442905** (KILL if ≤ 0) and breadth **1 of 9**
@@ -145,12 +173,12 @@ scheme and is not counted.
 
 | Metric | Value |
 |---|---|
-| RESEARCH cycles | **1** — T-038 (H-BasketVolTarget-1h, REJECT at pre-gate P2, 2026-08-01) |
+| RESEARCH cycles | **2** — T-038 (H-BasketVolTarget-1h, REJECT at pre-gate P2, 2026-08-01), T-039 (H-IntradayEdgeFloor-1h, REJECT at pre-gate, 2026-08-04) |
 | OPS/INFRASTRUCTURE cycles | **1** — A-005 (perps program benchmark, 2026-08-01) |
-| Ratio | **1 : 1** — reported only; below the 6-cycle threshold |
+| Ratio | **2 : 1** — reported only; below the 6-cycle threshold |
 | Floor status | **Not yet in force** |
-| Perps `n_trials` | **0** of the 30-trial cap (T-038 stopped at a zero-cost pre-gate) |
-| Perps trials spent to date | **0** — `research/trial_sharpe_ledger.csv` holds 0 rows |
+| Perps `n_trials` | **0** of the 30-trial cap (both T-038 and T-039 stopped at zero-cost pre-gates) |
+| Perps trials spent to date | **0** — `research/trial_sharpe_ledger.csv` holds 0 data rows (51 physical lines = 50 comments + 1 header) |
 
 **The 2:1 floor applies only after 6 completed perps cycles.** Below that count the ratio is
 statistically meaningless — a single early ops task would read as a catastrophic breach and trigger a
@@ -163,10 +191,12 @@ rather than invisible.
 
 ## Rejection / promotion rate
 
-- **Perps program (2026-08-01, after T-038): no rate is computable yet — 0 trials spent.** T-038 was
-  rejected at a zero-cost pre-gate, which by the manual's definition tests no construct against
-  `n_trials`. Perps cycles completed: 1 RESEARCH (rejected) + 1 OPS. The figures below are the
-  **closed spot program's** final values and do not carry across the program boundary.
+- **Perps program (2026-08-04, after T-039): no rate is computable yet — 0 trials spent.** Both
+  T-038 and T-039 were rejected at zero-cost pre-gates, which by the manual's definition test no
+  construct against `n_trials`. Perps cycles completed: **2 RESEARCH (both rejected) + 1 OPS**.
+  Cycle-level rejection rate 2 of 2; construct-level rate undefined because no construct has been
+  built. The figures below are the **closed spot program's** final values and do not carry across the
+  program boundary.
 - **Rejection rate: ~96%** (96 rejected of 100 total tested constructs).
 - **Promotion rate: ~1%** (1 of 100) — and that single promotion remains formally **unproven**
   (DSR 0.62 vs. the 0.95 bar for a statistically credible edge), not a confirmed success.
@@ -205,6 +235,8 @@ rather than invisible.
 | Champion rolling 18-month Sharpe (monthly step, 61 evaluations 2021-05→2026-05) | median 1.14, min +0.01 (18m ending 2022-11-30), max 2.37, **share negative 0.0%** |
 | Champion family context (Kaufman average-of-all-tests, from 2026-06-11 records) | Full-window Sharpe 1.33 = family PEAK (rank 1/66; family mean 0.537, median 0.74); TEST Sharpe 0.41 = rank 13/64, 81st pctile (family mean −0.628) |
 | Real anomalies found that are statistically genuine but untradeable after costs | 1 (intraday hours 21-22 UTC, t=2.4-3.0, fees exceed edge ~25:1) |
+| **Measured gross conditional 1h entry edge vs the taker cost wall (T-039, 9 perps, 251,946 bars)** | Best-of-72-cells gross edge ÷ 18.0 bps round trip = **0.15× / 0.27× / 0.46× / 0.90× / 1.19× / 2.21×** at h = 1/2/4/8/12/24. **The operator's "multiple round trips per day" target (h ≤ 8) is under 1.0× — i.e. gross-negative before slippage error and before selection is priced.** For the best h=8 cell to clear 2×, a round trip would have to cost under ~8 bps (below exchange fee + spread alone) |
+| **Family-wise noise floor of a 72-cell decile scan on the 9-perp 1h panel (T-039)** | **P95(M) = 47.22 bps** (mean 29.92, sd 9.90, P99 57.26) — *above* the 36.0 bps economic bar, so on this panel **scan width is unaffordable**: a wide census cannot clear its own selection noise. A narrow, pre-registered single-cell test faces a far lower bar. Effective independent variables `M_eff` = 5.00 of 6 (Li & Ji), max off-diagonal Spearman 0.77 |
 
 ## Common indicator / technique usage across all 97 tested constructs
 
@@ -237,6 +269,11 @@ Tally of recurring building blocks across the project's own construct history (9
 | Deribit DVOL (daily implied-vol index, BTC and ETH) | 0 | H-IVGate (2026-07-11/12), would-be trial #99 — **CLOSED AT PRE-GATE B3a**: 4 in-market spike-onset episodes < 6 required; champion's regime gate already avoids 5/9 spike onsets. **H-IVSizing (2026-07-12), would-be trial #99 (same slot)** — **CLOSED AT PRE-GATE P2**: P1 PASS (218/661 in-market days differ, 33%, 35 episodes); **P2 FAIL**: affected days (DVOL/100 > rv30, n=218) have forward 10d median +1.67% vs unconditional +0.53% — BETTER not worse. VRP is positive-carry; high-IV days are favorable trending phases. ZERO differing days in TEST split (Bar 6 also fails). **T-022 (2026-07-18)** evaluated change-based DVOL acceleration as signal; failed TEST split presence and harm census. **DVOL axis FULLY CLOSED for daily-bar champion modifications** (veto B3a + sizing P2 + change-based T-022 = all exhausted). Zero trials spent; n_trials=98 unchanged. |
 | Volume filters | ~3 | 3.5x-SMA volume filter was the one plausible genuine signal component in the very first (still-rejected) EmaRsiVolume construct |
 | Logistic regression (5 lagged log-return features, per-asset, sklearn default) | 0 | H-LogisticEntry (T-034, 2026-07-21), would-have-been trial #101 — **CLOSED AT ZERO-COST PRE-GATE (in-sample fit sanity)**: BTC first-window hit-ratio 53.1% failed significance (p=0.162 > 0.05); ETH first-window passed (56.7%, p=0.0029) but the joint two-asset gate requires both legs, so no walk-forward backtest was run. First fitted statistical/ML construct tested in this project (prior work was rule-based only); never backtested, zero n_trials cost |
+| Amihud (2002) illiquidity, 24-bar, 1h perps (`mean(\|r\|/(v·c))·1e9`) | 0 | T-039 census, 2026-08-04. **Nearest reachable proxy to the blocked order-book axis; first test in this project.** BOT tail is the strongest illiquidity cell (h=24 excess −25.75 bps, breadth 8/9) but far under the family-wise noise floor. **TOP tail is TEST-ABSENT** — the in-sample "most illiquid" state fires on 19 of 151 TEST dates and **zero** for the median instrument, because perp quote volumes rose between TRAIN+VAL and TEST. Never backtested, zero n_trials cost |
+| Cross-sectional momentum rank across a 9-perp panel (`cs_mom_rank`) | 0 | T-039 census, 2026-08-04 — first portfolio-structure variable tested on the perps panel. Weakest variable in the matrix (max \|excess\| 11.57 bps at h=24) and it supplied the family-wise max in only **3 of 1,000** placebo draws. Note its decile buckets are **not true deciles** (0.1120–0.1797 of valid bars) because a 9-instrument rank takes ≤9 discrete values. Zero n_trials cost |
+| Intraday volatility ratio (`std(r,24)/std(r,168)`), 1h perps, as an ENTRY conditioner | 0 | T-039 census, 2026-08-04 — the only coherent structure in the 72-cell matrix: monotone in h (excess −1.66/−3.54/−6.86/−12.56/−19.85/−36.52 bps), breadth 8–9 of 9 at every horizon, all nine instruments negative at h=24, and six of the seven highest \|excess\|/SE ratios (3.29–4.05). **Independently corroborates standing directive 10 and T-038 at the entry level with a placebo control neither had** — low trailing relative vol predicts WORSE forward returns. Still **not harvestable**: fails G4 (36.52 vs P95 47.22). Zero n_trials cost |
+| Channel position (`range_pos`, 24-bar) and volume z-score (168-bar, log1p) at 1h | 0 | T-039 census, 2026-08-04 — 1h instances of the archived ORB / volatility-breakout cards and of the 3.5×-SMA volume filter this project's first construct used. Both are noise at this resolution: max \|excess\| 11.38 and 11.51 bps respectively, against a 36.0 bps bar. `range_pos` correlates 0.77 with `mom_24` (highest off-diagonal in the matrix). Zero n_trials cost |
+| **Family-wise circular-shift placebo control (max-statistic over a cell scan)** | n/a — a validation technique, not a construct | **First use: T-039, 2026-08-04, and it CHANGED THE VERDICT.** 1,000 draws, one shared offset `k` per draw across all nine instruments, variables shifted and returns left in place, threshold re-estimated, `M_draw = max \|excess\| over 72 cells`. Prices the scan's own selection: **P95(M) = 47.22 bps > the 36.0 bps economic bar**, so the best real cell (36.52 bps) is inside the null (**22.1% of draws reach it**). Without it, a construct would have been handed forward and a trial spent. **Every future census of this shape should carry one** |
 
 **Takeaway**: across 97 constructs, exactly one non-signal component — volatility-target
 sizing — has a spotless track record of helping every time it was tried. Every signal

@@ -3,7 +3,7 @@
 > **Format: one line per completed cycle, no detailed analysis.** Pre-2026-07-28 narrative is in
 > `research/archive/index_narrative_pre_2026-07-28.md`.
 
-**Cycles since meta-review #1 (2026-07-18): 17 of 25** — not due.
+**Cycles since meta-review #1 (2026-07-18): 18 of 25** — not due.
 
 ## Standing constraints
 
@@ -45,6 +45,7 @@ survivorship-biased — both bias the bar upward. Spent no trial. Record:
 |---|---|---|---|
 | T-037 | Perps program transition (not a cycle) | **PROGRAM BOUNDARY, 2026-07-29** | Venue, cost model and trial ledger changed; spot results void as perps evidence. See `research/review_briefs/T-037_PERPS_TRANSITION_brief.md` |
 | T-038 | H-BasketVolTarget-1h — EWMA vol-target exposure scaling of the 9-perp basket | **REJECT (pre-gate P2), 2026-08-01** | Harm census inverted: basket Q1−Q5 = −0.442905 (KILL if ≤0), breadth 1/9 (KILL if <5). High-vol 1h bars have BETTER forward per-unit-risk returns. P1 passed (ρ median 0.564). Zero trials; **perps n_trials stays 0** |
+| T-039 | H-IntradayEdgeFloor-1h — 72-cell conditional-mean census for any 1h entry edge clearing 2× the taker round trip | **REJECT (pre-gate), 2026-08-04** | Falsification fired: **0 of 72** cells clear G1∧G2∧G3∧G4∧G5 (G1 72 · G2 1 · G3 66 · **G4 0** · G5 66). At h ≤ 8 the best gross conditional edge is **16.13 bps vs an 18.0 bps round trip (0.90×)**; the one G2-clearing cell (`vol_ratio` h=24 BOT, 36.5176 bps, 9/9 breadth) sits inside the 72-cell family-wise null (**P95(M) 47.2200 bps**; 22.1% of draws reach it). Zero trials; **perps n_trials stays 0** |
 
 > **T-035 raw artifact permanently lost; verdict stands. Do not attempt restoration.** Full note:
 > `research/review_briefs/T-035_brief.md`, "T-035 audit-status note".

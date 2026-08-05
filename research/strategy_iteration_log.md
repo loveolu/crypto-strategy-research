@@ -1583,3 +1583,88 @@ this cycle — it is a Director/operator declaration.
 
 **Decision:** REJECT CONFIRMED. Zero trials spent; **perps `n_trials` stays 0** (30-trial cap
 untouched). A correct, cheap, well-evidenced negative result.
+
+---
+
+### Iteration 42 (T-039 / H-IntradayEdgeFloor-1h) — REJECT at pre-gate, zero trials
+
+**Verdict: REJECT** (Independent Reviewer A, 2026-08-04). Reason: **failed pre-gate — the
+pre-registered falsification condition fired.** Of 72 cells, **0** satisfy G1∧G2∧G3∧G4∧G5.
+Gate counts G1 72/72 · G2 **1**/72 · G3 66/72 · G4 **0**/72 · G5 66/72. Reviewer B (composer-2.5)
+independently returned REJECT with identical figures.
+
+**What was run.** A 72-cell conditional-mean census (6 causal 1h OHLCV+volume state variables ×
+6 horizons {1,2,4,8,12,24} × 2 decile tails) on the nine OKX USDT perps, 251,946 pooled TRAIN+VAL
+bars, at the real 2026-07-28 `COST_MODEL` (9.0 bps/side, **18.0 bps taker round trip**), plus a
+1,000-draw family-wise circular-shift placebo control at pre-registered seed 20260803. No strategy
+object, no backtest, no optimization, no DSR, no Monte Carlo — none was assigned and none was run.
+
+**The headline number the cycle existed to produce.** At the operator's target frequency
+(multiple round trips per day, h ≤ 8), the best gross conditional per-trade return from any of the
+six variables on either tail is **16.1349 bps against an 18.0 bps round trip — 0.90×** — and that is
+the maximum over 12 in-sample cells at that horizon with no selection penalty applied. Gross
+edge-to-cost by horizon: **0.15× / 0.27× / 0.46× / 0.90× / 1.19× / 2.21×** at h = 1/2/4/8/12/24.
+Edge grows roughly with √h; cost does not move. That divergence is the finding.
+
+**G4 changed the verdict.** Exactly one cell — `vol_ratio h=24 BOT` — cleared the economic gate
+(`d·excess` 36.5176 ≥ 36.0 **and** `d·mu_cell` 39.8100 ≥ 18.0) with perfect **9/9** breadth, and
+failed only the placebo: the family-wise max-statistic null for a 72-cell scan on this data has
+**P95(M) = 47.2200 bps**, above both the largest real |excess| (**36.5176**) and the 36.0 bps
+economic bar. The Reviewer computed the statistic the Engineer did not: **22.1% of the 1,000 null
+draws reach 36.5176 bps or more** — an empirical family-wise p ≈ 0.22. Without G4 this cycle would
+have handed a construct to a follow-on cycle. Both mandatory sanity assertions passed (sd(M) 9.8972
+> 0; 72/72 cells differ shifted vs unshifted on draw 1).
+
+**Reviewer reproduction — two independent passes.** (1) Re-ran `phase_t039_census.py` unmodified:
+**all 20 raw artifacts byte-identical**. (2) Wrote an independent reimplementation from the
+`NEXT_TASK.md` spec text without importing the Engineer's module: the full 72-cell matrix
+reproduces to **max |diff| 7.1e-15 bps** on excess and mu_cell, with 0 breadth and 0 n_bucket
+mismatches; and the placebo reproduces using a **true `np.roll` with thresholds re-estimated on the
+shifted data** — first 60 draws match to **0.0000000000 bps**, confirming the Engineer's mask-roll
+optimization is exactly equivalent, as its in-script invariance proof claimed.
+
+**Compliance.** `user_data/data/` untouched (git status and diff empty); manifest verify OK (52
+files) before and after; never bypassed; `check_dsr_entrypoint.py` 0 violations; costs resolved
+through `per_side_cost()`/`round_trip_cost()` with nothing hardcoded (the string "maker" does not
+appear in the script); splits pinned via `split_by_dates(2024-11-22, 2025-04-21, 2025-09-19)`;
+`holdout_boundary("perps", freq="1h")` called, not hand-rolled; 45 `assert_no_holdout` calls all OK.
+Budget 0 variants / 0 optimizations / 1,000 draws / 6 variables / 6 horizons / 2 tails — exactly as
+assigned. Boolean transcription checked line-by-line: every conjunction is `&`, G4 is a strict `>`,
+no `or` appears in any gate expression.
+
+**Audit findings (none outcome-changing).**
+- **Assignment defect, not an Engineer deviation:** a 24-bar census trim under the mandated
+  executable anchor lets `fwd_24` read one TEST bar (2025-04-22 00:00) per instrument. Reviewer
+  independently confirmed both the overlap and the sensitivity — a 25-bar trim changes **0 of 72**
+  statuses, max |excess| shift **0.0546 bps**. The Engineer executed the literal pre-registered 24,
+  disclosed it, and put the alternative matrix on disk. Correct handling. Next 1h census must trim
+  `max(h) + 1`.
+- **G5 reading:** the spec did not state pooled-vs-per-instrument. The Engineer applied the
+  *permissive* pooled reading and reported all nine per-instrument counts, so the strict reading is
+  fully auditable. Under it, `vol_ratio BOT` (min 19) and `mom_24 BOT` (min 17) also become
+  TEST-ABSENT. No cell passes under either reading, because G4 is 0/72.
+- **`cs_mom_rank` buckets are not true deciles** (tail fractions 0.1120–0.1797 vs 0.100000–0.100044
+  for the other five; n_bucket 35,315/37,153 vs ~25,100) because a 9-instrument cross-sectional rank
+  takes at most nine discrete values. Disclosed; the bias direction is conservative.
+- **Traceability was clean** — every figure the Reviewer spot-checked (per-horizon median SEs
+  0.6393/1.2418/2.4297/4.7939/7.1022/14.2711; the six-of-seven-highest |excess|/SE claim, ratios
+  3.2924–4.0520; naive-anchor max 37.6360; the full economics-by-horizon table) recomputes from a
+  named raw artifact. **T-038's five-untraceable-diagnostics finding did not recur**, and unlike
+  T-038 the script was committed with `git add -f` and **no Reviewer-owned file was written by the
+  Engineer**. Both prior-cycle findings were acted on.
+
+**Observations.** The census window's unconditional drift is **negative at every horizon** (−0.1325
+to −3.2924 bps), so the design was not flattered by a bull window. `vol_ratio BOT` is the single
+coherent structure in the matrix — monotone in h (−1.66/−3.54/−6.86/−12.56/−19.85/−36.52 bps),
+breadth 8–9 of 9 at every horizon, **all nine instruments negative at h=24** (BTC −19.3 … ADA −75.8,
+Reviewer-reproduced): low trailing relative volatility predicts materially worse forward returns.
+This corroborates directive 10 and T-038 **at the entry level, with the control neither had** — same
+sign, different measurement. It remains a sign, not an effect size, and it is not harvestable.
+`mom_24` inverts the spot program's one surviving paradigm: TOP is negative at all six horizons and
+BOT positive at all six — **1h momentum on these perps is reversal, not trend**. `illiq TOP` is a
+regime casualty: the in-sample illiquid state fires on 19 of 151 TEST dates and on **zero** for the
+median instrument, because quote volumes rose — level-based thresholds silently expire.
+
+**Decision:** REJECT. Zero trials spent; **perps `n_trials` stays 0** of the 30-trial cap; trial
+ledger stays at 0 data rows; no DSR computed and none required. A correct, cheap, decisive negative
+result that supplies exactly the evidence the hypothesis-bank reopening note demanded.

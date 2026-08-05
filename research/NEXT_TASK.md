@@ -1,187 +1,599 @@
-# NEXT_TASK — T-038 / H-BasketVolTarget-1h
+# NEXT_TASK — T-039 / H-IntradayEdgeFloor-1h
 
-- **Task ID**: T-038 (first perps research cycle; global monotonic sequence, spot ended T-036, transition brief T-037)
-- **Program**: perps
-- **Cycle class**: RESEARCH
-- **n_trials before this cycle**: 0 (read from `research/research_metrics.md`, perps counter; cap is 30 per `PROJECT_OPERATOR_MANUAL.md`, "Program trial cap and terminal condition")
-- **Trials this cycle will spend**: **0 if any pre-gate fails (the normal expectation); exactly 1 if all pre-gates pass and the full validation runs.** Failing a pre-gate does NOT spend a trial.
+**Task ID**: T-039
+**Program**: `perps`
+**Cycle type**: RESEARCH
+**Assigned**: 2026-08-03, Research Director
+**n_trials before this cycle**: **0** (read from `research/research_metrics.md`, "Perps program — ACTIVE")
+**Trials this cycle will spend**: **0** — zero, whether the hypothesis passes or fails. This cycle
+evaluates **no strategy variant**: it runs a conditional-mean census on held data and produces a
+matrix plus a pass/fail verdict. Per `PROJECT_OPERATOR_MANUAL.md`, "Research budget": *"A cycle
+killed at a pre-gate spends ZERO trials — no variant was evaluated, so none is counted."* No variant
+is evaluated here on either branch, so `n_trials` stays **0** of the **30**-trial cap in either case.
 
 ---
 
 ## Objective
 
-Test whether intraday (1h) volatility-target scaling of the equal-weight 9-perp long basket — the risk-management mechanism that was the spot program's single most durable component — beats the frozen perps benchmark net of real taker costs.
+Measure, on the 338,933-bar 1h perp sample at the real 2026-07-28 cost model, whether **any**
+entry-level conditional edge computable from 1h OHLCV+volume is large enough per trade to clear the
+18.0 bps taker round-trip cost by a factor of two — and if none is, close the reopened intraday
+family at real rates rather than on archived cost assumptions.
 
 ## Hypothesis
 
-Scaling the equal-weight, monthly-rebalanced long basket of the 9 `user_data/config_perp.json` perps by a single exposure multiplier `m_t = min(1, sigma_target / sigma_t)` — where `sigma_t` is an EWMA volatility of the basket's 1h returns with 48-hour half-life, `sigma_target` is the TRAIN-split median of `sigma_t`, and `m` is re-applied only when it drifts ≥ 0.10 from the currently-applied value — yields a **net TEST-split per-period (daily) Sharpe ≥ 0.135653** (1.10× the committed benchmark's, quoted from the manual) with **realized TEST MaxDD no worse than −31.27%**, because per-unit-risk basket returns decline as trailing volatility rises (volatility is persistent at the 1h horizon; returns do not scale proportionally with it).
+**On the nine OKX USDT perpetual swaps at 1h, there exists at least one (state variable, horizon,
+tail) cell — drawn from a pre-registered family of 6 variables × 6 horizons × 2 tails = 72 cells,
+every variable computable causally from 1h OHLCV+volume at bar close — whose decile-conditional
+forward return, measured on TRAIN+VAL only, exceeds the unconditional forward return by at least
+36.0 bps (2 × the 18.0 bps taker round trip), holds that sign in at least 5 of the 9 instruments
+individually, and exceeds the 95th percentile of a family-wise circular-shift placebo distribution.**
 
-This is a **structural / risk-management mechanism, not a predictive one** — it forecasts risk (which is forecastable) and never direction. It is the first cycle ever run on the 1h sample and the first re-test of the reopened intraday family at real rates.
-
-## Falsification statement
-
-**This hypothesis is REJECTED if any of the following holds:**
-
-1. Pre-gate P1 fails (1h volatility is not persistent on this data at the declared thresholds), or
-2. Pre-gate P2 fails (high-trailing-vol hours do NOT have worse per-unit-risk forward returns — mechanism absent), or
-3. Pre-gate P3 fails (the fee-free timing benefit does not survive the 18 bps round-trip turnover drag, or timing adds nothing even fee-free), or
-4. Pre-gate P4 fails (the mechanism barely fires in the TEST window — comparison uninformative), or
-5. At trial: net TEST per-period daily Sharpe (daily-aggregated, identical dates to the benchmark CSV) **< 0.135653**, or realized TEST MaxDD (daily-aggregated equity) **worse than −31.27%**, or the Monte Carlo gate is FAIL, or any validation gate enumerated below fails.
-
-Pre-gate stops 1–4 spend **zero trials**. Outcome 5 spends the one trial. **The best achievable verdict this cycle is PARK, not PROMOTE** — see "Promotion criteria".
-
-## Scientific rationale
-
-- **Program evidence (strongest cross-cycle finding, carried through the T-037 transition):** predictive constructs did not survive out-of-sample; risk-management and structural mechanisms did. Volatility-target sizing is the single component with a spotless record across ~97 spot constructs (`research_metrics.md`, indicator-usage table). Those *numbers* are void as perps evidence — this cycle re-establishes (or refutes) the mechanism on the new venue, cost model, and resolution.
-- **Mechanism:** volatility-managed exposure raises Sharpe when (a) volatility is forecastable from its own past (clustering) and (b) expected return does not rise proportionally with volatility, so per-unit-risk return is worse in high-vol states. Both are empirical claims and both are pre-gated below rather than assumed. Grounding: `knowledge_base/hypothesis_bank.md` cards "Volatility-Stabilized Trend Portfolio (VF Rebalancing)" (Kaufman Ch.24 — portfolio-level vol factor with a drift-threshold rebalance rule, exactly the switching-cost-aware form used here), "Trend + Volatility-Target Sizing Combo", and "Equal-Risk (Volatility-Parity) Portfolio Weighting" (`06_volatility.md`, `12_portfolio_construction.md`).
-- **Why 1h:** Standing Directive 9 requires preferring samples that can resolve the claimed effect. The pooled/basket 1h sample (~24k basket bars in TRAIN+VAL alone) powers the mechanism censuses; a 151-bar daily TEST cannot power a mechanism test by itself. The manual designates 1h "the preferred sample for the perps program"; no cycle has ever used it.
-- **Known adverse precedent, addressed:** H-IVSizing (spot, 2026-07-12) found that days where *implied* vol exceeded *realized* had BETTER forward returns (VRP positive-carry). That was an IV-vs-RV gap on daily bars, not realized-vol level at 1h — but it is a standing warning that vol-conditioned de-risking can select good days. Pre-gate P2 exists precisely to test this instead of assuming it.
-
-## Expected regime(s)
-
-- **Should work:** vol-clustered drawdown regimes — cascading liquidation episodes, 2022-style deleveraging legs, sharp corrections inside the window — where the multiplier is capped down while per-unit-risk returns are poor.
-- **Should fail / lag:** high-volatility *rallies* (the construct de-risks into upside vol; the cap at m ≤ 1 means it can never overweight calm rallies to compensate) and any window dominated by a single vol regime (nothing to time). **Note honestly in the report:** the frozen TEST window (2025-04-22 → 2025-09-19) was a strong rally (74.5th percentile of rolling 151-bar windows per the manual); if its rally legs were high-vol, the candidate will trail the benchmark there — that is the hypothesis failing on merit, not a data defect.
-
-## Statistical power statement (Standing Directive 9 — mandatory)
-
-- Absolute TEST daily Sharpe, N = 151: **SE ≈ 1.555 annualised** — the absolute TEST Sharpe alone is nearly uninformative and is NOT this cycle's evidence.
-- The promotion-relevant quantity is the **paired difference** vs the benchmark on identical dates. By the manual's Jobson–Korkie/Memmel formula, with candidate–benchmark daily correlation ρ (expected high — the candidate holds the benchmark scaled by m ≤ 1): SE(Δ per-period) ≈ sqrt(2(1−ρ)/151); at ρ = 0.95 → ≈ 0.026 per-period (≈ 0.49 annualised), at ρ = 0.99 → ≈ 0.0115 per-period (≈ 0.22 annualised). The criterion-3 margin is Δ = 0.012 per-period (0.236 annualised). **Report the achieved ρ and SE(Δ); state plainly in the report whether the TEST comparison resolved the effect at 1 SE or not.**
-- The mechanism censuses (P1/P2) run on ~24,000 TRAIN+VAL basket 1h bars (and ~185,000 per-asset bars pooled as a diagnostic), where quintile-level effects of the size the vol-managed literature reports are resolvable. **The cycle's informational weight is deliberately on the pre-gates, not on the 151-bar TEST comparison.**
-- **Pre-registered correlation problem:** the candidate is the benchmark scaled by m ≤ 1, so ρ is expected to be **0.98–0.99**. At ρ = 0.99, SE(Δ) ≈ 0.0115 per-period against a required criterion-3 margin of 0.012 — **the comparison sits within one standard error of the bar by construction.** The report must state the achieved ρ and SE(Δ) and say plainly whether the result resolved the effect, and **must not present a narrow pass or fail on criterion 3 as a resolved finding.**
-
-## Prior-work check
-
-- **T-037 transition brief (opened by the Director this cycle):** voids every spot performance number and *all* prior Engineer recommendations ("A prior recommendation is not a reason to test anything"). There are therefore no Engineer recommendations to adopt or reject for T-038; the brief contains no hint or ranking. This cycle relies only on the venue-independent finding it carries forward (risk-management mechanisms survived; predictive ones did not).
-- **Closed family "Sleeve sizing refinement (estimator quality AND rebalance granularity)"** (H-RangeVol #97, H-SizingBand — ledger row in `knowledge_base/hypothesis_bank.md`): this cycle does NOT touch it. That closure covered refining the *spot champion's existing daily sizing layer* — swapping estimators and sweeping rebalance granularity at its efficient frontier. Here there is no champion and no existing sleeve: this is the perps program's *first candidate construct*, on a resolution (1h) the closed tests never touched, at a different venue and cost model. No estimator comparison is run (one pre-registered EWMA) and no granularity sweep is run (one pre-registered band). The ledger row remains closed and untouched.
-- **Intraday / time-of-day / sub-daily family — REOPENED 2026-07-29** on cost-model grounds. This is the first re-test at real rates the reopening note calls for. Finding #12 (hours 21–22 UTC) stays closed and is not touched.
-- **T-024 (VF rebalancing, spot):** rejected — but it tested discrete dynamic allocation between spot sleeves under the old cost model; void as perps evidence and structurally different (sleeve allocation vs. basket exposure scaling).
-- **H-IVSizing P2 precedent:** handled via pre-gate P2 (see rationale).
-- **Hypothesis bank:** no untested card matches this construct exactly (the closest, "Volatility-Stabilized Trend Portfolio (VF Rebalancing)", is already marked ASSIGNED (T-024); "Equal-Risk" is a *cross-sectional* reweighting — a different mechanism, left available). Invented under selection rubric item 7, grounded in the three cards cited above. **No bank card is marked ASSIGNED for T-038.**
-- **Index standing constraint** ("new hypothesis must use a genuinely new data dimension or structurally different mechanism"): satisfied — the 1h sample has never been used by any cycle, and no vol-timing overlay has ever been tested on perps.
+This is a statement about the **existence of a cost-feasible intraday entry edge**, not about any
+particular indicator. It is deliberately constructed so that its rejection carries family-level
+information.
 
 ---
 
-## Deployment envelope (binding)
+## Zero-cost pre-gate
 
-| Dimension | Value |
+**The entire cycle is the pre-gate.** There is no backtest, no optimization, no strategy object.
+Everything below is arithmetic on held feathers.
+
+### Definitions — transcribe these literally into code
+
+All variables are computed **per instrument, on the full 1h series, before any slicing** (see
+"Warmup" under Split specification). All are causal: the value at bar `t` uses only bars `<= t`.
+
+Let `c_t` = close, `h_t` = high, `l_t` = low, `v_t` = base volume, and `r_t = log(c_t) - log(c_{t-1})`.
+
+| # | Variable | Definition at bar `t` | Mechanism |
+|---|---|---|---|
+| 1 | `mom_24` | `log(c_t) - log(c_{t-24})` | Time-series momentum at intraday resolution. The one paradigm that survived the spot program (trend gate), never run at 1h or at real perp rates. |
+| 2 | `vol_ratio` | `std(r, 24 bars ending t) / std(r, 168 bars ending t)` | Volatility expansion. Tests T-038's inversion at the **entry** level rather than the sizing level (see "Standing directive compliance"). |
+| 3 | `volume_z` | `(log(1+v_t) - mean(log(1+v), 168 bars ending t)) / std(log(1+v), 168 bars ending t)` | Participation / liquidity shock. `research_metrics.md` records the 3.5x-SMA volume filter as "the one plausible genuine signal component" of this project's first construct; never isolated or tested at 1h. |
+| 4 | `range_pos` | `(c_t - min(l, 24 bars ending t)) / (max(h, 24 bars ending t) - min(l, 24 bars ending t))`; NaN if the denominator is 0 | Channel/breakout position. Direct 1h instance of the archived "Opening Range Breakout Family" and "Volatility Breakout Based on the Open or Previous Close" cards (`knowledge_base/archive/closed_families.md`, lines 356-400). |
+| 5 | `cs_mom_rank` | cross-sectional rank of `mom_24` across the instruments with a non-NaN value at timestamp `t`, scaled `(rank - 1)/(n_present - 1)` to `[0,1]`; NaN if `n_present < 6` | Cross-sectional structure across the 9-instrument panel — a portfolio mechanism, distinct from variable 1. |
+| 6 | `illiq` | `mean over the 24 bars ending t of ( abs(r_s) / (v_s * c_s) )`, then * 1e9; a bar with `v_s == 0` contributes NaN and the window value is NaN if any contributing bar is NaN | Amihud (2002) illiquidity — price impact per unit of quote volume. The closest available proxy for the order-book axis, which `research_index.md` records as unreachable. Never tested in this project. |
+
+**Horizons**: `h` in `{1, 2, 4, 8, 12, 24}` bars.
+
+**Tails**: `TOP` = the instrument's 10th (highest) decile of the variable; `BOT` = the 1st (lowest)
+decile. Decile thresholds are computed **per instrument on TRAIN+VAL only** and are never
+re-estimated on TEST.
+
+**Forward return — use the executable convention, not the naive one:**
+
+```
+fwd_h(t) = log(c_{t+1+h}) - log(c_{t+1})
+```
+
+This matches `validator.signal_to_returns`'s anti-lookahead convention (`user_data/research/validator.py`
+lines 505-536: `position[t] = signal[t-2]`, so a signal formed at close `t` is in position from close
+`t+1` onward). Anchoring at `c_t` instead would grant one bar of lookahead and would inflate `h=1`
+most of all. **Also report, as a diagnostic only, the naive `log(c_{t+h}) - log(c_t)` version**, so
+the size of the execution-lag effect is on the record. The naive version may never be used in any
+gate.
+
+**Cell statistics.** For each of the 72 cells `(variable, h, tail)`, pooled across the nine
+instruments over the census window:
+
+```
+mu_cell   = mean( fwd_h(t) )  over bars t in the cell's decile          [report in bps]
+mu_uncond = mean( fwd_h(t) )  over ALL bars in the census window        [report in bps]
+excess    = mu_cell - mu_uncond                                         [report in bps]
+d         = +1 if excess > 0 else -1
+```
+
+**Census window**: each instrument's full available 1h history up to and including
+**2025-04-21 23:00:00+00:00** (TRAIN+VAL), **minus its final 24 bars**, so that no forward return
+reads a TEST bar. Eight instruments start 2022-01-01, BNB starts 2022-12-23; pooled TRAIN+VAL bars
+before the 24-bar trim = **252,162** (Director-verified 2026-08-03).
+
+### Gates
+
+Compute the **full 72-cell matrix first** — it is cheap and it is the deliverable's most valuable
+output — then apply the gates. Do **not** stop early: a map of where the cost wall bites is worth
+more than a single verdict.
+
+| Gate | Condition | Disposition |
+|---|---|---|
+| **G0 — Coverage** | Every one of the 9 instruments loads, and `date` is strictly increasing with no duplicate timestamps. Report per-instrument bar counts and first/last timestamps. | A missing or non-monotonic series is a **BLOCK**, not something to route around. |
+| **G1 — Non-degeneracy** | The cell's decile bucket holds **>= 1,000** pooled bars **and >= 50** bars for each of the 9 instruments. | A cell failing G1 is marked **INELIGIBLE** and cannot pass, regardless of its statistics. |
+| **G2 — Economic (C1)** | `d * excess >= 36.0` bps **AND** `d * mu_cell >= 18.0` bps | Both clauses required. **This is an `and`, not an `or`.** |
+| **G3 — Breadth (C2)** | `d * excess_i > 0` for **>= 5 of the 9** instruments computed individually | Threshold adopted from T-038's pre-registered breadth rule (KILL if < 5 of 9). |
+| **G4 — Placebo control (C3)** | `abs(excess) > P95(M)`, where `M` is the family-wise max-statistic control distribution defined below | Guards the "passes by arithmetic" failure mode. |
+| **G5 — TEST presence** | Applying the **TRAIN+VAL** decile threshold to the variable over 2025-04-22 00:00 -> 2025-09-19 23:00 UTC, the cell fires on **>= 30 of the 151** TEST dates | A cell failing G5 is marked **TEST-ABSENT** and may not be carried forward. **Read the state variable only — no TEST forward returns may be computed for any purpose.** |
+
+**A cell PASSES only if it clears G1 AND G2 AND G3 AND G4 AND G5 — all five, conjunctively.**
+
+### The placebo control (G4) — construction is mandatory and specified here in full
+
+Per `PROJECT_OPERATOR_MANUAL.md` and the Director's own pre-gate-design rule, a gate must be
+**capable of failing for the reason the hypothesis is wrong**. State explicitly in the report what
+would make G2 pass in the absence of a real mechanism, and why G4 prevents it.
+
+*What would make G2 pass without a mechanism*: the top decile of a magnitude variable such as
+`vol_ratio` or `volume_z` selects high-variance bars. The **mean** of a high-variance subsample is
+itself a high-variance estimate, so with 72 cells scanned, the largest `abs(excess)` in the matrix is
+expected to be materially above zero even under pure noise. This is exactly the T-038 pathology the
+Engineer named a **trap** (T-038 brief, recommendation 4): the inverted construct looks good
+in-sample for a decomposition reason rather than a causal one.
+
+*Why G4 prevents it*: the control preserves each variable's marginal distribution, each return
+series' autocorrelation and volatility clustering, and the panel's cross-sectional structure, while
+destroying the **alignment** between variable and return. It then takes the **maximum over all 72
+cells per draw**, so the threshold is a family-wise one and the 72-cell scan is priced in.
+
+```
+Repeat 1,000 times (seed 20260803, stated here so it is pre-registered):
+  1. Draw one integer offset k ~ Uniform[720, N_min - 720], where N_min is the shortest
+     instrument's census-window length. Use the SAME k for all nine instruments in a draw,
+     so cs_mom_rank's cross-sectional alignment is preserved.
+  2. Circularly shift each instrument's six state-variable series forward by k bars,
+     leaving its return series in place.
+  3. Recompute per-instrument decile thresholds on the shifted variables and recompute
+     abs(excess) for all 72 cells.
+  4. M_draw = max over the 72 cells of abs(excess).
+Report: mean(M), sd(M), P50(M), P95(M), P99(M).
+```
+
+**Mandatory sanity assertions** (`research/strategy_research_notes.md`, lesson 20 — a suspiciously
+clean diagnostic is a bug signal, and a census must assert that its two sides differ):
+
+- `sd(M) > 0` and `P95(M) > 0`. If either is zero the control is degenerate — **BLOCK**, do not
+  interpret.
+- For at least one cell, the shifted `abs(excess)` must differ from the unshifted `abs(excess)`.
+  Exact equality across all cells is a bug signature (the shift did not take effect), not a result.
+- Report the pairwise Spearman correlation matrix of the six variables, pooled. **Not gating.**
+  Correlated variables reduce the **effective** number of independent tests in the family, which
+  **lowers** `P95(M)` — the max of fewer independent draws is smaller — and therefore makes G4
+  **EASIER to clear, not harder**. Report the effective number of independent cells implied by the
+  correlation structure alongside the raw 72. If any pair exceeds `abs(0.90)`, state in the report
+  that **G4's protection is weaker than the 72-cell framing suggests**, and name which cells are
+  affected.
+
+### Falsification statement
+
+**This hypothesis is REJECTED if, after computing all 72 cells, no cell satisfies G1 AND G2 AND G3
+AND G4 AND G5 simultaneously.**
+
+**It is CONFIRMED (pre-gate PASS) if at least one cell satisfies all five.** A confirmed cell is a
+*result*, not a strategy: it is handed to a future cycle, which builds and backtests the construct
+and spends the trial. **This cycle spends no trial on either branch and produces no promotion
+candidate.**
+
+**On the boolean operators** (`PROJECT_OPERATOR_MANUAL.md`, "Falsification conditions must be
+transcribed literally"): every conjunction above is `and`, written as `and`. "at least one of" does
+not appear anywhere in this specification. **If any condition in this file reads as genuinely
+ambiguous to you, do NOT choose an interpretation and do NOT pick the conservative one — write
+`research/BLOCKED.md` quoting the exact sentence and stop.**
+
+### Required robustness outputs for any PASSING cell
+
+Adopted from the T-038 Engineer's recommendation 5 (per-year and disjoint-window views beat a
+bootstrap CI):
+
+1. **Per-year** `excess` for each calendar year in the census window (2022, 2023, 2024, 2025-partial).
+2. **Three disjoint sub-windows** of roughly equal bar count, each with its own `excess` and breadth.
+3. **Common-window re-run**: census restricted to 2022-12-23 00:00 -> 2025-04-21 23:00 for all nine
+   instruments, so the pooled statistic is not driven by BNB's absence from the first year.
+4. Whether the cell implies a **long** construct (`d = +1` on a TOP tail, or `d = -1` on a BOT tail
+   interpreted as an avoidance filter) or a **short** construct. **Flag any short-implying cell
+   explicitly**: the "Short side / symmetric TSMOM" family is CLOSED in the
+   `knowledge_base/hypothesis_bank.md` FAMILY STATUS LEDGER, and standing directive 5 requires the
+   Reviewer to rule on whether a follow-on short construct is admissible before any cycle builds one.
+   Reporting the cell is correct; assuming it is buildable is not.
+5. **Selection debt.** Any passing cell was chosen from a **72-cell census**. The report must state
+   prominently, and the Reviewer must carry into the brief, that a follow-on construct built on this
+   cell **inherits 72 tests of selection debt**. The Director of that cycle must set `n_trials` to
+   reflect it — **not 1** — and must state the value used and its derivation in `NEXT_TASK.md`. **A
+   construct built on a censused cell and evaluated at `n_trials = 1` is a multiple-testing
+   violation, not a promotion candidate.**
+
+If **no** cell passes, items 1-3 are not required; report the full matrix and stop.
+
+---
+
+## Scientific rationale
+
+**The mechanism under test is the cost wall itself.** `PROJECT_OPERATOR_MANUAL.md`, "Execution and
+cost model" fixes the taker path at **9.0 bps/side, 18.0 bps round trip**. The operator's stated goal
+is a bot that trades multiple times per day. At one round trip per day that is 18.0 x 365 = 6,570 bps
+= **65.7% per year of cost drag**; at three round trips per day it is **197% per year**. No project
+file records an estimate of the gross per-trade edge available at 1h on this venue, so no Director
+can currently tell whether that goal is reachable — and **`n_trials` is capped at 30**, which is not
+enough budget to discover it by backtesting constructs one at a time.
+
+The family this tests was **REOPENED on 2026-07-29** precisely because its closure rested on the
+wrong cost assumption. The hypothesis bank states the condition for closing it again
+(`knowledge_base/hypothesis_bank.md`, "REOPENING (2026-07-29)"):
+
+> **Status: OPEN for re-test at real rates. It may not be re-closed on archived evidence**; a fresh
+> closure requires a run under the current `COST_MODEL`.
+
+This cycle is that run. Its rejection would supply the evidence the ledger explicitly demands, and
+would do so at zero trial cost.
+
+The six variables are not arbitrary. Each names a distinct structural mechanism with a cited source:
+momentum and channel position instantiate the archived ORB and volatility-breakout cards
+(`knowledge_base/archive/closed_families.md` lines 356-400, Kaufman Ch.16 — Crabel, Fisher, Raschke);
+volume participation is the one component `research_metrics.md` flags as plausibly genuine from this
+project's own first construct; Amihud illiquidity is the standard price-impact measure and the
+nearest reachable proxy to the order-book axis `research_index.md` records as blocked; cross-sectional
+rank is a portfolio mechanism the 9-instrument panel makes available and which no perps cycle has
+touched. Volatility expansion is included because T-038 measured the **opposite** of the expected
+sign at 1h and that lead should be tested where it was not tested — at entry, with a placebo control.
+
+**On the program's strongest cross-cycle finding**
+(`research/review_briefs/T-037_PERPS_TRANSITION_brief.md`): *predictive constructs did not survive
+out-of-sample; risk-management and structural mechanisms did.* This cycle does not contradict that
+finding — it prices it. If the census fails, the reason predictive constructs did not survive at this
+venue is quantified as an **execution-cost** fact rather than an inference from ~100 spot rejections,
+and future cycles can stop paying for it. If it passes, the surviving cell is the only place a
+predictive intraday construct is worth a trial at all.
+
+### Standing directive compliance (`research/STANDING_DIRECTIVES.md`)
+
+- **Directive 10** (volatility-conditioned de-risking is INVERTED; any construct reducing exposure as
+  trailing volatility rises must say why it escapes): **this cycle assigns no such construct.** It is
+  a census, and `vol_ratio` is measured symmetrically on both tails with a placebo control. Directive
+  10's own scope clause states the volatility family is **not** closed and that the T-038 bank entry
+  was basket-exposure-sizing only; an entry-level conditional-mean measurement is a different object.
+  Note also directive 10's caveat that `-0.442905` is a **sign**, never an effect size — do not
+  quote it as one.
+- **Directive 9** (state the expected SE of the primary metric before assigning): done below.
+- **Directive 8** (pre-2026-07-31 metrics used truncated indicator warmup, systematically depressing
+  val and test figures): binding on how you compute the variables — see "Warmup" below. No archived
+  TEST or walk-forward figure is cited in this assignment.
+- **Directive 5** (closed families are closed): the only closed family this cycle can touch is the
+  short side, and only if a BOT-tail cell passes; handling is specified above (flag, do not build).
+- **Directive 1** (claim-must-cite-test): every number in your report must cite the raw artifact and
+  the script line that produced it. See "Deliverables".
+
+### Expected standard error of the primary metric (directive 9)
+
+Director-computed on the real feathers, 2026-08-03, pooled TRAIN+VAL, top-decile bucket = 25,216
+bars, using non-overlapping subsampling (`n_eff = n_bucket / h`) to account for overlapping forward
+windows:
+
+| h | sd of `fwd_h` | `n_eff` | SE of `mu_cell` | SEs to the 36.0 bps threshold |
+|---|---|---|---|---|
+| 1 | 92.7 bps | 25,216 | **0.58 bps** | 62 |
+| 4 | 182.1 bps | 6,304 | **2.29 bps** | 16 |
+| 24 | 442.2 bps | 1,051 | **13.64 bps** | 2.6 |
+
+`SE(excess)` is approximately `1.05 x SE(mu_cell)`, since `mu_uncond` is estimated on roughly ten
+times the data. **The worst case, `h = 24`, resolves the 36.0 bps threshold at about 2.6 SE** —
+adequate, not lavish; `h <= 12` is comfortable. This is the resolution directive 9 exists to require,
+and it is available only because the sample is 1h: the same census on the 151-bar daily TEST split
+could not resolve it at all. **You must recompute and report these SEs per cell from the actual
+data** rather than quoting this table — it is a Director's power calculation, not your result.
+
+## Expected regime(s)
+
+- **Where it should work**: trending, high-participation regimes where directional follow-through
+  persists for several hours — 2023H2 and 2024Q4 in this sample. Longer horizons (`h = 12, 24`) are
+  where a 36.0 bps excess is physically plausible, because the 24-bar return has a 442 bps standard
+  deviation to draw from.
+- **Where it should fail**: `h = 1` and `h = 2` almost certainly fail G2 on magnitude alone — a
+  92.7 bps-sd one-hour return does not support a 36.0 bps conditional mean — and that failure is a
+  *finding*, not a defect in the design. Chop and low-participation regimes (2025H1, the only
+  negative calendar half-year in the series, which sits in VAL) should show the smallest excess.
+- **Where the design could mislead**: a bull-heavy census window inflates `mu_uncond`, which the
+  `excess` construction subtracts out by design; and a single 2024Q4-type episode could carry a cell,
+  which is why per-year and disjoint-window views are mandatory for any passing cell.
+
+---
+
+## Prior-work check
+
+| Adjacent work | Why this escapes its failure mode |
+|---|---|
+| **T-038 / H-BasketVolTarget-1h** (REJECT at pre-gate P2, 2026-08-01) — same nine perps, same 1h sample. | T-038 tested one **sizing overlay** on a fixed basket; this tests **entry-level** conditional means across six variables. Decisively, T-038's headline statistic (`Q1-Q5 = -0.442905`) had **no placebo control** — its bootstrap CI straddled zero and its quintile means were non-monotonic, which is why the Reviewer recorded the sign as robust and the magnitude as not. G4 here is the control that census lacked. |
+| **#6 — overnight/time-of-day breakout, Zarattini-style** (FAIL: N below any statistical floor, 2-10 trades in 3-5 years). | That construct was daily and event-sparse. This census has **252,162 pooled TRAIN+VAL bars** and a 25,216-bar decile bucket; the failure mode was sample size, and it does not recur. |
+| **#12 — hours 21-22 UTC anomaly** (REAL but untradeable; fee-to-edge ~25:1, ~3.3:1 at maker rates). | **Stays closed and is not retested**: no variable here is a clock. The hypothesis-bank reopening note is explicit that the family reopened but #12 did not. Its lesson — that a statistically real intraday effect can be economically dead — is the reason G2 is denominated in cost multiples rather than t-statistics. |
+| **#8 — 61-strategy autonomous sweep** (0/61, found a ceiling and no edge). | That was a sweep that selected a backtest winner. This is a pre-registered census with a **family-wise max-statistic control** over all 72 cells and **zero** backtests, so the multiple comparison is priced rather than exploited. The 2026-07-21 ledger correction also warns against generalising row #8; this assignment does not rely on it. |
+| **H-IVSizing (spot, daily, implied vol)** and standing directive 10. | Handled above under directive compliance — no de-risking construct is assigned. |
+
+### Engineer recommendations from `research/review_briefs/T-038_brief.md` — the brief WAS opened
+
+1. **Semivariance / downside-deviation variant of the P2 census** — **REJECTED as this cycle's
+   object.** Reason (one line, as required): it re-enters the sizing layer immediately after a
+   decisive inversion there, whereas the prior question — whether *any* intraday entry edge clears
+   18.0 bps — determines whether the sizing layer is worth refining at all; the idea stays live and
+   uncosted for a later cycle.
+2. **The 1h sample is worth using** — **ADOPTED.** It is the whole basis of this cycle's power.
+3. **Fix the hourly boundary before assigning another 1h cycle** — **ADOPTED, already satisfied.**
+   Resolution-aware `holdout_boundary(program, freq=...)` landed 2026-08-02 (`5cbd7617a`); the manual
+   records 1h -> 23:00. Use it; do not hand-roll a boundary.
+4. **The inverted construct is a trap, untestable without a crash-sample pre-gate** — **ADOPTED as
+   the design's central constraint.** G4 is that pre-gate in generalised form: `vol_ratio`'s top
+   decile must beat a placebo that preserves its distribution and destroys its alignment.
+5. **Per-year and disjoint-window views beat the bootstrap CI** — **ADOPTED**, mandatory for any
+   passing cell.
+
+### Alternatives the Director considered and rejected this cycle (recorded so they are not re-derived)
+
+- **Funding-rate carry / crowding.** The natively-perp mechanism, and dead for the frozen split
+  triple: all nine `*-1h-funding_rate.feather` files start **2026-02-26 / 2026-02-28** and end
+  2026-05-28 — **zero overlap** with a TEST window ending 2025-09-19, and entirely inside the
+  reserved holdout. Consistent with A-005's note that funding had to be excluded from the benchmark.
+  See "Environment notes".
+- **Mark-vs-last basis as an order-flow / liquidation-pressure proxy.** Rejected at reachability:
+  `BTC_USDT_USDT-1h-mark.feather` holds **7,810** rows against 38,587 OHLCV bars (~20% coverage), and
+  the basis itself is ~1-3 bps with 8-29% exact zeros from tick quantization on the cheaper alts.
+  Not worth a cycle in that state.
+
+---
+
+## Deployment envelope
+
+Quoted for you because you cannot see the Director's prompt. Every figure below is transcribed from
+`PROJECT_OPERATOR_MANUAL.md` or `user_data/config_perp.json`.
+
+| Dimension | Constraint |
 |---|---|
 | Venue | OKX USDT perpetual swaps, regular (non-VIP) fee tier |
-| Config | `user_data/config_perp.json` — futures, isolated margin, `dry_run: true` |
-| Instruments | Exactly the 9 whitelist pairs: BTC/USDT:USDT, ETH/USDT:USDT, SOL/USDT:USDT, BNB/USDT:USDT, XRP/USDT:USDT, ADA/USDT:USDT, AVAX/USDT:USDT, DOT/USDT:USDT, LINK/USDT:USDT. No others. |
-| Timeframe | 1h (candidate construction and evidence); daily aggregation only for the benchmark pairing |
-| Fill assumption | `taker` only. `maker_optimistic` must not appear anywhere in this cycle. |
-| Costs (quoted from `PROJECT_OPERATOR_MANUAL.md`, "Execution and cost model") | maker fee 2.0 bps/side; taker fee 5.0 bps/side; slippage 3.0 bps/side; spread 2.0 bps quoted, taker crosses half = 1.0 bps/side; **taker all-in 9.0 bps/side, 18.0 bps round trip**. Single source of truth is `validator.COST_MODEL` via `per_side_cost()` / `round_trip_cost()` — never hardcode these numbers in analysis code. |
-| Leverage | None. `m_t ∈ [0, 1]` — the candidate only de-risks; it never exceeds equal-weight exposure. Un-invested fraction sits in USDT at zero yield. |
-| Position count | Long-only basket; no shorts. |
-| Return envelope | **Any result above 100% CAGR is presumed defective.** Manual check order, quoted: "costs actually applied (not defaulted, not zero); signal lag (`signal_to_returns`'s 2-bar convention); indicators computed over the full series before splitting; survivorship." A result surviving all four is reported *with* that verification; one unchecked is not reportable. |
+| Config | `user_data/config_perp.json` — `"trading_mode": "futures"`, `"margin_mode": "isolated"`, `"fee": 0.0009` |
+| Instruments | Exactly the 9 in that config's `pair_whitelist`: BTC, ETH, SOL, BNB, XRP, ADA, AVAX, DOT, LINK — all `/USDT:USDT`. **No others.** |
+| Timeframe | **1h** (this cycle's whole point). The 1d feathers are not used. |
+| Fill assumption | **`taker`**. `maker_optimistic` may not be used anywhere in this cycle, not even as a secondary comparison — there is no promotion argument here for it to contaminate, and the manual forbids resting any promotion on it. |
+| Cost — exact figures | maker fee **2.0 bps/side**; **taker fee 5.0 bps/side**; slippage **3.0 bps/side** (estimate, uncalibrated); spread **2.0 bps quoted, a taker crosses half = 1.0 bps/side** (estimate, uncalibrated); **taker all-in 9.0 bps/side, 18.0 bps round trip**. `validator.per_side_cost("taker")` returns **0.0009**. The single source of truth is `COST_MODEL` in `user_data/research/validator.py`; resolve every cost number through `per_side_cost()` / `round_trip_cost()` and **hardcode none**. |
+| Return envelope | Not applicable — this cycle produces no equity curve. Stated for completeness: any backtest above **100% CAGR is presumed defective**, and the manual's check order is (1) costs actually applied, not defaulted or zero; (2) signal lag — `signal_to_returns`'s 2-bar convention; (3) indicators computed over the full series before splitting; (4) survivorship. |
+| Target frequency | The operator's goal is a bot trading **multiple times per day**. This cycle exists to measure whether that is affordable; `h = 24` is included as the one-round-trip-per-day boundary case, not as a target. |
 
-**Funding P&L is excluded from both candidate and benchmark** — the held funding series starts 2026-02-26 and has zero overlap with the evaluation window (see Environment notes). The candidate holds *less* long exposure on average than the benchmark, so the exclusion flatters the candidate **less** than it flatters the benchmark (conservative direction). State this in the report.
+---
 
-## Data (all held; confirm each exists before starting; **must not be created, modified, or downloaded**)
+## Data
 
-- 1h futures OHLCV, one file per instrument:
-  `user_data/data/okx/futures/<PAIR>_USDT_USDT-1h-futures.feather` for PAIR ∈ {BTC, ETH, SOL, BNB, XRP, ADA, AVAX, DOT, LINK}. (All 27 futures/mark/funding 1h feathers exist; only the 9 `-1h-futures` files are inputs here.)
-- Benchmark record (read it; replicate its monthly-rebalance convention and its 4-window walk-forward construction exactly): `research/benchmarks/perps_equal_weight_benchmark.md`
-- Benchmark paired TEST series (read-only): `research/benchmarks/perps_equal_weight_benchmark_TEST_returns.csv`
-- Harness: `user_data/research/validator.py` (COST_MODEL, `per_side_cost`, `round_trip_cost`, `split_by_dates`, `assert_no_holdout`, `walk_forward`, `monte_carlo`, `mc_gate_status`, `deflated_sharpe`, `sharpe_difference_se`, `metrics`, `yearly_breakdown`, `append_trial`)
-- Trial ledger (append exactly one row ONLY if the trial is spent): `research/trial_sharpe_ledger.csv`
-
-Rules, quoted from the manual: a cycle whose git diff touches `user_data/data/` is INVALID; `scripts/data_manifest.py verify` failing mid-cycle is a stop condition, never run `build`; `FREQTRADE_SKIP_DATA_VERIFY=1` invalidates the cycle. No new external axis is assigned — fetching one would be a scope violation.
-
-## Split specification (FROZEN — not yours to choose)
+**Read-only. Exact paths, all verified present by the Director on 2026-08-03:**
 
 ```
-train_end 2024-11-22   val_end 2025-04-21   test_end 2025-09-19
+user_data/data/okx/futures/BTC_USDT_USDT-1h-futures.feather
+user_data/data/okx/futures/ETH_USDT_USDT-1h-futures.feather
+user_data/data/okx/futures/SOL_USDT_USDT-1h-futures.feather
+user_data/data/okx/futures/BNB_USDT_USDT-1h-futures.feather
+user_data/data/okx/futures/XRP_USDT_USDT-1h-futures.feather
+user_data/data/okx/futures/ADA_USDT_USDT-1h-futures.feather
+user_data/data/okx/futures/AVAX_USDT_USDT-1h-futures.feather
+user_data/data/okx/futures/DOT_USDT_USDT-1h-futures.feather
+user_data/data/okx/futures/LINK_USDT_USDT-1h-futures.feather
 ```
 
-- Use `validator.split_by_dates(df, "2024-11-22", "2025-04-21", "2025-09-19")`. Never fractions; `split_70_15_15()` is deprecated and must not appear.
-- **Reserved holdout: bars strictly after 2025-09-19 UTC** (program-scoped, perps). The 1h feathers extend to 2026-05-28 — **slice off everything after 2025-09-19 as the very first step**, and call `validator.assert_no_holdout(...)` on every frame before any computation. `validate()` raises `HoldoutViolation` rather than trimming; the caller must exclude explicitly.
-- Evaluation window: **2022-12-23 → 2025-09-19** (the benchmark's committed window; BNB's 1h history begins 2022-12-23, so this is also the earliest date with all 9 instruments).
-- A candidate evaluated on any other split dates is **VOID against the program benchmark, not weaker evidence** — criterion 3 requires date-identical TEST overlap.
+Columns: `date, open, high, low, close, volume`, `date` tz-aware UTC. `volume` is **base** volume —
+`illiq` requires quote volume, so use `v_s * c_s` as specified. Coverage: eight instruments
+2022-01-01 -> 2026-05-28 at 38,612 bars (BTC 38,587 to 05-27); BNB 2022-12-23 -> 2026-05-28 at
+30,062; **pooled 338,933**. All nine are in `MANIFEST.json` and `verify` is clean.
 
-## Construct specification (fully pre-registered — no free parameters, no optimization)
+**No other data file may be read** — not the 1d feathers, not mark, not funding, not any external
+axis. No new data axis is assigned this cycle, so fetching one would be a scope violation.
 
-1. **Base basket**: equal-weight (1/9) long basket of the 9 instruments, monthly-rebalanced with **exactly the same rebalance-date convention as the committed benchmark** (read it from `research/benchmarks/perps_equal_weight_benchmark.md` and mirror it). Basket 1h simple-return series `r_t` built from the 1h feather closes, with the benchmark's own rebalance turnover costed at 9.0 bps/side on traded notional.
-2. **Volatility estimate**: EWMA variance of `r_t` with half-life **48 bars** (λ = 2^(−1/48) ≈ 0.985663), initialized as an expanding estimate over the first 96 bars (2× half-life). `sigma_t` = sqrt(EWMA var), annualised with **bars_per_year = 8760**. Compute over the **full pre-holdout series once, then split** — never recompute per split (the warmup-truncation defect of Standing Directive 8).
-3. **Target**: `sigma_target` = median of `sigma_t` over the TRAIN split only (2022-12-23 → 2024-11-22), excluding the 96 burn-in bars. Computed once; fixed for VAL and TEST. A plug-in, not a tuned parameter.
-4. **Multiplier**: `m_raw_t = min(1.0, sigma_target / sigma_t)`; during the 96 burn-in bars `m = 1.0`.
-5. **No-trade band**: the *applied* multiplier changes to `m_raw_t` only when `|m_raw_t − m_applied| ≥ 0.10`; otherwise hold `m_applied`. One band value; no sweep.
-6. **Lag**: the multiplier computed at the close of bar t takes effect with the same lag convention as `validator.signal_to_returns` (the project's 2-bar convention). If that function cannot carry fractional weights directly, replicate its exact lag arithmetic manually and state so in the report.
-7. **Costs**: every change of applied exposure trades `|Δ(m_applied)|` of equity at **9.0 bps per side** (from `per_side_cost()`), in addition to the scaled monthly-rebalance turnover of the underlying basket.
-8. **Net candidate return**: `m_applied(t, lagged) × r_t − costs_t`. The fraction `1 − m` earns zero.
+**Data must not be created, modified, deleted, downloaded or rebuilt.** From
+`PROJECT_OPERATOR_MANUAL.md`, "Data acquisition is not research": *"A cycle whose git diff touches
+`user_data/data/` is INVALID — the Reviewer rejects it on that basis alone, without assessing the
+hypothesis."* Run `python scripts/data_manifest.py verify` before and after your work and paste both
+outputs into the report. **A failing verify is a stop condition; never run `build` to clear it, and
+`FREQTRADE_SKIP_DATA_VERIFY=1` invalidates the cycle.**
 
-**Variant budget: exactly 1 variant (the spec above). 0 optimization runs.** (Manual default is 3 variants / 1 optimization run; the Director assigns fewer, as permitted.) Changing HL, band, cap, target percentile, or estimator = a new variant = exceeding the budget = the cycle is invalidated.
+---
 
-## Zero-cost pre-gate ladder (run in order; STOP at first failure; a stop = REJECT at zero trials)
+## Split specification
 
-All pre-gates use only bars ≤ 2025-09-19; P1–P3 use TRAIN+VAL only (2022-12-23 → 2025-04-21); P4 examines the TEST window per the ladder's gate-6 precedent. Pure pandas arithmetic — no backtest engine, no freqtrade run.
+**The perps split triple is FROZEN. It is not yours and not the Director's to choose.** Pin as
+literal dates, never as fractions — `validator.split_70_15_15()` is deprecated and warns.
 
-**P0 — Reachability (environment check, not a hypothesis verdict).** All 9 `-1h-futures` feathers load; coverage runs through ≥ 2025-09-19 with no internal gap > 24 h inside 2022-12-23 → 2025-09-19. Failure here = report BLOCKED (environment), not a rejection. Do not repair data.
+```
+train_end 2024-11-22    val_end 2025-04-21    test_end 2025-09-19
+```
 
-**P1 — Volatility persistence (lead/lag analog).** Per instrument, on TRAIN+VAL 1h log returns: Spearman correlation between `sigma_t` (EWMA as specified, per-asset) and forward realized vol over the next 24 bars (std of log returns t+1…t+24). **PASS requires: median correlation across the 9 instruments ≥ 0.30 AND every instrument > 0.15.** Mandatory sanity checks, quoted from the manual: "any lead/lag census must ASSERT that the −k and +k sides differ before its verdict — exact k↔−k symmetry between two distinct series is a bug signature" — here: also compute the *reversed* pairing (trailing realized vol vs forward EWMA displacement) and assert the two censuses are not identical; "when a diagnostic produces a suspiciously clean result (equal to 4 decimals, perfectly monotonic), treat cleanliness as a bug signal and verify before interpretation."
+Use `validator.split_by_dates(df, "2024-11-22", "2025-04-21", "2025-09-19")`.
 
-**P2 — Mechanism existence (harm census; the H-IVSizing lesson applied).** On TRAIN+VAL:
-- Primary, basket level: bucket basket bars into quintiles by `sigma_t` (quintile edges from TRAIN+VAL). Per quintile, compute forward 24-bar per-unit-risk return: per bar, (sum of log returns t+1…t+24) / (std of log returns t+1…t+24), averaged within quintile. **KILL if (Q1 per-unit-risk return − Q5 per-unit-risk return) ≤ 0** — i.e., high-vol hours are not worse per unit risk; the mechanism does not exist on this data.
-- Secondary, per-asset: same census per instrument (per-asset quintile edges). **KILL if fewer than 5 of 9 instruments show Q1 − Q5 > 0.**
-- Report a moving-block-bootstrap 90% CI on the basket Q1−Q5 difference (block length 168 bars, 2,000 resamples — overlapping forward windows make naive t-stats invalid). The CI is REPORTED, not gating: the gate is on sign and breadth; the trial is the real test. Also report the 1-bar-forward version of the same census as a diagnostic.
+- **Census window (G1-G4)**: TRAIN + VAL only, i.e. bars up to and including
+  **2025-04-21 23:00:00+00:00**, minus each instrument's final 24 bars so no forward return reads a
+  TEST bar. Instruments with longer history keep it — BTC/ETH/etc. from 2022-01-01, BNB from
+  2022-12-23 — giving a longer TRAIN with an identical TEST, as the manual specifies.
+- **TEST window (G5 only)**: 2025-04-22 00:00 -> 2025-09-19 23:00 UTC, **151 UTC dates**. Only the
+  state variable is read here. **No TEST forward return may be computed, for any purpose, including
+  a diagnostic.**
+- **Reserved holdout (perps): bars strictly after 2025-09-19.** The boundary is a **date resolved to
+  its last complete bar**: at 1h the inclusive instant is **23:00**, not midnight — this was fixed on
+  2026-08-02 after it silently cost T-038's 1h slice a date (152 vs the benchmark's 151). Call
+  `validator.assert_no_holdout(obj, label=..., program="perps", freq="1h")` on every frame you build
+  and paste the result. `validate()` **raises `HoldoutViolation`** rather than trimming, by design.
+- A candidate evaluated on different split dates is **VOID against the program benchmark**, not
+  weaker evidence.
 
-**P3 — Cost-free upper bound (turnover viability; strongest pre-gate sub-class).** Build the full candidate multiplier and weight series on TRAIN+VAL exactly per the construct spec. Compute:
-- (a) **gross** (fee-free) annualised Sharpe of the vol-timed basket vs a **SHUFFLE CONTROL**: rebuild the multiplier from a block-shuffled `sigma` series (block length 168 bars, 200 shuffles, seed pre-registered at **7**), preserving the multiplier's distribution while destroying its timing. **KILL if the real vol-timed gross Sharpe does not exceed the 90th percentile of the shuffled distribution.** Report the real value, the shuffle p5/p50/p90, and the percentile rank of the real value. (Rationale: because `sigma_target` is the TRAIN median, m < 1 roughly half the time, so the construct systematically holds less exposure in high-vol bars; on any volatility-clustered series that lowers realized vol more than mean return and raises Sharpe MECHANICALLY, independent of whether the P2 mechanism exists — a plain-basket comparison would pass by construction.)
-- (a2) Retain the plain equal-weight-basket gross-Sharpe comparison as a **REPORTED diagnostic, not a gate**, with a note that it cannot distinguish timing from mechanical variance reduction.
-- (b) **net** Sharpe of the vol-timed basket (gross minus per-bar turnover drag: Σ|Δm_applied| × 0.0009, plus scaled monthly-rebalance costs) vs **net** Sharpe of the equal-weight monthly-rebalanced basket at the same cost model, same bars. **KILL if net(vol-timed) ≤ net(equal-weight)** — the mechanism cannot pay its own turnover even in-sample.
-- Report total TRAIN+VAL turnover (Σ|Δm_applied|), implied trades per day, and annualised cost drag in bps.
+### Warmup (directive 8)
 
-**P4 — TEST activity floor (episode floor + TEST concentration).** On the TEST window (2025-04-22 → 2025-09-19): count distinct de-risking episodes — a maximal run of ≥ 12 consecutive bars with `m_raw_t < 0.9`, separated from the next by ≥ 24 bars at `m_raw ≥ 0.9`. **KILL if fewer than 6 episodes** (H-IVGate floor precedent) **or if fewer than 20% of TEST bars have `m_raw_t < 1.0`.** A mechanism that barely fires in TEST cannot produce an informative benchmark comparison there.
+Compute **all six state variables on each instrument's full 1h series first, then slice.** The
+longest lookback is 720 bars (the normalisation windows and the control's minimum offset).
+Truncating warmup at a split edge is the defect that systematically depressed every archived val and
+test metric before 2026-07-31 (BTC 1d SMA200: TEST Sharpe -1.2159 -> +0.2129 after the fix). Rolling
+windows are backward-looking, so computing them on the full series is causal and safe — **but decile
+thresholds are a selection statistic and must be estimated on TRAIN+VAL only.**
 
-Every pre-gate stop is a verdict and, per the manual ("pre-gate stops get Director reruns"), will be independently rerun — save every script and print every intermediate number into the report.
+---
 
-## Required validation (only if all pre-gates pass; this spends the 1 trial)
+## Required validation
 
-1. **Full-window candidate build** on 2022-12-23 → 2025-09-19; `assert_no_holdout` on every frame; splits via `split_by_dates` at the frozen dates.
-2. **TEST benchmark comparison (promotion criterion 3 accounting):** aggregate the candidate's net 1h returns to UTC-daily returns over TEST; pair with `research/benchmarks/perps_equal_weight_benchmark_TEST_returns.csv` on **identical dates** (N must be 151; any mismatch → the comparison is VOID — stop and report). Compute per-period daily Sharpes on both sides. Bar, quoted from the manual: candidate TEST per-period Sharpe **≥ 0.135653** (= 1.10 × benchmark's 0.123321; annualised equivalent +2.5916 at √365). "A series compared against itself gives Δ = 0 and does not pass — 1.00× is not 1.10×."
-3. **`validator.sharpe_difference_se()` — MANDATORY reporting, non-gating:** paired-difference SE and implied t vs the benchmark TEST series, plus the achieved correlation ρ. Omitting this is a spec violation.
-4. **MaxDD (criterion 4):** realized TEST MaxDD on the daily-aggregated equity, cap **−31.27%** (= 1.25 × benchmark's −25.02%). Realized only — never the Monte Carlo MaxDD distribution. Also report the 1h-resolution MaxDD (deeper by construction; informational).
-5. **Walk-forward:** the same 4-window construction as the benchmark record (`perps_equal_weight_benchmark.md`); report per-window candidate Sharpe next to the benchmark's per-window figures.
-6. **Monte Carlo — pre-registered: PRIMARY on the candidate's net 1h TEST stream (~3,650 bars), bars_per_year = 8760, n_sims = 1000 per seed, seeds = {11, 23, 47}. Criterion 6 is evaluated on the 1h result.** The daily-aggregated TEST MC is retained as a **reported diagnostic** (the benchmark's own TEST Sharpe carries SE 1.555 on the 151-bar daily sample, so daily bootstrap percentiles are wide and the seed-agreement rule would produce INSUFFICIENT for reasons of sample size rather than strategy quality). State both results in the report. The gate has THREE outcomes, quoted from the manual: **PASS** = every seed's p5 Sharpe > 0; **FAIL** = every seed's p5 Sharpe ≤ 0; **INSUFFICIENT** = seeds disagree in sign → **PARK, never PROMOTE**. "INSUFFICIENT is the absence of a result, not a soft FAIL." `n_sims` may NOT be raised after seeing a straddling result — that invalidates the cycle. Use `mc_gate_status`; per-seed p5 values go in the report.
-7. **DSR:** `validator.deflated_sharpe` on the TEST stream at **n_trials = 1** (this trial). Threshold ≥ 0.95 (criterion 1). The ledger holds 0 rows, so `trial_var_source` WILL be `"estimator_proxy"` — record it; see promotion criteria.
-8. **Regime/yearly breakdown:** `yearly_breakdown` per calendar year of the window plus per-split metrics (Return, CAGR, Sharpe, DSR, Sortino, Calmar, Profit Factor, MaxDD, Win Rate, N trades, Avg trade, Expectancy — manual Validation §3). Annualisation: 8760 for 1h streams, 365 for daily-aggregated.
-9. **Parameter-stability statement (manual Validation §6):** no sweep is authorized. Report the pre-registered values (HL 48, band 0.10, TRAIN-median target, cap 1.0) and state that neighbors were NOT evaluated by design (budget: 0 optimization runs); stability assessment is deferred to any future cycle that would pre-register it.
-10. **Ledger row (only if the trial ran):** `validator.append_trial(task_id="T-038", construct="BVT-EW-HL48-B10", ...)` with the DSR output's `sr_hat_per_trade`, its `n_obs`, `basis="per_bar"`, date — one row, same commit as the report.
-11. **Look-ahead check (manual Validation §8):** confirm sigma and m at bar t use only bars ≤ t; confirm the lag convention; state both in the report.
+**Applicable gates**: G0-G5 above, plus the sanity assertions, plus the manifest checks. That is the
+complete list for this cycle.
 
-## Promotion criteria (quoted in full from `PROJECT_OPERATOR_MANUAL.md`, "Promotion rule — FINAL"; ALL SEVEN must hold; no discretion)
+**Gates that do NOT apply, stated explicitly rather than silently omitted** — this cycle evaluates no
+strategy variant, produces no return series and no candidate:
 
-1. **DSR ≥ 0.95 on the TEST split at the current `n_trials`.** Absolute gate, not a comparison against the benchmark.
+- **Deflated Sharpe Ratio.** Not computed. No trial is spent, so nothing is appended to
+  `research/trial_sharpe_ledger.csv`, which stays at **0 rows**.
+- **Monte Carlo gate.** Not run. For the record, and because it is routinely misreported: it has
+  **three** outcomes — **PASS** = every seed's p5 Sharpe > 0; **FAIL** = every seed's p5 Sharpe <= 0;
+  **INSUFFICIENT** = the seeds disagree in sign, which maps to **PARK, never PROMOTE**. INSUFFICIENT
+  is the absence of a result, not a soft FAIL. `n_sims` may be raised only as a **pre-registered**
+  choice; raising it after seeing a straddling result invalidates the cycle.
+- **`validator.sharpe_difference_se()`.** Mandatory on **every candidate**, and there is no candidate
+  here. Do not fabricate one to satisfy the rule. When a follow-on cycle builds a construct from a
+  passing cell, it must compute and report the paired-difference SE and implied t-statistic against
+  `research/benchmarks/perps_equal_weight_benchmark_TEST_returns.csv` on the 151 identical TEST
+  dates; those figures are reported and do **not** gate.
+- **Walk-forward, parameter stability, regime breakdown, trade-count validation.** All are
+  properties of a strategy; none exists this cycle.
+
+The **1,000-draw placebo control at seed 20260803 is pre-registered here** and may not be enlarged,
+re-seeded, or re-run with a different offset rule after seeing the result. If the control comes back
+degenerate under the sanity assertions, BLOCK — do not re-draw.
+
+---
+
+## Promotion criteria
+
+**PROMOTE IS CURRENTLY UNREACHABLE, AND THIS CYCLE CANNOT REACH IT FOR A SECOND, INDEPENDENT REASON.**
+
+First reason (program-wide): `research/trial_sharpe_ledger.csv` holds **0 rows**. The harness needs
+**10** before cross-trial variance is estimable, so every DSR presently returns
+`trial_var_source = "estimator_proxy"` and **criterion 7 caps the maximum available verdict at
+PARK**. Do not design or argue toward an outcome that cannot be reached. Second reason (this cycle):
+no candidate is produced at all.
+
+All seven are quoted in full from `PROJECT_OPERATOR_MANUAL.md`, "Promotion rule — FINAL", so that
+they are on the record and so a follow-on cycle inherits them. **A candidate is PROMOTED only if ALL
+SEVEN hold. Failing any one is REJECT or PARK. There is no discretion** — you may not weigh a strong
+result on one criterion against a failure on another.
+
+1. **DSR >= 0.95 on the TEST split at the current `n_trials`.** An absolute gate, not a comparison
+   against the benchmark (which is computed at `n_trials = 1` by construction, sr0 = 0.0, DSR
+   0.93914). DSR measures selection luck, not skill relative to holding.
 2. **Candidate TEST-split Sharpe > 0** in absolute terms.
-3. **Candidate TEST-split Sharpe ≥ 1.10 × the benchmark's** — same window, cost model and fill assumption; against the committed benchmark, **≥ 0.135653 per-period (+2.5916 annualised)**. Paired-difference SE and t from `sharpe_difference_se()` reported, non-gating.
-4. **Candidate REALIZED MaxDD ≤ 1.25 × the benchmark's realized TEST MaxDD** — benchmark −25.02%, so the cap is **−31.27%**. Realized only, never the Monte Carlo MaxDD distribution.
+3. **Candidate TEST-split Sharpe >= 1.10 x the benchmark's** — same window, cost model and fill
+   assumption; against the committed benchmark, **>= 0.135653 per-period (+2.5916 annualised)**.
+   Compare per-period Sharpes. The paired-difference SE and t-statistic must be computed and reported
+   but do **not** gate. A series compared against itself gives delta = 0 and does not pass — 1.00x is
+   not 1.10x.
+4. **Candidate REALIZED MaxDD <= 1.25 x the benchmark's realized TEST MaxDD** — benchmark -25.02%, so
+   the cap is **-31.27%**. Realized only, never the Monte Carlo MaxDD distribution.
 5. **Every validation gate in `NEXT_TASK.md` passed.**
-6. **Monte Carlo gate is PASS, not INSUFFICIENT.** INSUFFICIENT maps to PARK.
-7. **DSR `trial_var_source` is not `"estimator_proxy"`.** Below 10 rows in `research/trial_sharpe_ledger.csv` the hurdle falls back to the Lo (2002) proxy; **until the ledger is populated the maximum available verdict is PARK.**
+6. **Monte Carlo gate is PASS, not INSUFFICIENT.**
+7. **DSR `trial_var_source` is not `"estimator_proxy"`.**
 
-**PROMOTE IS CURRENTLY UNREACHABLE THIS CYCLE.** `research/trial_sharpe_ledger.csv` holds 0 rows; 10 are needed before cross-trial variance is estimable, so criterion 7 caps this cycle's best outcome at **PARK** regardless of results. Engineer and Reviewer must not work toward, or claim, a promotion. A full pass on criteria 1–6 is recorded as PARK with criterion 7 cited.
+**Benchmark of record** (`PROJECT_OPERATOR_MANUAL.md`, "Promotion comparison"; full record at
+`research/benchmarks/perps_equal_weight_benchmark.md`): equal-weight, **monthly-rebalanced** long
+basket of the 9 config instruments, 1d, `COST_MODEL` taker, funding excluded. Window
+2022-12-23...2025-09-19, splits 2024-11-22 / 2025-04-21 / 2025-09-19. **TEST Sharpe 0.123321
+per-period (+2.3560 annualised), TEST MaxDD -25.02%, N = 151, DSR 0.93914 at `n_trials = 1`.**
+Because the benchmark's own TEST Sharpe is **positive**, criterion 3 binds rather than criterion 2 —
+a merely profitable candidate does not clear it.
+
+**Note for the follow-on cycle, recorded here because it is easy to get wrong**: a 1h construct's
+**per-period Sharpe is hourly** and is not comparable to the benchmark's **daily** per-period Sharpe.
+Criterion 3 requires date-identical overlap, so a 1h candidate must have its net return stream
+aggregated to the **151 daily TEST buckets** and its daily per-period Sharpe compared against
+0.135653. Do not annualise one side and not the other, and do not compare an hourly Sharpe to a daily
+one.
+
+---
 
 ## Research budget
 
-- **Maximum strategy variants: 1** (the pre-registered construct). Each variant tested = 1 trial against `n_trials`.
-- **Maximum optimization runs: 0.**
-- Manual default is 3 variants / 1 optimization run ("Research budget"); the Director assigns fewer, as the manual permits. Reaching a limit without a result = report that and stop. Exceeding it invalidates the cycle.
+`PROJECT_OPERATOR_MANUAL.md`, "Research budget" sets the default per-cycle limits at **3 strategy
+variants, 1 optimization run**, each variant counting as one trial. **The Director may assign fewer,
+never more.** For T-039:
+
+| Item | Assigned |
+|---|---|
+| Strategy variants | **0** |
+| Optimization runs | **0** |
+| Trials against `n_trials` | **0** |
+| Hyperopt / parameter search of any kind | **0 — forbidden this cycle** |
+| Placebo control draws | **1,000**, seed **20260803**, pre-registered above |
+| State variables | **6**, exactly as defined — do not add a seventh, do not substitute |
+| Horizons | **6**, exactly `{1, 2, 4, 8, 12, 24}` |
+| Tails | **2** (`TOP`, `BOT`) |
+
+The variable set, horizon set and tail set are **pre-registered and closed**. Adding a variable after
+seeing the matrix is the multiple-testing failure this design exists to prevent, and it would
+invalidate the family-wise control. If you believe a seventh variable is essential, that is a finding
+for the report and an input to the next Director — not a change you make.
+
+**Exceeding any assigned number invalidates the cycle.** If you reach a limit without a result,
+report that and stop.
+
+---
 
 ## Deliverables
 
-1. `research/results/T-038_report.md` — standard format: verdict (REJECT at pre-gate / REJECT / PARK), every pre-gate's numbers, all validation outputs, the SE/ρ statement from the power section, the funding-exclusion statement, the look-ahead confirmation, and paths to all scripts.
-2. Analysis scripts under `user_data/research/` (a new `phase_t038_*.py` or similar; do NOT modify frozen `phase*.py` reproduction artifacts per `user_data/research/ARCHIVE_COST_NOTE.md`).
-3. One row appended to `research/trial_sharpe_ledger.csv` **only** if the trial was spent.
-4. Do NOT write to `research_index.md`, `research_metrics.md`, or `strategy_iteration_log.md` — memory maintenance belongs to the Reviewer.
+**File ownership** (`PROJECT_OPERATOR_MANUAL.md`, "File ownership — Engineer / Reviewer division",
+2026-08-02). This assignment does **not** narrow or widen it:
+
+- **You write:** `research/results/T-039_report.md`, raw artifacts under `research/results/T-039_raw/`,
+  and your scripts under `user_data/research/`. **Nothing else.**
+- **You do not write:** `research_index.md`, `research_metrics.md`, `strategy_iteration_log.md`,
+  `strategy_research_notes.md`, `hypothesis_bank.md`, or anything in `review_briefs/`. Those are the
+  Reviewer's. An Engineer writing a Reviewer-owned file is a recorded **spec deviation** — T-038's
+  Engineer did exactly this and it is in the brief.
+
+**Required contents of `research/results/T-039_report.md`:**
+
+1. Verdict: **pre-gate PASS** (>=1 cell clears G1-G5) or **REJECT** (none does), stated in the first
+   line.
+2. `n_trials` before and after: **0 -> 0**. Trial ledger row count before and after: **0 -> 0**.
+3. The **full 72-cell matrix**: for each `(variable, h, tail)` — `mu_cell`, `mu_uncond`, `excess`,
+   `d`, per-cell SE by non-overlapping subsampling, bucket bar count, per-instrument breadth count,
+   and G1-G5 status. Present it as a readable table **and** dump it as CSV to
+   `research/results/T-039_raw/`.
+4. The naive-anchor diagnostic matrix (`log(c_{t+h}) - log(c_t)`), clearly labelled as **not used in
+   any gate**, with one sentence on the size of the execution-lag effect.
+5. Control distribution summary: `mean(M)`, `sd(M)`, `P50/P95/P99(M)`, plus both sanity assertions
+   and their outcomes.
+6. The pairwise Spearman correlation matrix of the six variables, with the `abs(0.90)` note if
+   triggered.
+7. G0 coverage table: per-instrument bar counts, first/last timestamp, monotonicity check.
+8. `assert_no_holdout` output for every frame built, and both `data_manifest.py verify` outputs.
+9. `validator.describe_cost_model("taker")` output, showing 9.00 bps/side and 18.00 bps round trip
+   resolved from `COST_MODEL` rather than hardcoded.
+10. For any passing cell: the four robustness outputs (per-year, three disjoint sub-windows,
+    common-window re-run, long/short flag).
+11. **Traceability**: every figure in the report must be traceable to a named raw artifact and the
+    script that produced it. T-038's audit found five diagnostics that appeared in no raw artifact —
+    they recomputed correct, but the gap is on the record and is not to be repeated.
+12. **Your recommendations to the next Director** — what you saw that the matrix does not show.
+13. An explicit statement of whether any condition in this assignment was ambiguous and how you
+    resolved it (or that none was).
+
+**Scripts**: name them `phase_t039_*.py` under `user_data/research/`. **`user_data/*` is gitignored
+(`.gitignore:7`), so a plain `git add` silently does nothing** — commit them with **`git add -f`**.
+This is the same gap that lost `fng_raw.json` permanently and left T-038's three scripts untracked
+until 2026-08-02. Your scripts must be re-runnable **unmodified** by the Reviewer and must produce
+byte-identical output; seed every random draw.
+
+---
 
 ## Environment notes
 
-- **Funding data has zero overlap with the evaluation window** (earliest held funding datum 2026-02-26 vs window end 2025-09-19, per the A-005 record). Funding P&L is excluded from candidate and benchmark alike; the direction of the resulting bias is anti-candidate (it holds less long exposure), as stated in the envelope section.
-- **The 1h feathers extend past the holdout boundary** (to 2026-05-28). Slice to ≤ 2025-09-19 before anything else; `validate()` raises `HoldoutViolation` otherwise.
-- `research/champions/` does not exist — expected; it is created by the Reviewer on the first PROMOTE.
-- The latest review brief is the T-037 transition brief (highest Task ID). It was opened by the Director; it voids all prior Engineer recommendations, so none were available to weigh for this assignment.
-- BNB's 1h history begins 2022-12-23 — identical to the window start; the other eight begin 2022-01-01. No pre-window bars are used.
-- The manual defines the variant/optimization budget defaults; no manual gap required Director-invented numbers this cycle.
-- `n_trials` cap is 30 (manual, "Program trial cap and terminal condition"); this cycle spends at most 1, leaving ≥ 29.
-- RESEARCH:OPS (perps): 0 research / 1 ops before this cycle; this RESEARCH assignment is the ratio-correct choice (floor not yet in force below 6 completed cycles).
-- The prior contents of this file (the terminated T-036 record, "NO ACTIVE ASSIGNMENT") are preserved in git history and in `research_metrics.md`'s 2026-07-29 entry; this file is create-or-overwrite per the Director prompt.
+- **`research/BLOCKED.md` does not exist** — there is no outstanding blocker to repair. If you create
+  one, quote the exact ambiguous sentence and stop.
+- **`research/champions/` does not exist.** Expected: it is created by the Reviewer on the first
+  PROMOTE. Not a missing file.
+- **The perps program has no champion.** TrendVolTarget and the 80/20 stance are spot artifacts at
+  the pre-2026-07-28 cost model — **void as perps evidence**, not a baseline. The benchmark above is
+  the comparison object.
+- **Funding data cannot support any hypothesis on the frozen split triple.** All nine
+  `user_data/data/okx/futures/*-1h-funding_rate.feather` files span **2026-02-26/28 -> 2026-05-28**
+  (266-273 rows each) — entirely after the TEST window and inside the reserved holdout. A-005
+  excluded funding from the benchmark for the same reason. **Proposed ops task for
+  `research/OPS_BACKLOG.md` (Reviewer to file; the Director may not write that file this cycle):
+  investigate whether OKX or any reachable venue serves funding history back to 2022 — if not, the
+  funding axis is permanently unavailable to this program and should be recorded as closed at the
+  data layer rather than re-proposed each cycle.**
+- **`BTC_USDT_USDT-1h-mark.feather` holds only 7,810 rows against 38,587 OHLCV bars (~20% coverage).**
+  The other instruments' mark series are complete. Recorded so no future cycle rediscovers it; not
+  used this cycle.
+- **`validator.load(symbol, timeframe)` resolves against `DATA_DIR` with a flat filename convention
+  and will not find the futures tree.** Read the feathers directly with `pd.read_feather` at the
+  exact paths listed above, then `set_index("date").sort_index()`.
+- **RESEARCH:OPS ratio, perps program**: currently **1:1** (T-038 research, A-005 ops), below the
+  6-cycle threshold at which the 2:1 floor begins to bind. T-039 is a RESEARCH cycle and takes it to
+  **2:1**. No exception is being claimed.
+- **Meta-review counter**: 17 of 25 before this cycle; not due. The Reviewer advances it.
+- **The T-038 review brief was opened and read by the Director** (2026-08-03). All five Engineer
+  recommendations are dispositioned above.
+- If any file this assignment names is missing, **do not invent its contents** — record it and
+  proceed, or BLOCK if it is load-bearing.

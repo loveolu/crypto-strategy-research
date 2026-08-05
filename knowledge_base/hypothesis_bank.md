@@ -50,34 +50,39 @@ cards stay in the archive and this row governs.
 | Family / theme | Status | Cards | Closure evidence (research_index.md rows) |
 |---|---|---|---|
 | Mean reversion on crypto OHLCV (all tested timeframes) | **CLOSED** | 17 archived | #2, #3 (negative even in-sample), #8, #13; fees vs reversion amplitude structural |
-| Intraday / time-of-day / sub-daily constructions | **REOPENED 2026-07-29** | 4 archived (cards stay archived; this row governs) | Closed on a cost model that overstated achievable perp round-trip cost. Requires re-test at real rates before it may be re-closed — see the reopening note below. |
+| Intraday 1h **univariate decile-conditioned entry** on OHLCV+volume | **TESTED → CLOSED 2026-08-04 (T-039, REJECT)** | 4 archived (cards stay archived; this row governs) | T-039 at the real `COST_MODEL`: 0/72 cells pass; at h ≤ 8 best gross edge **16.13 bps vs 18.0 bps round trip (0.90×)**; edge/cost 0.15/0.27/0.46/0.90/1.19/2.21× at h=1/2/4/8/12/24. Scope note below — this closes less than "intraday is dead". |
 | Short side / symmetric TSMOM of the champion's gate | **CLOSED** | 1 archived | #16 whipsaw census (median episode 3 bars; 2018's −84% bear → +2.6% gross) |
 | BTC-ETH pairs / relative value / rotation / dominance / ratio | **CLOSED** | 4 archived | #18 (no cointegration any window; post-2024 ETF-era break formal, ADF p 0.405) |
 | Sleeve sizing refinement (estimator quality AND rebalance granularity) | **CLOSED** | 0 (no book card; champion's own card stays live) | #15 + #19 (efficient frontier from both directions; 25% quantizer is protective) |
 | DVOL daily-bar champion modifications | **CLOSED** | 4 archived | #21 (veto, B3a) + #22 (sizing, P2 — VRP positive-carry) |
 | Regime-classifier overlay (ER, ADX, MESA, HMM) | **CLOSED** | 4 archived | #30 (post-hoc), #31, #32 (three firing-set concentration failures on the same Oct-2025 boundary across two signals and both threshold types; dataset lacks recent classifier-detectable chop). Reopen ONLY per T-030 §3: window extended ≥6 months past 2026-05-27 with fresh held-out split, OR forward-lane documented in-market chop episode |
 
-### REOPENING (2026-07-29) — intraday / time-of-day / sub-daily
+### RE-CLOSURE (2026-08-04, T-039) — intraday, at real rates. Read the scope line.
 
-This family was closed on a cost model that **overstated achievable perp round-trip cost by 3x
-(taker) to 7.5x (maker)**. Archived runs charged a blended 15 bps/side with zero spread and no
-maker/taker distinction — 30 bps round trip. Real OKX regular-tier perp fees are 10 bps round trip
-taker, 4 bps maker. Those ratios compare the archived all-in figure against *fee-only* perp rates,
-because the old model never separated its fee component; on an all-in basis the current taker model
-is 18 bps round trip, so the archived cost was 1.67x too high. **Do not quote 3x/7.5x as an expected
-P&L improvement.** See `user_data/research/ARCHIVE_COST_NOTE.md`.
+The 2026-07-29 reopening demanded "a fresh closure … under the current `COST_MODEL`" because the
+original closure used an archived cost model **1.67x too high on an all-in basis** (30 vs 18 bps
+round trip; **do not quote the old 3x/7.5x as expected P&L** — those compared an all-in figure to
+fee-only rates). T-039 is that run, and it closes the family **harder than the wrong cost model
+did**: costs fell and the edge still is not there.
 
-Turnover-heavy constructs are the ones this mispricing hurt most, and this family is the most
-turnover-heavy in the bank — so its closure rests on exactly the assumption that was wrong.
-**Status: OPEN for re-test at real rates. It may not be re-closed on archived evidence**; a fresh
-closure requires a run under the current `COST_MODEL`. No sub-hourly data exists yet, and acquiring
-it is an `A-XXX` ops task gated on A-002 (`research/OPS_BACKLOG.md`) — not something a cycle may do.
+**CLOSED for: univariate decile-conditioned 1h entry signals on OHLCV+volume, measured as
+conditional-mean differences.** Evidence: 6 variables (mom_24, vol_ratio, volume_z, range_pos,
+cs_mom_rank, illiq) × 6 horizons × 2 tails = 72 cells, 251,946 pooled TRAIN+VAL bars, 0 passing.
+The binding constraint is **not** the cost wall alone — it is that a 72-cell scan on this panel has a
+family-wise noise floor of **P95(M) = 47.22 bps**, *above* the 36.0 bps economic bar, so width itself
+is unaffordable here. Reopening requires a **narrow, pre-registered single-cell** test (which faces a
+far lower bar), a materially lower round-trip cost, or new data.
 
-**Finding #12 (hours 21-22 UTC anomaly) STAYS CLOSED.** Its fee-to-edge ratio improves from 25:1 to
-roughly **3.3:1 at real maker rates** — still losing by a wide margin, and the maker path is itself
-unproven (no promotion may rest on it; see the manual's cost-model section). The reopening applies to
-the family, not to this specific construct: #12 was re-examined and remains rejected on its own
-numbers. The statistical finding (t = 2.4-3.0, stable) was never in doubt; its tradeability is.
+**NOT closed by T-039, stated so it is not over-read** (cf. the 2026-07-21 ledger correction):
+variable **interactions**; non-decile functional forms; **rolling-percentile** rather than level
+conditioners; conditional volatility/skew targets rather than mean returns; sub-hourly bars (no data;
+`A-XXX` ops task gated on A-002). h=12 (1.19×) and h=24 (2.21×) clear the cost wall gross and fail
+only the scan's own selection noise — that is where a narrow test would go.
+
+**Finding #12 (hours 21-22 UTC anomaly) STAYS CLOSED** on its own numbers: fee-to-edge improves from
+25:1 to ~3.3:1 at real maker rates — still losing, and no promotion may rest on the maker path. Its
+statistical reality (t = 2.4–3.0) was never in doubt; its tradeability is. T-039 tested no clock
+variable and does not bear on it.
 
 ### CORRECTION (2026-07-21) — the blanket OHLCV closure was retracted
 
