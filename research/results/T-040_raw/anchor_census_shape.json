@@ -1,0 +1,187 @@
+{
+  "per_instrument": {
+    "BTC/USDT:USDT": {
+      "n_train_val_bars_raw": 28968,
+      "n_after_25_bar_trim": 28943,
+      "n_after_warmup_drop": 28775,
+      "n_dropped_zero_fwd_vol": 0,
+      "n_anchors": 28775,
+      "first_anchor": "2022-01-08 00:00:00+00:00",
+      "last_anchor": "2025-04-20 22:00:00+00:00",
+      "last_bar_read_by_forward_window": "2025-04-21 22:00:00+00:00"
+    },
+    "ETH/USDT:USDT": {
+      "n_train_val_bars_raw": 28968,
+      "n_after_25_bar_trim": 28943,
+      "n_after_warmup_drop": 28775,
+      "n_dropped_zero_fwd_vol": 0,
+      "n_anchors": 28775,
+      "first_anchor": "2022-01-08 00:00:00+00:00",
+      "last_anchor": "2025-04-20 22:00:00+00:00",
+      "last_bar_read_by_forward_window": "2025-04-21 22:00:00+00:00"
+    },
+    "SOL/USDT:USDT": {
+      "n_train_val_bars_raw": 28968,
+      "n_after_25_bar_trim": 28943,
+      "n_after_warmup_drop": 28775,
+      "n_dropped_zero_fwd_vol": 0,
+      "n_anchors": 28775,
+      "first_anchor": "2022-01-08 00:00:00+00:00",
+      "last_anchor": "2025-04-20 22:00:00+00:00",
+      "last_bar_read_by_forward_window": "2025-04-21 22:00:00+00:00"
+    },
+    "BNB/USDT:USDT": {
+      "n_train_val_bars_raw": 20418,
+      "n_after_25_bar_trim": 20393,
+      "n_after_warmup_drop": 20225,
+      "n_dropped_zero_fwd_vol": 0,
+      "n_anchors": 20225,
+      "first_anchor": "2022-12-30 06:00:00+00:00",
+      "last_anchor": "2025-04-20 22:00:00+00:00",
+      "last_bar_read_by_forward_window": "2025-04-21 22:00:00+00:00"
+    },
+    "XRP/USDT:USDT": {
+      "n_train_val_bars_raw": 28968,
+      "n_after_25_bar_trim": 28943,
+      "n_after_warmup_drop": 28775,
+      "n_dropped_zero_fwd_vol": 0,
+      "n_anchors": 28775,
+      "first_anchor": "2022-01-08 00:00:00+00:00",
+      "last_anchor": "2025-04-20 22:00:00+00:00",
+      "last_bar_read_by_forward_window": "2025-04-21 22:00:00+00:00"
+    },
+    "ADA/USDT:USDT": {
+      "n_train_val_bars_raw": 28968,
+      "n_after_25_bar_trim": 28943,
+      "n_after_warmup_drop": 28775,
+      "n_dropped_zero_fwd_vol": 0,
+      "n_anchors": 28775,
+      "first_anchor": "2022-01-08 00:00:00+00:00",
+      "last_anchor": "2025-04-20 22:00:00+00:00",
+      "last_bar_read_by_forward_window": "2025-04-21 22:00:00+00:00"
+    },
+    "AVAX/USDT:USDT": {
+      "n_train_val_bars_raw": 28968,
+      "n_after_25_bar_trim": 28943,
+      "n_after_warmup_drop": 28775,
+      "n_dropped_zero_fwd_vol": 0,
+      "n_anchors": 28775,
+      "first_anchor": "2022-01-08 00:00:00+00:00",
+      "last_anchor": "2025-04-20 22:00:00+00:00",
+      "last_bar_read_by_forward_window": "2025-04-21 22:00:00+00:00"
+    },
+    "DOT/USDT:USDT": {
+      "n_train_val_bars_raw": 28968,
+      "n_after_25_bar_trim": 28943,
+      "n_after_warmup_drop": 28775,
+      "n_dropped_zero_fwd_vol": 0,
+      "n_anchors": 28775,
+      "first_anchor": "2022-01-08 00:00:00+00:00",
+      "last_anchor": "2025-04-20 22:00:00+00:00",
+      "last_bar_read_by_forward_window": "2025-04-21 22:00:00+00:00"
+    },
+    "LINK/USDT:USDT": {
+      "n_train_val_bars_raw": 28968,
+      "n_after_25_bar_trim": 28943,
+      "n_after_warmup_drop": 28775,
+      "n_dropped_zero_fwd_vol": 0,
+      "n_anchors": 28775,
+      "first_anchor": "2022-01-08 00:00:00+00:00",
+      "last_anchor": "2025-04-20 22:00:00+00:00",
+      "last_bar_read_by_forward_window": "2025-04-21 22:00:00+00:00"
+    }
+  },
+  "pooled_anchor_bars": 250425,
+  "data_inventory": {
+    "BTC/USDT:USDT": {
+      "file": "BTC_USDT_USDT-1h-futures.feather",
+      "n_bars": 38587,
+      "first": "2022-01-01 00:00:00+00:00",
+      "last": "2026-05-27 18:00:00+00:00",
+      "n_zero_volume_bars": 9,
+      "zero_volume_in_train_val": 9,
+      "zero_volume_in_test": 0,
+      "zero_volume_handling": "kept as ordinary bars; construct reads close only"
+    },
+    "ETH/USDT:USDT": {
+      "file": "ETH_USDT_USDT-1h-futures.feather",
+      "n_bars": 38612,
+      "first": "2022-01-01 00:00:00+00:00",
+      "last": "2026-05-28 19:00:00+00:00",
+      "n_zero_volume_bars": 9,
+      "zero_volume_in_train_val": 9,
+      "zero_volume_in_test": 0,
+      "zero_volume_handling": "kept as ordinary bars; construct reads close only"
+    },
+    "SOL/USDT:USDT": {
+      "file": "SOL_USDT_USDT-1h-futures.feather",
+      "n_bars": 38612,
+      "first": "2022-01-01 00:00:00+00:00",
+      "last": "2026-05-28 19:00:00+00:00",
+      "n_zero_volume_bars": 9,
+      "zero_volume_in_train_val": 9,
+      "zero_volume_in_test": 0,
+      "zero_volume_handling": "kept as ordinary bars; construct reads close only"
+    },
+    "BNB/USDT:USDT": {
+      "file": "BNB_USDT_USDT-1h-futures.feather",
+      "n_bars": 30062,
+      "first": "2022-12-23 06:00:00+00:00",
+      "last": "2026-05-28 19:00:00+00:00",
+      "n_zero_volume_bars": 0,
+      "zero_volume_in_train_val": 0,
+      "zero_volume_in_test": 0,
+      "zero_volume_handling": "kept as ordinary bars; construct reads close only"
+    },
+    "XRP/USDT:USDT": {
+      "file": "XRP_USDT_USDT-1h-futures.feather",
+      "n_bars": 38612,
+      "first": "2022-01-01 00:00:00+00:00",
+      "last": "2026-05-28 19:00:00+00:00",
+      "n_zero_volume_bars": 9,
+      "zero_volume_in_train_val": 9,
+      "zero_volume_in_test": 0,
+      "zero_volume_handling": "kept as ordinary bars; construct reads close only"
+    },
+    "ADA/USDT:USDT": {
+      "file": "ADA_USDT_USDT-1h-futures.feather",
+      "n_bars": 38612,
+      "first": "2022-01-01 00:00:00+00:00",
+      "last": "2026-05-28 19:00:00+00:00",
+      "n_zero_volume_bars": 9,
+      "zero_volume_in_train_val": 9,
+      "zero_volume_in_test": 0,
+      "zero_volume_handling": "kept as ordinary bars; construct reads close only"
+    },
+    "AVAX/USDT:USDT": {
+      "file": "AVAX_USDT_USDT-1h-futures.feather",
+      "n_bars": 38612,
+      "first": "2022-01-01 00:00:00+00:00",
+      "last": "2026-05-28 19:00:00+00:00",
+      "n_zero_volume_bars": 9,
+      "zero_volume_in_train_val": 9,
+      "zero_volume_in_test": 0,
+      "zero_volume_handling": "kept as ordinary bars; construct reads close only"
+    },
+    "DOT/USDT:USDT": {
+      "file": "DOT_USDT_USDT-1h-futures.feather",
+      "n_bars": 38612,
+      "first": "2022-01-01 00:00:00+00:00",
+      "last": "2026-05-28 19:00:00+00:00",
+      "n_zero_volume_bars": 9,
+      "zero_volume_in_train_val": 9,
+      "zero_volume_in_test": 0,
+      "zero_volume_handling": "kept as ordinary bars; construct reads close only"
+    },
+    "LINK/USDT:USDT": {
+      "file": "LINK_USDT_USDT-1h-futures.feather",
+      "n_bars": 38612,
+      "first": "2022-01-01 00:00:00+00:00",
+      "last": "2026-05-28 19:00:00+00:00",
+      "n_zero_volume_bars": 9,
+      "zero_volume_in_train_val": 9,
+      "zero_volume_in_test": 0,
+      "zero_volume_handling": "kept as ordinary bars; construct reads close only"
+    }
+  }
+}

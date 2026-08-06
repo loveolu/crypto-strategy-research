@@ -1,0 +1,131 @@
+{
+  "truncation_invariance": {
+    "check": "recompute the whole census on inputs physically truncated at val_end; results must be bit-identical",
+    "anchor_sets_identical": true,
+    "D_bar_full_series_input": "-0.4265863378077064",
+    "D_bar_truncated_input": "-0.4265863378077064",
+    "P1_median_rho_full": "0.4802800066657192",
+    "P1_median_rho_truncated": "0.4802800066657192",
+    "bit_identical": true
+  },
+  "independent_code_path": {
+    "check": "D[i] via pandas qcut+groupby (right-closed bins) vs the pre-registered quantile+searchsorted(side='right'), all nine",
+    "per_instrument": [
+      {
+        "pair": "BTC/USDT:USDT",
+        "D_searchsorted": -0.10375515318752887,
+        "D_qcut": -0.10002395492749508,
+        "abs_difference": 0.003731198260033791,
+        "n_bars_binned_differently": 6,
+        "n_duplicate_dsd_values": 7469
+      },
+      {
+        "pair": "ETH/USDT:USDT",
+        "D_searchsorted": -0.05552414008017885,
+        "D_qcut": -0.05552414008017893,
+        "abs_difference": 8.326672684688674e-17,
+        "n_bars_binned_differently": 3,
+        "n_duplicate_dsd_values": 7226
+      },
+      {
+        "pair": "SOL/USDT:USDT",
+        "D_searchsorted": -0.39346382590111695,
+        "D_qcut": -0.393463825901117,
+        "abs_difference": 5.551115123125783e-17,
+        "n_bars_binned_differently": 2,
+        "n_duplicate_dsd_values": 7218
+      },
+      {
+        "pair": "BNB/USDT:USDT",
+        "D_searchsorted": -1.0512955237432757,
+        "D_qcut": -1.0512955237432755,
+        "abs_difference": 2.220446049250313e-16,
+        "n_bars_binned_differently": 0,
+        "n_duplicate_dsd_values": 5544
+      },
+      {
+        "pair": "XRP/USDT:USDT",
+        "D_searchsorted": -0.5504582915867386,
+        "D_qcut": -0.5481432090632713,
+        "abs_difference": 0.002315082523467349,
+        "n_bars_binned_differently": 4,
+        "n_duplicate_dsd_values": 7796
+      },
+      {
+        "pair": "ADA/USDT:USDT",
+        "D_searchsorted": -0.42826734828201307,
+        "D_qcut": -0.4282673482820132,
+        "abs_difference": 1.1102230246251565e-16,
+        "n_bars_binned_differently": 0,
+        "n_duplicate_dsd_values": 7265
+      },
+      {
+        "pair": "AVAX/USDT:USDT",
+        "D_searchsorted": -0.48946831717993755,
+        "D_qcut": -0.48892280603502636,
+        "abs_difference": 0.0005455111449111927,
+        "n_bars_binned_differently": 2,
+        "n_duplicate_dsd_values": 7478
+      },
+      {
+        "pair": "DOT/USDT:USDT",
+        "D_searchsorted": -0.43483071173430277,
+        "D_qcut": -0.4360883932069757,
+        "abs_difference": 0.0012576814726729113,
+        "n_bars_binned_differently": 3,
+        "n_duplicate_dsd_values": 7487
+      },
+      {
+        "pair": "LINK/USDT:USDT",
+        "D_searchsorted": -0.33221372857426507,
+        "D_qcut": -0.3322137285742651,
+        "abs_difference": 5.551115123125783e-17,
+        "n_bars_binned_differently": 0,
+        "n_duplicate_dsd_values": 7357
+      }
+    ],
+    "max_abs_difference": 0.003731198260033791,
+    "cause": "tied dsd values at quintile edges; the two conventions assign ties to opposite bins, moving 0-6 bars per instrument",
+    "searchsorted_PRIMARY": {
+      "D_bar": -0.4265863378077064,
+      "breadth": 0
+    },
+    "qcut_alternative": {
+      "D_bar": -0.42599365886817986,
+      "breadth": 0
+    },
+    "kill_clauses_agree_under_both_conventions": true
+  },
+  "hand_arithmetic": {
+    "pair": "SOL/USDT:USDT",
+    "timestamp": "2024-06-05 07:00:00+00:00",
+    "manual": {
+      "dsd": 0.0036674495685781014,
+      "usd": 0.0035751416312484532,
+      "sd": 0.005120719554683015,
+      "fwd_ret": -0.004268081670319557,
+      "fwd_vol": 0.004042463852921032,
+      "fwd_pur": -1.0558119566698156
+    },
+    "script": {
+      "dsd": 0.003667449568578101,
+      "usd": 0.0035751416312484532,
+      "sd": 0.005120719554682716,
+      "fwd_ret": -0.004268081670319557,
+      "fwd_vol": 0.004042463852920926,
+      "fwd_pur": -1.0558119566698434
+    },
+    "agree_rtol_1e-9": true,
+    "decomposition_identity_dsd2_plus_usd2_eq_mean_r2": {
+      "lhs": 2.6231824021549556e-05,
+      "rhs": 2.6231824021549552e-05,
+      "holds": true
+    }
+  },
+  "forward_window_containment": {
+    "check": "every retained anchor's h-bar forward window ends strictly before val_end; asserted in build_anchor_frame for all nine",
+    "val_end_1h": "2025-04-21 23:00:00+00:00",
+    "last_bar_read_any_instrument": "2025-04-21 22:00:00+00:00",
+    "holds": true
+  }
+}

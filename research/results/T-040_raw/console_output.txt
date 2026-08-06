@@ -1,0 +1,132 @@
+
+==============================================================================
+T-040 / H-SemiVarSizing-1h — downside semideviation, 9-perp 1h basket
+==============================================================================
+Data        : {'verified': True, 'bypassed': False, 'files_checked': 52, 'manifest_built_utc': '2026-07-29T07:58:59Z'}
+Costs       : okx_usdt_perp / regular (non-VIP, no fee discounts) / fill=taker: maker 2.0bps, taker 5.0bps, slippage 3.0bps/side, spread 2.0bps, adverse selection unset -> 9.00bps/side, 18.00bps round trip
+per_side_cost('taker') = 0.000900 (9.0 bps)   round trip 18.0 bps
+Splits      : train<=2024-11-22 val<=2025-04-21 test<=2025-09-19   1h boundary 2025-09-19 23:00:00+00:00   holdout after it is UNTOUCHED
+Instruments : BTC, ETH, SOL, BNB, XRP, ADA, AVAX, DOT, LINK
+
+Census anchors (TRAIN+VAL, warmup 168, trim 25): pooled 250425 bars
+  BTC   raw  28968 -> anchors  28775  2022-01-08 00:00 .. 2025-04-20 22:00  (fwd window ends 2025-04-21 22:00)
+  ETH   raw  28968 -> anchors  28775  2022-01-08 00:00 .. 2025-04-20 22:00  (fwd window ends 2025-04-21 22:00)
+  SOL   raw  28968 -> anchors  28775  2022-01-08 00:00 .. 2025-04-20 22:00  (fwd window ends 2025-04-21 22:00)
+  BNB   raw  20418 -> anchors  20225  2022-12-30 06:00 .. 2025-04-20 22:00  (fwd window ends 2025-04-21 22:00)
+  XRP   raw  28968 -> anchors  28775  2022-01-08 00:00 .. 2025-04-20 22:00  (fwd window ends 2025-04-21 22:00)
+  ADA   raw  28968 -> anchors  28775  2022-01-08 00:00 .. 2025-04-20 22:00  (fwd window ends 2025-04-21 22:00)
+  AVAX  raw  28968 -> anchors  28775  2022-01-08 00:00 .. 2025-04-20 22:00  (fwd window ends 2025-04-21 22:00)
+  DOT   raw  28968 -> anchors  28775  2022-01-08 00:00 .. 2025-04-20 22:00  (fwd window ends 2025-04-21 22:00)
+  LINK  raw  28968 -> anchors  28775  2022-01-08 00:00 .. 2025-04-20 22:00  (fwd window ends 2025-04-21 22:00)
+
+==============================================================================
+Lookahead / leakage / arithmetic verification (raises on any failure)
+==============================================================================
+  truncation invariance : D_bar -0.4265863378077064 (full input) == -0.4265863378077064 (truncated at val_end) -> True
+  independent code path : max |diff| 3.731e-03 (tie-handling at quintile edges) — D_bar searchsorted -0.426586 (breadth 0/9) vs qcut -0.425994 (breadth 0/9); KILL clauses agree: True
+  hand arithmetic       : SOL/USDT:USDT 2024-06-05 07:00:00+00:00 agree, and dsd^2+usd^2 == mean(r^2) holds
+  forward containment   : last bar any forward window reads = 2025-04-21 22:00:00+00:00 < val_end 2025-04-21 23:00:00+00:00
+
+==============================================================================
+P1 — persistence of the conditioner (F1)
+==============================================================================
+  BTC   rho +0.427458  n 28775
+  ETH   rho +0.513487  n 28775
+  SOL   rho +0.462938  n 28775
+  BNB   rho +0.441343  n 20225
+  XRP   rho +0.480280  n 28775
+  ADA   rho +0.505624  n 28775
+  AVAX  rho +0.520576  n 28775
+  DOT   rho +0.529232  n 28775
+  LINK  rho +0.478164  n 28775
+  median rho +0.480280 (floor 0.3)   min rho +0.427458 (floor > 0.15)
+  F1 fired: False
+
+==============================================================================
+P2 — harm census on dsd (F2). THIS IS WHERE THE SCIENCE IS.
+==============================================================================
+
+  dsd  PRIMARY:  D_bar -0.426586   breadth 0/9
+    BTC   D -0.103755  n  28775  q-means +0.2140 +0.1681 +0.3459 +0.1004 +0.3177
+    ETH   D -0.055524  n  28775  q-means +0.0752 +0.0370 +0.3098 +0.0602 +0.1307
+    SOL   D -0.393464  n  28775  q-means -0.0501 +0.2925 -0.3754 +0.0629 +0.3433
+    BNB   D -1.051296  n  20225  q-means +0.0138 +0.0765 +0.1184 +0.4039 +1.0651
+    XRP   D -0.550458  n  28775  q-means +0.1069 -0.3015 -0.1910 +0.1179 +0.6574
+    ADA   D -0.428267  n  28775  q-means -0.0773 -0.0871 +0.1104 -0.2533 +0.3510
+    AVAX  D -0.489468  n  28775  q-means -0.1411 -0.0709 -0.3965 -0.0423 +0.3484
+    DOT   D -0.434831  n  28775  q-means +0.0171 +0.0188 -0.3018 -0.1235 +0.4519
+    LINK  D -0.332214  n  28775  q-means -0.0519 -0.0028 +0.5204 -0.2215 +0.2803
+
+  sd   diag:  D_bar -0.205060   breadth 2/9
+    BTC   D +0.122912  n  28775  q-means +0.2662 +0.2902 -0.1523 +0.5986 +0.1433
+    ETH   D +0.041169  n  28775  q-means +0.1213 -0.0673 +0.2437 +0.2352 +0.0801
+    SOL   D -0.381057  n  28775  q-means -0.1945 +0.1082 +0.0122 +0.1604 +0.1866
+    BNB   D -0.758062  n  20225  q-means +0.1794 -0.0060 -0.0026 +0.5694 +0.9374
+    XRP   D -0.478643  n  28775  q-means -0.0382 -0.2095 +0.1852 +0.0119 +0.4404
+    ADA   D -0.009335  n  28775  q-means -0.0334 -0.3020 +0.1130 +0.2899 -0.0240
+    AVAX  D -0.085517  n  28775  q-means +0.0445 -0.5648 +0.0512 +0.0366 +0.1300
+    DOT   D -0.272336  n  28775  q-means +0.0029 -0.1181 +0.1804 -0.2778 +0.2752
+    LINK  D -0.024674  n  28775  q-means -0.0169 -0.0665 +0.3937 +0.2066 +0.0077
+
+  usd  diag:  D_bar -0.189939   breadth 3/9
+    BTC   D +0.203311  n  28775  q-means +0.4084 +0.2773 -0.1933 +0.4487 +0.2051
+    ETH   D +0.316765  n  28775  q-means +0.5617 +0.0225 -0.4710 +0.2549 +0.2449
+    SOL   D -0.535430  n  28775  q-means -0.2686 +0.0656 +0.1661 +0.0431 +0.2668
+    BNB   D -0.982215  n  20225  q-means -0.0141 +0.1434 +0.5118 +0.0684 +0.9681
+    XRP   D -0.300409  n  28775  q-means -0.0107 -0.1064 +0.3917 -0.1744 +0.2897
+    ADA   D +0.003809  n  28775  q-means -0.1950 -0.0506 +0.0080 +0.4800 -0.1988
+    AVAX  D -0.214589  n  28775  q-means -0.2342 -0.0331 +0.0406 -0.0562 -0.0196
+    DOT   D -0.095581  n  28775  q-means +0.0672 -0.4377 +0.4857 -0.2153 +0.1628
+    LINK  D -0.105109  n  28775  q-means -0.1408 +0.0119 +0.5795 +0.1097 -0.0357
+
+  KILL clause: D_bar <= 0 OR B < 5
+    D_bar <= 0 ? True   B < 5 ? True
+  F2 fired: True
+
+  Robustness (non-gating):
+    year 2022                                    D_bar(refit)    -1.452418  breadth 1/9   D_bar(fixed)    -0.827844
+    year 2023                                    D_bar(refit)    -0.337993  breadth 3/9   D_bar(fixed)    -0.185046
+    year 2024                                    D_bar(refit)    -0.631020  breadth 1/9   D_bar(fixed)    -0.767184
+    year 2025                                    D_bar(refit)    -0.835599  breadth 1/9   D_bar(fixed)    -6.372216
+    sub-window 1: 2022-01-08 .. 2023-02-11       D_bar(refit)    -0.081812  breadth 3/9   D_bar(fixed)    -0.197952
+    sub-window 2: 2023-02-11 .. 2024-03-17       D_bar(refit)    -0.376236  breadth 2/9   D_bar(fixed)    -0.470891
+    sub-window 3: 2024-03-17 .. 2025-04-20       D_bar(refit)    -0.904028  breadth 0/9   D_bar(fixed)    -1.236465
+    sign flips across views: False
+
+  Post-verdict diagnostics (non-gating; F2 already evaluated):
+    D_bar from quintile MEANS   (pre-registered) -0.426586  breadth 0/9
+    D_bar from quintile MEDIANS                  -0.473918  breadth 0/9
+    D_bar from 1%-TRIMMED means                  -0.426874  breadth 0/9
+    median monotonicity rho (quintile index vs mean) +0.3000
+      BTC   mono rho +0.1000  D_mean -0.103755  D_med -0.311038  D_trim -0.121078
+      ETH   mono rho +0.3000  D_mean -0.055524  D_med -0.132317  D_trim -0.051757
+      SOL   mono rho +0.5000  D_mean -0.393464  D_med -0.504837  D_trim -0.387758
+      BNB   mono rho +1.0000  D_mean -1.051296  D_med -0.923144  D_trim -1.063930
+      XRP   mono rho +0.7000  D_mean -0.550458  D_med -0.541751  D_trim -0.527538
+      ADA   mono rho +0.3000  D_mean -0.428267  D_med -0.623347  D_trim -0.415091
+      AVAX  mono rho +0.7000  D_mean -0.489468  D_med -0.569609  D_trim -0.490253
+      DOT   mono rho +0.2000  D_mean -0.434831  D_med -0.493757  D_trim -0.440596
+      LINK  mono rho +0.2000  D_mean -0.332214  D_med -0.165462  D_trim -0.343862
+
+==============================================================================
+VERDICT
+==============================================================================
+{
+  "stopped_at": "P2",
+  "F1_fired": false,
+  "F2_fired": true,
+  "F3_fired": null,
+  "trials_spent": 0
+}
+
+WARNINGS — reproduce verbatim in any report quoting these numbers
+  !! COST MODEL NOTE - slippage (3.0 bps/side) and spread (2.0 bps) are estimates, not calibrated against realized fills. Fee rates are published OKX regular (non-VIP, no fee discounts) rates for okx_usdt_perp as of 2026-07-28.
+
+Artifacts in research/results/T-040_raw/:
+  lookahead_checks           research/results/T-040_raw/lookahead_checks.json
+  anchor_census_shape        research/results/T-040_raw/anchor_census_shape.json
+  p1                         research/results/T-040_raw/p1_persistence.csv
+  p2                         research/results/T-040_raw/p2_census.csv
+  p2_robustness              research/results/T-040_raw/p2_robustness_views.json
+  p2_post_verdict            research/results/T-040_raw/p2_post_verdict_diagnostics.json
+  results                    research/results/T-040_raw/t040_results.json

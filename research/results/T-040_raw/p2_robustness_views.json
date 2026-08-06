@@ -1,0 +1,141 @@
+{
+  "note": "REPORTED, NON-GATING",
+  "per_calendar_year": [
+    {
+      "view": "year 2022",
+      "bar_counts": {
+        "BTC/USDT:USDT": 8592,
+        "ETH/USDT:USDT": 8592,
+        "SOL/USDT:USDT": 8592,
+        "BNB/USDT:USDT": 42,
+        "XRP/USDT:USDT": 8592,
+        "ADA/USDT:USDT": 8592,
+        "AVAX/USDT:USDT": 8592,
+        "DOT/USDT:USDT": 8592,
+        "LINK/USDT:USDT": 8592
+      },
+      "D_bar_refit_edges": -1.4524179816266851,
+      "breadth_refit_edges": 1,
+      "D_bar_fixed_edges": -0.8278444002974013,
+      "breadth_fixed_edges": 1,
+      "n_instruments_evaluable": 9
+    },
+    {
+      "view": "year 2023",
+      "bar_counts": {
+        "BTC/USDT:USDT": 8760,
+        "ETH/USDT:USDT": 8760,
+        "SOL/USDT:USDT": 8760,
+        "BNB/USDT:USDT": 8760,
+        "XRP/USDT:USDT": 8760,
+        "ADA/USDT:USDT": 8760,
+        "AVAX/USDT:USDT": 8760,
+        "DOT/USDT:USDT": 8760,
+        "LINK/USDT:USDT": 8760
+      },
+      "D_bar_refit_edges": -0.3379934243858222,
+      "breadth_refit_edges": 3,
+      "D_bar_fixed_edges": -0.18504630561830784,
+      "breadth_fixed_edges": 4,
+      "n_instruments_evaluable": 9
+    },
+    {
+      "view": "year 2024",
+      "bar_counts": {
+        "BTC/USDT:USDT": 8784,
+        "ETH/USDT:USDT": 8784,
+        "SOL/USDT:USDT": 8784,
+        "BNB/USDT:USDT": 8784,
+        "XRP/USDT:USDT": 8784,
+        "ADA/USDT:USDT": 8784,
+        "AVAX/USDT:USDT": 8784,
+        "DOT/USDT:USDT": 8784,
+        "LINK/USDT:USDT": 8784
+      },
+      "D_bar_refit_edges": -0.6310197192140213,
+      "breadth_refit_edges": 1,
+      "D_bar_fixed_edges": -0.7671837388597107,
+      "breadth_fixed_edges": 0,
+      "n_instruments_evaluable": 9
+    },
+    {
+      "view": "year 2025",
+      "bar_counts": {
+        "BTC/USDT:USDT": 2639,
+        "ETH/USDT:USDT": 2639,
+        "SOL/USDT:USDT": 2639,
+        "BNB/USDT:USDT": 2639,
+        "XRP/USDT:USDT": 2639,
+        "ADA/USDT:USDT": 2639,
+        "AVAX/USDT:USDT": 2639,
+        "DOT/USDT:USDT": 2639,
+        "LINK/USDT:USDT": 2639
+      },
+      "D_bar_refit_edges": -0.8355994749168941,
+      "breadth_refit_edges": 1,
+      "D_bar_fixed_edges": -6.372216089265769,
+      "breadth_fixed_edges": 0,
+      "n_instruments_evaluable": 9
+    }
+  ],
+  "three_disjoint_sub_windows": [
+    {
+      "view": "sub-window 1: 2022-01-08 .. 2023-02-11",
+      "bar_counts": {
+        "BTC/USDT:USDT": 9592,
+        "ETH/USDT:USDT": 9592,
+        "SOL/USDT:USDT": 9592,
+        "BNB/USDT:USDT": 1042,
+        "XRP/USDT:USDT": 9592,
+        "ADA/USDT:USDT": 9592,
+        "AVAX/USDT:USDT": 9592,
+        "DOT/USDT:USDT": 9592,
+        "LINK/USDT:USDT": 9592
+      },
+      "D_bar_refit_edges": -0.08181162651646479,
+      "breadth_refit_edges": 3,
+      "D_bar_fixed_edges": -0.19795175494823727,
+      "breadth_fixed_edges": 2,
+      "n_instruments_evaluable": 9
+    },
+    {
+      "view": "sub-window 2: 2023-02-11 .. 2024-03-17",
+      "bar_counts": {
+        "BTC/USDT:USDT": 9592,
+        "ETH/USDT:USDT": 9592,
+        "SOL/USDT:USDT": 9592,
+        "BNB/USDT:USDT": 9592,
+        "XRP/USDT:USDT": 9592,
+        "ADA/USDT:USDT": 9592,
+        "AVAX/USDT:USDT": 9592,
+        "DOT/USDT:USDT": 9592,
+        "LINK/USDT:USDT": 9592
+      },
+      "D_bar_refit_edges": -0.37623622802166895,
+      "breadth_refit_edges": 2,
+      "D_bar_fixed_edges": -0.4708909883363176,
+      "breadth_fixed_edges": 1,
+      "n_instruments_evaluable": 9
+    },
+    {
+      "view": "sub-window 3: 2024-03-17 .. 2025-04-20",
+      "bar_counts": {
+        "BTC/USDT:USDT": 9591,
+        "ETH/USDT:USDT": 9591,
+        "SOL/USDT:USDT": 9591,
+        "BNB/USDT:USDT": 9591,
+        "XRP/USDT:USDT": 9591,
+        "ADA/USDT:USDT": 9591,
+        "AVAX/USDT:USDT": 9591,
+        "DOT/USDT:USDT": 9591,
+        "LINK/USDT:USDT": 9591
+      },
+      "D_bar_refit_edges": -0.9040275858726994,
+      "breadth_refit_edges": 0,
+      "D_bar_fixed_edges": -1.23646547108907,
+      "breadth_fixed_edges": 0,
+      "n_instruments_evaluable": 9
+    }
+  ],
+  "sign_flips_across_views": false
+}

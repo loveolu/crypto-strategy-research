@@ -1,0 +1,1472 @@
+{
+  "task": "T-040",
+  "hypothesis": "H-SemiVarSizing-1h",
+  "program": "perps",
+  "cost_model": {
+    "venue": "okx_usdt_perp",
+    "fee_tier": "regular (non-VIP, no fee discounts)",
+    "maker": 0.0002,
+    "taker": 0.0005,
+    "slippage_bps": 3.0,
+    "spread_bps": 2.0,
+    "fill_assumption": "taker",
+    "rates_as_of": "2026-07-28",
+    "slippage_spread_basis": "estimate - not calibrated against realized fills",
+    "adverse_selection_bps": null,
+    "adverse_selection_basis": null,
+    "per_side_cost": 0.0009,
+    "round_trip_cost": 0.0018,
+    "summary": "okx_usdt_perp / regular (non-VIP, no fee discounts) / fill=taker: maker 2.0bps, taker 5.0bps, slippage 3.0bps/side, spread 2.0bps, adverse selection unset -> 9.00bps/side, 18.00bps round trip"
+  },
+  "data_manifest": {
+    "verified": true,
+    "bypassed": false,
+    "files_checked": 52,
+    "manifest_built_utc": "2026-07-29T07:58:59Z"
+  },
+  "splits": {
+    "train_end": "2024-11-22",
+    "val_end": "2025-04-21",
+    "test_end": "2025-09-19",
+    "mode": "date_pinned",
+    "holdout_after_1h": "2025-09-19 23:00:00+00:00",
+    "holdout_untouched": true
+  },
+  "pre_registered": {
+    "W": 168,
+    "h": 24,
+    "trim": 25,
+    "quantiles": 5,
+    "m_range": [
+      0.25,
+      1.0
+    ],
+    "m_step": 0.25,
+    "placebo_draws": 1000,
+    "placebo_seed": 20260805,
+    "mc_sims": 1000,
+    "mc_seeds": [
+      11,
+      20260805,
+      777
+    ],
+    "n_trials": 1
+  },
+  "anchor_shape": {
+    "per_instrument": {
+      "BTC/USDT:USDT": {
+        "n_train_val_bars_raw": 28968,
+        "n_after_25_bar_trim": 28943,
+        "n_after_warmup_drop": 28775,
+        "n_dropped_zero_fwd_vol": 0,
+        "n_anchors": 28775,
+        "first_anchor": "2022-01-08 00:00:00+00:00",
+        "last_anchor": "2025-04-20 22:00:00+00:00",
+        "last_bar_read_by_forward_window": "2025-04-21 22:00:00+00:00"
+      },
+      "ETH/USDT:USDT": {
+        "n_train_val_bars_raw": 28968,
+        "n_after_25_bar_trim": 28943,
+        "n_after_warmup_drop": 28775,
+        "n_dropped_zero_fwd_vol": 0,
+        "n_anchors": 28775,
+        "first_anchor": "2022-01-08 00:00:00+00:00",
+        "last_anchor": "2025-04-20 22:00:00+00:00",
+        "last_bar_read_by_forward_window": "2025-04-21 22:00:00+00:00"
+      },
+      "SOL/USDT:USDT": {
+        "n_train_val_bars_raw": 28968,
+        "n_after_25_bar_trim": 28943,
+        "n_after_warmup_drop": 28775,
+        "n_dropped_zero_fwd_vol": 0,
+        "n_anchors": 28775,
+        "first_anchor": "2022-01-08 00:00:00+00:00",
+        "last_anchor": "2025-04-20 22:00:00+00:00",
+        "last_bar_read_by_forward_window": "2025-04-21 22:00:00+00:00"
+      },
+      "BNB/USDT:USDT": {
+        "n_train_val_bars_raw": 20418,
+        "n_after_25_bar_trim": 20393,
+        "n_after_warmup_drop": 20225,
+        "n_dropped_zero_fwd_vol": 0,
+        "n_anchors": 20225,
+        "first_anchor": "2022-12-30 06:00:00+00:00",
+        "last_anchor": "2025-04-20 22:00:00+00:00",
+        "last_bar_read_by_forward_window": "2025-04-21 22:00:00+00:00"
+      },
+      "XRP/USDT:USDT": {
+        "n_train_val_bars_raw": 28968,
+        "n_after_25_bar_trim": 28943,
+        "n_after_warmup_drop": 28775,
+        "n_dropped_zero_fwd_vol": 0,
+        "n_anchors": 28775,
+        "first_anchor": "2022-01-08 00:00:00+00:00",
+        "last_anchor": "2025-04-20 22:00:00+00:00",
+        "last_bar_read_by_forward_window": "2025-04-21 22:00:00+00:00"
+      },
+      "ADA/USDT:USDT": {
+        "n_train_val_bars_raw": 28968,
+        "n_after_25_bar_trim": 28943,
+        "n_after_warmup_drop": 28775,
+        "n_dropped_zero_fwd_vol": 0,
+        "n_anchors": 28775,
+        "first_anchor": "2022-01-08 00:00:00+00:00",
+        "last_anchor": "2025-04-20 22:00:00+00:00",
+        "last_bar_read_by_forward_window": "2025-04-21 22:00:00+00:00"
+      },
+      "AVAX/USDT:USDT": {
+        "n_train_val_bars_raw": 28968,
+        "n_after_25_bar_trim": 28943,
+        "n_after_warmup_drop": 28775,
+        "n_dropped_zero_fwd_vol": 0,
+        "n_anchors": 28775,
+        "first_anchor": "2022-01-08 00:00:00+00:00",
+        "last_anchor": "2025-04-20 22:00:00+00:00",
+        "last_bar_read_by_forward_window": "2025-04-21 22:00:00+00:00"
+      },
+      "DOT/USDT:USDT": {
+        "n_train_val_bars_raw": 28968,
+        "n_after_25_bar_trim": 28943,
+        "n_after_warmup_drop": 28775,
+        "n_dropped_zero_fwd_vol": 0,
+        "n_anchors": 28775,
+        "first_anchor": "2022-01-08 00:00:00+00:00",
+        "last_anchor": "2025-04-20 22:00:00+00:00",
+        "last_bar_read_by_forward_window": "2025-04-21 22:00:00+00:00"
+      },
+      "LINK/USDT:USDT": {
+        "n_train_val_bars_raw": 28968,
+        "n_after_25_bar_trim": 28943,
+        "n_after_warmup_drop": 28775,
+        "n_dropped_zero_fwd_vol": 0,
+        "n_anchors": 28775,
+        "first_anchor": "2022-01-08 00:00:00+00:00",
+        "last_anchor": "2025-04-20 22:00:00+00:00",
+        "last_bar_read_by_forward_window": "2025-04-21 22:00:00+00:00"
+      }
+    },
+    "pooled_anchor_bars": 250425
+  },
+  "data_inventory": {
+    "BTC/USDT:USDT": {
+      "file": "BTC_USDT_USDT-1h-futures.feather",
+      "n_bars": 38587,
+      "first": "2022-01-01 00:00:00+00:00",
+      "last": "2026-05-27 18:00:00+00:00",
+      "n_zero_volume_bars": 9,
+      "zero_volume_in_train_val": 9,
+      "zero_volume_in_test": 0,
+      "zero_volume_handling": "kept as ordinary bars; construct reads close only"
+    },
+    "ETH/USDT:USDT": {
+      "file": "ETH_USDT_USDT-1h-futures.feather",
+      "n_bars": 38612,
+      "first": "2022-01-01 00:00:00+00:00",
+      "last": "2026-05-28 19:00:00+00:00",
+      "n_zero_volume_bars": 9,
+      "zero_volume_in_train_val": 9,
+      "zero_volume_in_test": 0,
+      "zero_volume_handling": "kept as ordinary bars; construct reads close only"
+    },
+    "SOL/USDT:USDT": {
+      "file": "SOL_USDT_USDT-1h-futures.feather",
+      "n_bars": 38612,
+      "first": "2022-01-01 00:00:00+00:00",
+      "last": "2026-05-28 19:00:00+00:00",
+      "n_zero_volume_bars": 9,
+      "zero_volume_in_train_val": 9,
+      "zero_volume_in_test": 0,
+      "zero_volume_handling": "kept as ordinary bars; construct reads close only"
+    },
+    "BNB/USDT:USDT": {
+      "file": "BNB_USDT_USDT-1h-futures.feather",
+      "n_bars": 30062,
+      "first": "2022-12-23 06:00:00+00:00",
+      "last": "2026-05-28 19:00:00+00:00",
+      "n_zero_volume_bars": 0,
+      "zero_volume_in_train_val": 0,
+      "zero_volume_in_test": 0,
+      "zero_volume_handling": "kept as ordinary bars; construct reads close only"
+    },
+    "XRP/USDT:USDT": {
+      "file": "XRP_USDT_USDT-1h-futures.feather",
+      "n_bars": 38612,
+      "first": "2022-01-01 00:00:00+00:00",
+      "last": "2026-05-28 19:00:00+00:00",
+      "n_zero_volume_bars": 9,
+      "zero_volume_in_train_val": 9,
+      "zero_volume_in_test": 0,
+      "zero_volume_handling": "kept as ordinary bars; construct reads close only"
+    },
+    "ADA/USDT:USDT": {
+      "file": "ADA_USDT_USDT-1h-futures.feather",
+      "n_bars": 38612,
+      "first": "2022-01-01 00:00:00+00:00",
+      "last": "2026-05-28 19:00:00+00:00",
+      "n_zero_volume_bars": 9,
+      "zero_volume_in_train_val": 9,
+      "zero_volume_in_test": 0,
+      "zero_volume_handling": "kept as ordinary bars; construct reads close only"
+    },
+    "AVAX/USDT:USDT": {
+      "file": "AVAX_USDT_USDT-1h-futures.feather",
+      "n_bars": 38612,
+      "first": "2022-01-01 00:00:00+00:00",
+      "last": "2026-05-28 19:00:00+00:00",
+      "n_zero_volume_bars": 9,
+      "zero_volume_in_train_val": 9,
+      "zero_volume_in_test": 0,
+      "zero_volume_handling": "kept as ordinary bars; construct reads close only"
+    },
+    "DOT/USDT:USDT": {
+      "file": "DOT_USDT_USDT-1h-futures.feather",
+      "n_bars": 38612,
+      "first": "2022-01-01 00:00:00+00:00",
+      "last": "2026-05-28 19:00:00+00:00",
+      "n_zero_volume_bars": 9,
+      "zero_volume_in_train_val": 9,
+      "zero_volume_in_test": 0,
+      "zero_volume_handling": "kept as ordinary bars; construct reads close only"
+    },
+    "LINK/USDT:USDT": {
+      "file": "LINK_USDT_USDT-1h-futures.feather",
+      "n_bars": 38612,
+      "first": "2022-01-01 00:00:00+00:00",
+      "last": "2026-05-28 19:00:00+00:00",
+      "n_zero_volume_bars": 9,
+      "zero_volume_in_train_val": 9,
+      "zero_volume_in_test": 0,
+      "zero_volume_handling": "kept as ordinary bars; construct reads close only"
+    }
+  },
+  "lookahead_checks": {
+    "truncation_invariance": {
+      "check": "recompute the whole census on inputs physically truncated at val_end; results must be bit-identical",
+      "anchor_sets_identical": true,
+      "D_bar_full_series_input": "-0.4265863378077064",
+      "D_bar_truncated_input": "-0.4265863378077064",
+      "P1_median_rho_full": "0.4802800066657192",
+      "P1_median_rho_truncated": "0.4802800066657192",
+      "bit_identical": true
+    },
+    "independent_code_path": {
+      "check": "D[i] via pandas qcut+groupby (right-closed bins) vs the pre-registered quantile+searchsorted(side='right'), all nine",
+      "per_instrument": [
+        {
+          "pair": "BTC/USDT:USDT",
+          "D_searchsorted": -0.10375515318752887,
+          "D_qcut": -0.10002395492749508,
+          "abs_difference": 0.003731198260033791,
+          "n_bars_binned_differently": 6,
+          "n_duplicate_dsd_values": 7469
+        },
+        {
+          "pair": "ETH/USDT:USDT",
+          "D_searchsorted": -0.05552414008017885,
+          "D_qcut": -0.05552414008017893,
+          "abs_difference": 8.326672684688674e-17,
+          "n_bars_binned_differently": 3,
+          "n_duplicate_dsd_values": 7226
+        },
+        {
+          "pair": "SOL/USDT:USDT",
+          "D_searchsorted": -0.39346382590111695,
+          "D_qcut": -0.393463825901117,
+          "abs_difference": 5.551115123125783e-17,
+          "n_bars_binned_differently": 2,
+          "n_duplicate_dsd_values": 7218
+        },
+        {
+          "pair": "BNB/USDT:USDT",
+          "D_searchsorted": -1.0512955237432757,
+          "D_qcut": -1.0512955237432755,
+          "abs_difference": 2.220446049250313e-16,
+          "n_bars_binned_differently": 0,
+          "n_duplicate_dsd_values": 5544
+        },
+        {
+          "pair": "XRP/USDT:USDT",
+          "D_searchsorted": -0.5504582915867386,
+          "D_qcut": -0.5481432090632713,
+          "abs_difference": 0.002315082523467349,
+          "n_bars_binned_differently": 4,
+          "n_duplicate_dsd_values": 7796
+        },
+        {
+          "pair": "ADA/USDT:USDT",
+          "D_searchsorted": -0.42826734828201307,
+          "D_qcut": -0.4282673482820132,
+          "abs_difference": 1.1102230246251565e-16,
+          "n_bars_binned_differently": 0,
+          "n_duplicate_dsd_values": 7265
+        },
+        {
+          "pair": "AVAX/USDT:USDT",
+          "D_searchsorted": -0.48946831717993755,
+          "D_qcut": -0.48892280603502636,
+          "abs_difference": 0.0005455111449111927,
+          "n_bars_binned_differently": 2,
+          "n_duplicate_dsd_values": 7478
+        },
+        {
+          "pair": "DOT/USDT:USDT",
+          "D_searchsorted": -0.43483071173430277,
+          "D_qcut": -0.4360883932069757,
+          "abs_difference": 0.0012576814726729113,
+          "n_bars_binned_differently": 3,
+          "n_duplicate_dsd_values": 7487
+        },
+        {
+          "pair": "LINK/USDT:USDT",
+          "D_searchsorted": -0.33221372857426507,
+          "D_qcut": -0.3322137285742651,
+          "abs_difference": 5.551115123125783e-17,
+          "n_bars_binned_differently": 0,
+          "n_duplicate_dsd_values": 7357
+        }
+      ],
+      "max_abs_difference": 0.003731198260033791,
+      "cause": "tied dsd values at quintile edges; the two conventions assign ties to opposite bins, moving 0-6 bars per instrument",
+      "searchsorted_PRIMARY": {
+        "D_bar": -0.4265863378077064,
+        "breadth": 0
+      },
+      "qcut_alternative": {
+        "D_bar": -0.42599365886817986,
+        "breadth": 0
+      },
+      "kill_clauses_agree_under_both_conventions": true
+    },
+    "hand_arithmetic": {
+      "pair": "SOL/USDT:USDT",
+      "timestamp": "2024-06-05 07:00:00+00:00",
+      "manual": {
+        "dsd": 0.0036674495685781014,
+        "usd": 0.0035751416312484532,
+        "sd": 0.005120719554683015,
+        "fwd_ret": -0.004268081670319557,
+        "fwd_vol": 0.004042463852921032,
+        "fwd_pur": -1.0558119566698156
+      },
+      "script": {
+        "dsd": 0.003667449568578101,
+        "usd": 0.0035751416312484532,
+        "sd": 0.005120719554682716,
+        "fwd_ret": -0.004268081670319557,
+        "fwd_vol": 0.004042463852920926,
+        "fwd_pur": -1.0558119566698434
+      },
+      "agree_rtol_1e-9": true,
+      "decomposition_identity_dsd2_plus_usd2_eq_mean_r2": {
+        "lhs": 2.6231824021549556e-05,
+        "rhs": 2.6231824021549552e-05,
+        "holds": true
+      }
+    },
+    "forward_window_containment": {
+      "check": "every retained anchor's h-bar forward window ends strictly before val_end; asserted in build_anchor_frame for all nine",
+      "val_end_1h": "2025-04-21 23:00:00+00:00",
+      "last_bar_read_any_instrument": "2025-04-21 22:00:00+00:00",
+      "holds": true
+    }
+  },
+  "P1": {
+    "gate": "P1 / F1",
+    "statistic": "spearman(dsd[t], forward 24-bar realized downside semideviation)",
+    "per_instrument": [
+      {
+        "pair": "BTC/USDT:USDT",
+        "rho": 0.4274577446849601,
+        "p_value": 0.0,
+        "n": 28775
+      },
+      {
+        "pair": "ETH/USDT:USDT",
+        "rho": 0.5134868114590309,
+        "p_value": 0.0,
+        "n": 28775
+      },
+      {
+        "pair": "SOL/USDT:USDT",
+        "rho": 0.46293811605214075,
+        "p_value": 0.0,
+        "n": 28775
+      },
+      {
+        "pair": "BNB/USDT:USDT",
+        "rho": 0.44134345344310005,
+        "p_value": 0.0,
+        "n": 20225
+      },
+      {
+        "pair": "XRP/USDT:USDT",
+        "rho": 0.4802800066657192,
+        "p_value": 0.0,
+        "n": 28775
+      },
+      {
+        "pair": "ADA/USDT:USDT",
+        "rho": 0.5056243019410933,
+        "p_value": 0.0,
+        "n": 28775
+      },
+      {
+        "pair": "AVAX/USDT:USDT",
+        "rho": 0.5205763340223261,
+        "p_value": 0.0,
+        "n": 28775
+      },
+      {
+        "pair": "DOT/USDT:USDT",
+        "rho": 0.5292317338804495,
+        "p_value": 0.0,
+        "n": 28775
+      },
+      {
+        "pair": "LINK/USDT:USDT",
+        "rho": 0.47816428380733056,
+        "p_value": 0.0,
+        "n": 28775
+      }
+    ],
+    "median_rho": 0.4802800066657192,
+    "min_rho": 0.4274577446849601,
+    "kill_clause": "median(rho) < 0.3 OR min(rho) <= 0.15",
+    "clause_a_median_below_floor": false,
+    "clause_b_min_at_or_below_floor": false,
+    "F1_fired": false,
+    "note": "P1 is a NECESSARY condition only. Any autocorrelated series passes a persistence test; passing it is not evidence for the hypothesis and may not be cited as support."
+  },
+  "P2": {
+    "gate": "P2 / F2",
+    "response": "fwd_pur = fwd_ret / fwd_vol (per-unit-risk, h = 24 bars)",
+    "primary_dsd": {
+      "conditioner": "dsd",
+      "per_instrument": [
+        {
+          "pair": "BTC/USDT:USDT",
+          "D": -0.10375515318752887,
+          "n": 28775,
+          "n_q1": 5754,
+          "n_q5": 5755,
+          "quintile_means": [
+            0.21396846521688784,
+            0.16806988096871536,
+            0.34594881887747664,
+            0.1003574713873055,
+            0.3177236184044167
+          ],
+          "quintile_counts": [
+            5754,
+            5755,
+            5756,
+            5755,
+            5755
+          ]
+        },
+        {
+          "pair": "ETH/USDT:USDT",
+          "D": -0.05552414008017885,
+          "n": 28775,
+          "n_q1": 5755,
+          "n_q5": 5755,
+          "quintile_means": [
+            0.07520979829408202,
+            0.03698240635959878,
+            0.30976447379628386,
+            0.060205509466505804,
+            0.13073393837426087
+          ],
+          "quintile_counts": [
+            5755,
+            5754,
+            5756,
+            5755,
+            5755
+          ]
+        },
+        {
+          "pair": "SOL/USDT:USDT",
+          "D": -0.39346382590111695,
+          "n": 28775,
+          "n_q1": 5755,
+          "n_q5": 5755,
+          "quintile_means": [
+            -0.05013849436371383,
+            0.2924580829096742,
+            -0.37543578811404565,
+            0.06289034530952302,
+            0.34332533153740313
+          ],
+          "quintile_counts": [
+            5755,
+            5754,
+            5756,
+            5755,
+            5755
+          ]
+        },
+        {
+          "pair": "BNB/USDT:USDT",
+          "D": -1.0512955237432757,
+          "n": 20225,
+          "n_q1": 4045,
+          "n_q5": 4045,
+          "quintile_means": [
+            0.013776462777383801,
+            0.07647814180220111,
+            0.11835857624847308,
+            0.40389229977151586,
+            1.0650719865206595
+          ],
+          "quintile_counts": [
+            4045,
+            4045,
+            4045,
+            4045,
+            4045
+          ]
+        },
+        {
+          "pair": "XRP/USDT:USDT",
+          "D": -0.5504582915867386,
+          "n": 28775,
+          "n_q1": 5755,
+          "n_q5": 5756,
+          "quintile_means": [
+            0.10692769360071278,
+            -0.3014582413405997,
+            -0.1910212981362736,
+            0.11788388191730143,
+            0.6573859851874514
+          ],
+          "quintile_counts": [
+            5755,
+            5755,
+            5755,
+            5754,
+            5756
+          ]
+        },
+        {
+          "pair": "ADA/USDT:USDT",
+          "D": -0.42826734828201307,
+          "n": 28775,
+          "n_q1": 5755,
+          "n_q5": 5755,
+          "quintile_means": [
+            -0.0773061126484012,
+            -0.0871315374473419,
+            0.11036712646526801,
+            -0.253290060059539,
+            0.35096123563361187
+          ],
+          "quintile_counts": [
+            5755,
+            5755,
+            5755,
+            5755,
+            5755
+          ]
+        },
+        {
+          "pair": "AVAX/USDT:USDT",
+          "D": -0.48946831717993755,
+          "n": 28775,
+          "n_q1": 5754,
+          "n_q5": 5755,
+          "quintile_means": [
+            -0.1410934124136897,
+            -0.07094777429591893,
+            -0.3964671723946485,
+            -0.0423349650999797,
+            0.3483749047662479
+          ],
+          "quintile_counts": [
+            5754,
+            5756,
+            5755,
+            5755,
+            5755
+          ]
+        },
+        {
+          "pair": "DOT/USDT:USDT",
+          "D": -0.43483071173430277,
+          "n": 28775,
+          "n_q1": 5755,
+          "n_q5": 5756,
+          "quintile_means": [
+            0.01708754486331694,
+            0.01876997216548877,
+            -0.3017718393024155,
+            -0.12348610316153652,
+            0.4519182565976197
+          ],
+          "quintile_counts": [
+            5755,
+            5755,
+            5755,
+            5754,
+            5756
+          ]
+        },
+        {
+          "pair": "LINK/USDT:USDT",
+          "D": -0.33221372857426507,
+          "n": 28775,
+          "n_q1": 5755,
+          "n_q5": 5755,
+          "quintile_means": [
+            -0.05190226498996522,
+            -0.002776258304571808,
+            0.5204410179274093,
+            -0.2214718335841921,
+            0.28031146358429987
+          ],
+          "quintile_counts": [
+            5755,
+            5755,
+            5755,
+            5755,
+            5755
+          ]
+        }
+      ],
+      "D_bar": -0.4265863378077064,
+      "breadth": 0,
+      "n_instruments": 9
+    },
+    "diagnostic_sd": {
+      "conditioner": "sd",
+      "per_instrument": [
+        {
+          "pair": "BTC/USDT:USDT",
+          "D": 0.1229124614261512,
+          "n": 28775,
+          "n_q1": 5755,
+          "n_q5": 5755,
+          "quintile_means": [
+            0.26621365876745773,
+            0.29020021456105655,
+            -0.15225754034986777,
+            0.5986336576979526,
+            0.14330119734130653
+          ],
+          "quintile_counts": [
+            5755,
+            5755,
+            5755,
+            5755,
+            5755
+          ]
+        },
+        {
+          "pair": "ETH/USDT:USDT",
+          "D": 0.04116938522285024,
+          "n": 28775,
+          "n_q1": 5755,
+          "n_q5": 5755,
+          "quintile_means": [
+            0.12125903778317797,
+            -0.06725444939243842,
+            0.24369032382407516,
+            0.23515896065849715,
+            0.08008965256032773
+          ],
+          "quintile_counts": [
+            5755,
+            5755,
+            5755,
+            5755,
+            5755
+          ]
+        },
+        {
+          "pair": "SOL/USDT:USDT",
+          "D": -0.3810573035267439,
+          "n": 28775,
+          "n_q1": 5755,
+          "n_q5": 5755,
+          "quintile_means": [
+            -0.19447759546128265,
+            0.10822774073581841,
+            0.012226827723673608,
+            0.16042674167633045,
+            0.18657970806546123
+          ],
+          "quintile_counts": [
+            5755,
+            5755,
+            5755,
+            5755,
+            5755
+          ]
+        },
+        {
+          "pair": "BNB/USDT:USDT",
+          "D": -0.7580616729601559,
+          "n": 20225,
+          "n_q1": 4045,
+          "n_q5": 4045,
+          "quintile_means": [
+            0.17935265577422185,
+            -0.006019043913457278,
+            -0.002619323488876741,
+            0.5694488500139677,
+            0.9374143287343778
+          ],
+          "quintile_counts": [
+            4045,
+            4045,
+            4045,
+            4045,
+            4045
+          ]
+        },
+        {
+          "pair": "XRP/USDT:USDT",
+          "D": -0.47864312905327006,
+          "n": 28775,
+          "n_q1": 5755,
+          "n_q5": 5755,
+          "quintile_means": [
+            -0.03819474961747491,
+            -0.20949203224197735,
+            0.18519317524675127,
+            0.011856993340905507,
+            0.4404483794357951
+          ],
+          "quintile_counts": [
+            5755,
+            5755,
+            5755,
+            5755,
+            5755
+          ]
+        },
+        {
+          "pair": "ADA/USDT:USDT",
+          "D": -0.00933456265367029,
+          "n": 28775,
+          "n_q1": 5755,
+          "n_q5": 5755,
+          "quintile_means": [
+            -0.03335631458494908,
+            -0.3019881211601642,
+            0.11304827639609405,
+            0.2899185632238958,
+            -0.02402175193127879
+          ],
+          "quintile_counts": [
+            5755,
+            5755,
+            5755,
+            5755,
+            5755
+          ]
+        },
+        {
+          "pair": "AVAX/USDT:USDT",
+          "D": -0.08551675975141457,
+          "n": 28775,
+          "n_q1": 5755,
+          "n_q5": 5755,
+          "quintile_means": [
+            0.04452343875250628,
+            -0.5647713339419898,
+            0.05116627959711832,
+            0.036585186293047564,
+            0.13004019850392085
+          ],
+          "quintile_counts": [
+            5755,
+            5755,
+            5755,
+            5755,
+            5755
+          ]
+        },
+        {
+          "pair": "DOT/USDT:USDT",
+          "D": -0.2723359548979457,
+          "n": 28775,
+          "n_q1": 5755,
+          "n_q5": 5755,
+          "quintile_means": [
+            0.0028626302100952373,
+            -0.11805062638398105,
+            0.1803729235565156,
+            -0.277765697946832,
+            0.27519858510804096
+          ],
+          "quintile_counts": [
+            5755,
+            5755,
+            5755,
+            5755,
+            5755
+          ]
+        },
+        {
+          "pair": "LINK/USDT:USDT",
+          "D": -0.024673832793548844,
+          "n": 28775,
+          "n_q1": 5755,
+          "n_q5": 5755,
+          "quintile_means": [
+            -0.016949721435724936,
+            -0.06652230269052312,
+            0.3937424670879914,
+            0.20660757031341276,
+            0.0077241113578239064
+          ],
+          "quintile_counts": [
+            5755,
+            5755,
+            5755,
+            5755,
+            5755
+          ]
+        }
+      ],
+      "D_bar": -0.20506015210974976,
+      "breadth": 2,
+      "n_instruments": 9
+    },
+    "diagnostic_usd": {
+      "conditioner": "usd",
+      "per_instrument": [
+        {
+          "pair": "BTC/USDT:USDT",
+          "D": 0.20331096169923504,
+          "n": 28775,
+          "n_q1": 5755,
+          "n_q5": 5755,
+          "quintile_means": [
+            0.408367454907598,
+            0.2773086537951873,
+            -0.19332833341820832,
+            0.44865714567754905,
+            0.20505649320836297
+          ],
+          "quintile_counts": [
+            5755,
+            5754,
+            5755,
+            5756,
+            5755
+          ]
+        },
+        {
+          "pair": "ETH/USDT:USDT",
+          "D": 0.3167652676982511,
+          "n": 28775,
+          "n_q1": 5755,
+          "n_q5": 5755,
+          "quintile_means": [
+            0.5616650896370572,
+            0.02250863236394581,
+            -0.4710173252748307,
+            0.2548873067686611,
+            0.24489982193880608
+          ],
+          "quintile_counts": [
+            5755,
+            5755,
+            5755,
+            5755,
+            5755
+          ]
+        },
+        {
+          "pair": "SOL/USDT:USDT",
+          "D": -0.5354302408455931,
+          "n": 28775,
+          "n_q1": 5755,
+          "n_q5": 5755,
+          "quintile_means": [
+            -0.2685983984105301,
+            0.06556590893796103,
+            0.16606969796890403,
+            0.04311437180860308,
+            0.2668318424350629
+          ],
+          "quintile_counts": [
+            5755,
+            5755,
+            5755,
+            5755,
+            5755
+          ]
+        },
+        {
+          "pair": "BNB/USDT:USDT",
+          "D": -0.9822154639240197,
+          "n": 20225,
+          "n_q1": 4045,
+          "n_q5": 4045,
+          "quintile_means": [
+            -0.014116149600108341,
+            0.14338197864377786,
+            0.5118339828302448,
+            0.06837834092240778,
+            0.9680993143239114
+          ],
+          "quintile_counts": [
+            4045,
+            4045,
+            4045,
+            4045,
+            4045
+          ]
+        },
+        {
+          "pair": "XRP/USDT:USDT",
+          "D": -0.300409039915307,
+          "n": 28775,
+          "n_q1": 5755,
+          "n_q5": 5755,
+          "quintile_means": [
+            -0.010742569364451372,
+            -0.10641434215579595,
+            0.39172208788252194,
+            -0.17441988074913034,
+            0.2896664705508556
+          ],
+          "quintile_counts": [
+            5755,
+            5755,
+            5755,
+            5755,
+            5755
+          ]
+        },
+        {
+          "pair": "ADA/USDT:USDT",
+          "D": 0.0038090693685359223,
+          "n": 28775,
+          "n_q1": 5754,
+          "n_q5": 5755,
+          "quintile_means": [
+            -0.19501527565029544,
+            -0.05057015334319896,
+            0.007987855529395587,
+            0.4799974713609663,
+            -0.19882434501883137
+          ],
+          "quintile_counts": [
+            5754,
+            5756,
+            5755,
+            5755,
+            5755
+          ]
+        },
+        {
+          "pair": "AVAX/USDT:USDT",
+          "D": -0.21458885965329444,
+          "n": 28775,
+          "n_q1": 5755,
+          "n_q5": 5755,
+          "quintile_means": [
+            -0.23422790881997788,
+            -0.03305633002634207,
+            0.04061679299667068,
+            -0.05616253736429818,
+            -0.019639049166683447
+          ],
+          "quintile_counts": [
+            5755,
+            5754,
+            5756,
+            5755,
+            5755
+          ]
+        },
+        {
+          "pair": "DOT/USDT:USDT",
+          "D": -0.09558145684147526,
+          "n": 28775,
+          "n_q1": 5755,
+          "n_q5": 5755,
+          "quintile_means": [
+            0.06717287809015432,
+            -0.437673810418424,
+            0.4857471157421165,
+            -0.21526089528538594,
+            0.16275433493162958
+          ],
+          "quintile_counts": [
+            5755,
+            5755,
+            5754,
+            5756,
+            5755
+          ]
+        },
+        {
+          "pair": "LINK/USDT:USDT",
+          "D": -0.10510926244809721,
+          "n": 28775,
+          "n_q1": 5755,
+          "n_q5": 5755,
+          "quintile_means": [
+            -0.14076564208536654,
+            0.011882504704806084,
+            0.5795427321353518,
+            0.10968055368200076,
+            -0.03565637963726933
+          ],
+          "quintile_counts": [
+            5755,
+            5755,
+            5754,
+            5756,
+            5755
+          ]
+        }
+      ],
+      "D_bar": -0.18993878054019608,
+      "breadth": 3,
+      "n_instruments": 9
+    },
+    "kill_clause": "D_bar <= 0 OR B < 5",
+    "clause_a_D_bar_non_positive": true,
+    "clause_b_breadth_below_floor": true,
+    "F2_fired": true,
+    "diagnostic_expectations": {
+      "sd": "expected NEGATIVE (T-038's finding on a matched window)",
+      "usd": "expected STRONGLY NEGATIVE if the contamination hypothesis is right"
+    }
+  },
+  "P2_robustness": {
+    "note": "REPORTED, NON-GATING",
+    "per_calendar_year": [
+      {
+        "view": "year 2022",
+        "bar_counts": {
+          "BTC/USDT:USDT": 8592,
+          "ETH/USDT:USDT": 8592,
+          "SOL/USDT:USDT": 8592,
+          "BNB/USDT:USDT": 42,
+          "XRP/USDT:USDT": 8592,
+          "ADA/USDT:USDT": 8592,
+          "AVAX/USDT:USDT": 8592,
+          "DOT/USDT:USDT": 8592,
+          "LINK/USDT:USDT": 8592
+        },
+        "D_bar_refit_edges": -1.4524179816266851,
+        "breadth_refit_edges": 1,
+        "D_bar_fixed_edges": -0.8278444002974013,
+        "breadth_fixed_edges": 1,
+        "n_instruments_evaluable": 9
+      },
+      {
+        "view": "year 2023",
+        "bar_counts": {
+          "BTC/USDT:USDT": 8760,
+          "ETH/USDT:USDT": 8760,
+          "SOL/USDT:USDT": 8760,
+          "BNB/USDT:USDT": 8760,
+          "XRP/USDT:USDT": 8760,
+          "ADA/USDT:USDT": 8760,
+          "AVAX/USDT:USDT": 8760,
+          "DOT/USDT:USDT": 8760,
+          "LINK/USDT:USDT": 8760
+        },
+        "D_bar_refit_edges": -0.3379934243858222,
+        "breadth_refit_edges": 3,
+        "D_bar_fixed_edges": -0.18504630561830784,
+        "breadth_fixed_edges": 4,
+        "n_instruments_evaluable": 9
+      },
+      {
+        "view": "year 2024",
+        "bar_counts": {
+          "BTC/USDT:USDT": 8784,
+          "ETH/USDT:USDT": 8784,
+          "SOL/USDT:USDT": 8784,
+          "BNB/USDT:USDT": 8784,
+          "XRP/USDT:USDT": 8784,
+          "ADA/USDT:USDT": 8784,
+          "AVAX/USDT:USDT": 8784,
+          "DOT/USDT:USDT": 8784,
+          "LINK/USDT:USDT": 8784
+        },
+        "D_bar_refit_edges": -0.6310197192140213,
+        "breadth_refit_edges": 1,
+        "D_bar_fixed_edges": -0.7671837388597107,
+        "breadth_fixed_edges": 0,
+        "n_instruments_evaluable": 9
+      },
+      {
+        "view": "year 2025",
+        "bar_counts": {
+          "BTC/USDT:USDT": 2639,
+          "ETH/USDT:USDT": 2639,
+          "SOL/USDT:USDT": 2639,
+          "BNB/USDT:USDT": 2639,
+          "XRP/USDT:USDT": 2639,
+          "ADA/USDT:USDT": 2639,
+          "AVAX/USDT:USDT": 2639,
+          "DOT/USDT:USDT": 2639,
+          "LINK/USDT:USDT": 2639
+        },
+        "D_bar_refit_edges": -0.8355994749168941,
+        "breadth_refit_edges": 1,
+        "D_bar_fixed_edges": -6.372216089265769,
+        "breadth_fixed_edges": 0,
+        "n_instruments_evaluable": 9
+      }
+    ],
+    "three_disjoint_sub_windows": [
+      {
+        "view": "sub-window 1: 2022-01-08 .. 2023-02-11",
+        "bar_counts": {
+          "BTC/USDT:USDT": 9592,
+          "ETH/USDT:USDT": 9592,
+          "SOL/USDT:USDT": 9592,
+          "BNB/USDT:USDT": 1042,
+          "XRP/USDT:USDT": 9592,
+          "ADA/USDT:USDT": 9592,
+          "AVAX/USDT:USDT": 9592,
+          "DOT/USDT:USDT": 9592,
+          "LINK/USDT:USDT": 9592
+        },
+        "D_bar_refit_edges": -0.08181162651646479,
+        "breadth_refit_edges": 3,
+        "D_bar_fixed_edges": -0.19795175494823727,
+        "breadth_fixed_edges": 2,
+        "n_instruments_evaluable": 9
+      },
+      {
+        "view": "sub-window 2: 2023-02-11 .. 2024-03-17",
+        "bar_counts": {
+          "BTC/USDT:USDT": 9592,
+          "ETH/USDT:USDT": 9592,
+          "SOL/USDT:USDT": 9592,
+          "BNB/USDT:USDT": 9592,
+          "XRP/USDT:USDT": 9592,
+          "ADA/USDT:USDT": 9592,
+          "AVAX/USDT:USDT": 9592,
+          "DOT/USDT:USDT": 9592,
+          "LINK/USDT:USDT": 9592
+        },
+        "D_bar_refit_edges": -0.37623622802166895,
+        "breadth_refit_edges": 2,
+        "D_bar_fixed_edges": -0.4708909883363176,
+        "breadth_fixed_edges": 1,
+        "n_instruments_evaluable": 9
+      },
+      {
+        "view": "sub-window 3: 2024-03-17 .. 2025-04-20",
+        "bar_counts": {
+          "BTC/USDT:USDT": 9591,
+          "ETH/USDT:USDT": 9591,
+          "SOL/USDT:USDT": 9591,
+          "BNB/USDT:USDT": 9591,
+          "XRP/USDT:USDT": 9591,
+          "ADA/USDT:USDT": 9591,
+          "AVAX/USDT:USDT": 9591,
+          "DOT/USDT:USDT": 9591,
+          "LINK/USDT:USDT": 9591
+        },
+        "D_bar_refit_edges": -0.9040275858726994,
+        "breadth_refit_edges": 0,
+        "D_bar_fixed_edges": -1.23646547108907,
+        "breadth_fixed_edges": 0,
+        "n_instruments_evaluable": 9
+      }
+    ],
+    "sign_flips_across_views": false
+  },
+  "P2_post_verdict_diagnostics": {
+    "note": "POST-VERDICT, NON-GATING, computed after F2 was evaluated on the pre-registered statistic. Changes no gate and no verdict.",
+    "per_instrument": [
+      {
+        "pair": "BTC/USDT:USDT",
+        "D_mean_prereg": -0.10375515318752937,
+        "D_median": -0.3110384280970099,
+        "D_trimmed_1pct": -0.12107829971521478,
+        "monotonicity_rho": 0.09999999999999999,
+        "q_means": [
+          0.21396846521688723,
+          0.1680698809687155,
+          0.3459488188774765,
+          0.1003574713873059,
+          0.3177236184044166
+        ],
+        "q_medians": [
+          0.12472655217573211,
+          -0.059616883528840106,
+          0.14800743508268147,
+          0.07367845874330087,
+          0.43576498027274196
+        ],
+        "q_trimmed": [
+          0.20944696940576263,
+          0.13661700192831158,
+          0.31791988202808846,
+          0.09658572568062801,
+          0.3305252691209774
+        ]
+      },
+      {
+        "pair": "ETH/USDT:USDT",
+        "D_mean_prereg": -0.055524140080179224,
+        "D_median": -0.1323171150265947,
+        "D_trimmed_1pct": -0.05175696147748618,
+        "monotonicity_rho": 0.3,
+        "q_means": [
+          0.07520979829408203,
+          0.03698240635959866,
+          0.3097644737962841,
+          0.06020550946650616,
+          0.13073393837426125
+        ],
+        "q_medians": [
+          -0.03609269415687575,
+          -0.047470145414044554,
+          0.13781832840172017,
+          0.08702297590667483,
+          0.09622442086971897
+        ],
+        "q_trimmed": [
+          0.07132088834661494,
+          0.028121529745082967,
+          0.2966933085256567,
+          0.045999650881005986,
+          0.12307784982410112
+        ]
+      },
+      {
+        "pair": "SOL/USDT:USDT",
+        "D_mean_prereg": -0.3934638259011171,
+        "D_median": -0.5048373588414246,
+        "D_trimmed_1pct": -0.3877576848590968,
+        "monotonicity_rho": 0.49999999999999994,
+        "q_means": [
+          -0.05013849436371383,
+          0.2924580829096741,
+          -0.3754357881140459,
+          0.06289034530952262,
+          0.3433253315374033
+        ],
+        "q_medians": [
+          -0.2754020513762869,
+          -0.05026206590686294,
+          -0.604099688711407,
+          -0.08275446612460706,
+          0.22943530746513768
+        ],
+        "q_trimmed": [
+          -0.07052370582488414,
+          0.27425022839974844,
+          -0.38610308291786966,
+          0.04721092551568694,
+          0.31723397903421263
+        ]
+      },
+      {
+        "pair": "BNB/USDT:USDT",
+        "D_mean_prereg": -1.0512955237432762,
+        "D_median": -0.9231440753083611,
+        "D_trimmed_1pct": -1.063929682480041,
+        "monotonicity_rho": 0.9999999999999999,
+        "q_means": [
+          0.013776462777383352,
+          0.07647814180220121,
+          0.11835857624847304,
+          0.4038922997715161,
+          1.0650719865206595
+        ],
+        "q_medians": [
+          -0.122949857810491,
+          -0.14333328534059742,
+          0.2780575921318831,
+          0.3945364387634693,
+          0.8001942174978701
+        ],
+        "q_trimmed": [
+          -0.01827785206465249,
+          0.06405053117831666,
+          0.10896441874220884,
+          0.4027339891355941,
+          1.0456518304153886
+        ]
+      },
+      {
+        "pair": "XRP/USDT:USDT",
+        "D_mean_prereg": -0.5504582915867385,
+        "D_median": -0.5417514350225445,
+        "D_trimmed_1pct": -0.5275384095000143,
+        "monotonicity_rho": 0.7,
+        "q_means": [
+          0.10692769360071286,
+          -0.3014582413406001,
+          -0.19102129813627322,
+          0.11788388191730119,
+          0.6573859851874514
+        ],
+        "q_medians": [
+          0.0,
+          -0.5073138648167238,
+          -0.34429108681543724,
+          -0.0251769667328137,
+          0.5417514350225445
+        ],
+        "q_trimmed": [
+          0.10650106670901978,
+          -0.352485014001059,
+          -0.2072319466548847,
+          0.10927001249477414,
+          0.6340394762090341
+        ]
+      },
+      {
+        "pair": "ADA/USDT:USDT",
+        "D_mean_prereg": -0.42826734828201285,
+        "D_median": -0.6233472827959482,
+        "D_trimmed_1pct": -0.4150911719826117,
+        "monotonicity_rho": 0.3,
+        "q_means": [
+          -0.07730611264840115,
+          -0.08713153744734206,
+          0.11036712646526799,
+          -0.25329006005953886,
+          0.3509612356336117
+        ],
+        "q_medians": [
+          -0.45861992686759473,
+          -0.24910332649488662,
+          -0.1660389971781725,
+          -0.5218894859398588,
+          0.1647273559283535
+        ],
+        "q_trimmed": [
+          -0.08772897448534044,
+          -0.1229915795398063,
+          0.0861573850683785,
+          -0.28420599051167167,
+          0.32736219749727125
+        ]
+      },
+      {
+        "pair": "AVAX/USDT:USDT",
+        "D_mean_prereg": -0.48946831717993766,
+        "D_median": -0.5696092203216004,
+        "D_trimmed_1pct": -0.4902532856065337,
+        "monotonicity_rho": 0.7,
+        "q_means": [
+          -0.1410934124136899,
+          -0.07094777429591892,
+          -0.39646717239464885,
+          -0.04233496509997972,
+          0.3483749047662478
+        ],
+        "q_medians": [
+          -0.3019163493970829,
+          -0.4697511569195859,
+          -0.5423799706546986,
+          -0.15493502088478234,
+          0.26769287092451755
+        ],
+        "q_trimmed": [
+          -0.14694085959877706,
+          -0.0907083821652018,
+          -0.42039478049133017,
+          -0.07225392173258938,
+          0.34331242600775663
+        ]
+      },
+      {
+        "pair": "DOT/USDT:USDT",
+        "D_mean_prereg": -0.4348307117343032,
+        "D_median": -0.49375684513496576,
+        "D_trimmed_1pct": -0.44059566369870556,
+        "monotonicity_rho": 0.19999999999999998,
+        "q_means": [
+          0.017087544863316505,
+          0.018769972165488636,
+          -0.301771839302416,
+          -0.12348610316153653,
+          0.4519182565976197
+        ],
+        "q_medians": [
+          -0.17556066359745762,
+          -0.12437505450759818,
+          -0.5349983360145844,
+          -0.15970493870844701,
+          0.31819618153750817
+        ],
+        "q_trimmed": [
+          -0.004087414772544468,
+          -0.003490230161303531,
+          -0.3284561915370945,
+          -0.129878959712806,
+          0.4365082489261611
+        ]
+      },
+      {
+        "pair": "LINK/USDT:USDT",
+        "D_mean_prereg": -0.33221372857426545,
+        "D_median": -0.165461658598353,
+        "D_trimmed_1pct": -0.34386201727359195,
+        "monotonicity_rho": 0.19999999999999998,
+        "q_means": [
+          -0.051902264989965675,
+          -0.0027762583045718627,
+          0.5204410179274093,
+          -0.22147183358419156,
+          0.28031146358429976
+        ],
+        "q_medians": [
+          0.08306096580031609,
+          -0.31780051285088123,
+          0.37644669063674957,
+          -0.4650044015193588,
+          0.2485226243986691
+        ],
+        "q_trimmed": [
+          -0.06795296217142462,
+          -0.0283772249787015,
+          0.5071013495408379,
+          -0.24566786911468777,
+          0.27590905510216734
+        ]
+      }
+    ],
+    "pooled_mean_prereg": {
+      "D_bar": -0.4265863378077066,
+      "breadth_positive": 0
+    },
+    "pooled_median": {
+      "D_bar": -0.47391815768297796,
+      "breadth_positive": 0
+    },
+    "pooled_trimmed_1pct": {
+      "D_bar": -0.426873686288144,
+      "breadth_positive": 0
+    },
+    "median_monotonicity_rho": 0.3
+  },
+  "verdict": {
+    "stopped_at": "P2",
+    "F1_fired": false,
+    "F2_fired": true,
+    "F3_fired": null,
+    "trials_spent": 0
+  },
+  "artifacts": {
+    "lookahead_checks": "research/results/T-040_raw/lookahead_checks.json",
+    "anchor_census_shape": "research/results/T-040_raw/anchor_census_shape.json",
+    "p1": "research/results/T-040_raw/p1_persistence.csv",
+    "p2": "research/results/T-040_raw/p2_census.csv",
+    "p2_robustness": "research/results/T-040_raw/p2_robustness_views.json",
+    "p2_post_verdict": "research/results/T-040_raw/p2_post_verdict_diagnostics.json"
+  },
+  "warnings": [
+    "COST MODEL NOTE - slippage (3.0 bps/side) and spread (2.0 bps) are estimates, not calibrated against realized fills. Fee rates are published OKX regular (non-VIP, no fee discounts) rates for okx_usdt_perp as of 2026-07-28."
+  ]
+}
