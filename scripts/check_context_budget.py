@@ -56,7 +56,6 @@ REVIEW_BRIEFS_DIR = "research/review_briefs"
 #: newest file in REVIEW_BRIEFS_DIR at check time.
 MANDATORY: list[tuple[str, str | None]] = [
     ("PROJECT_OPERATOR_MANUAL.md", "markers"),
-    ("research/research_index.md", None),
     ("knowledge_base/hypothesis_bank.md", "markers"),
     ("research/STANDING_DIRECTIVES.md", None),
     # REVIEW_BRIEFS_DIR was here until 2026-08-01. DEMOTED to on-demand as the
@@ -64,12 +63,20 @@ MANDATORY: list[tuple[str, str | None]] = [
     # 56 KB - see PROJECT_OPERATOR_MANUAL.md, "Research Director - context
     # loading". It was the largest mandatory item (4,044 B) and is the only one
     # a Director can skip without losing a standard.
+    #
+    # research/research_index.md was here until 2026-08-06. DEMOTED to on-demand
+    # as escalation STEP 2 of the same frozen-cap box, applied pre-emptively at
+    # 98.1% rather than on the breach: T-040's Reviewer had to compact its own
+    # bookkeeping twice to fit 1,075 B of headroom. Its standing-constraints
+    # block was PROMOTED into the manual's marked region as section 17, so the
+    # constraints stay mandatory while the cycles table becomes a lookup.
 ]
 
 #: Files the Director may open per-cycle but which must NOT be in the mandatory set.
 #: Reported for context so the size that was moved off-budget stays visible.
 ON_DEMAND = [
     REVIEW_BRIEFS_DIR,   # latest brief - demoted from mandatory 2026-08-01
+    "research/research_index.md",   # demoted from mandatory 2026-08-06 (step 2)
     "knowledge_base/master_index.md",
     "knowledge_base/archive/closed_families.md",
     "research/archive/index_narrative_pre_2026-07-28.md",

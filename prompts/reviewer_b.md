@@ -39,9 +39,27 @@ python scripts/data_manifest.py verify
 
 Then:
 
-1. **Reproduce the headline numbers** from the raw artifacts listed in the report's raw
-   output section. At minimum the DSR and the primary performance statistics. Record
-   both your value and the report's.
+1. **Reproduce EVERY figure the report's stated finding rests on — not only the figure
+   that gated.** Work from the raw artifacts listed in the report's raw output section.
+   Record both your value and the report's for each.
+
+   The gating figure is the one that decides PASS/FAIL. The **finding** is what the report
+   claims the cycle established, and it is frequently a larger object: an **ordering**, a
+   **decomposition**, a monotonic trend across horizons, a breadth pattern, a
+   before/after comparison. **A cycle whose substantive result is an ordering or a
+   decomposition is not verified by reproducing one term of it.** If the report says
+   `a << b < c`, reproduce `a`, `b` **and** `c` — reproducing only `a` because only `a`
+   tripped the kill clause leaves the actual claim unaudited, and the ordering is what
+   downstream Directors will build on and what family closures get written from.
+
+   Non-gating diagnostics are in scope exactly when the report leans on them. A figure
+   labelled "reported, non-gating" that then appears in the report's Lessons, Verdict or
+   Recommendations sections is carrying the finding and must be reproduced.
+
+   **You must list, in the verdict file, each figure you reproduced and each you did
+   not** — see `figures_reproduced` / `figures_not_reproduced` below. "I reproduced the
+   headline numbers" is not an audit record; the operator cannot tell what was checked
+   from it.
 2. **Check the cost model** — call `per_side_cost()` and `round_trip_cost()` in
    `user_data/research/validator.py` yourself. Confirm they match the report and that
    the fill assumption matches `NEXT_TASK.md`.
@@ -85,6 +103,8 @@ Write **only** `research/review_briefs/<Task ID>_verdict_b.json`:
   "reproduced": true,
   "reproduced_values": {"<figure name>": "<value YOU computed>"},
   "reported_values":   {"<figure name>": "<value the REPORT claims>"},
+  "figures_reproduced":     ["<name of every figure you independently recomputed>"],
+  "figures_not_reproduced": [["<figure name>", "<why not>"]],
   "data_clean": true,
   "manifest_verified": true,
   "bypass_detected": false,
@@ -122,6 +142,27 @@ Worked example, a pre-gate stop (T-038):
                       "p1_median_rho": 0.564373, "dsr": null, "sharpe": null},
 "reported_values":   {"p2_basket_q1_minus_q5": -0.442905, "p2_breadth_positive": "1/9",
                       "p1_median_rho": 0.564373, "dsr": null, "sharpe": null}
+```
+
+### `figures_reproduced` / `figures_not_reproduced` — the audit record
+
+Both lists are **required**, and an empty `figures_not_reproduced` is a positive claim that
+you recomputed everything the finding rests on. Name figures the same way
+`reproduced_values` keys them, so the two can be read together.
+
+`figures_not_reproduced` entries are `[name, reason]` pairs. Legitimate reasons: the
+quantity does not exist (no trial ran, so no DSR), the artifact backing it is missing, or
+it is not computable from the committed artifacts. **"It did not gate" is NOT a legitimate
+reason** — that is precisely the omission this field exists to surface.
+
+Worked example, a decomposition finding (T-040, whose report's stated result is the
+ordering `dsd << sd < usd`, of which only `dsd` gated):
+
+```json
+"figures_reproduced": ["p2_D_bar_dsd", "p2_breadth_dsd", "p2_D_bar_sd", "p2_breadth_sd",
+                       "p2_D_bar_usd", "p2_breadth_usd", "p1_median_rho", "p1_min_rho",
+                       "pooled_anchor_bars"],
+"figures_not_reproduced": [["dsr", "no trial ran — quantity does not exist"]]
 ```
 
 ---

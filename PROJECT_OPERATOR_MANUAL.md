@@ -77,7 +77,15 @@ which the cap moves; a breach with narrative still in the region is not.
 >    Engineer's recommendations. **Open it whenever the next hypothesis is adjacent to the last
 >    one.**
 > 2. If a further breach occurs, demote `research/research_index.md` to on-demand **except** its
->    standing-constraints block, which is promoted into this manual.
+>    standing-constraints block, which is promoted into this manual. *(APPLIED 2026-08-06, by
+>    operator decision, **pre-emptively at 98.1% rather than waiting for the breach** — Reviewer A
+>    had compacted its own T-040 additions twice to fit inside 1,075 B of headroom, which is the
+>    condition this step exists to end. The standing-constraints block is now section 17 of this
+>    region and this manual is its primary location. Cost of the demotion, stated honestly: the
+>    Director no longer sees the completed-cycles table automatically, so **what was already tried
+>    and rejected is now an explicit lookup rather than a guaranteed read** — open
+>    `research/research_index.md` before selecting any hypothesis adjacent to recent work, and the
+>    meta-review counter now lives only there.)*
 >
 > **The marked region is NOT to be compacted further.** All narrative and rationale have already
 > been removed across three passes; the next cut takes a standard, and a standard removed to save
@@ -88,11 +96,10 @@ which the cap moves; a breach with narrative still in the region is not.
 | File | Region |
 |---|---|
 | `PROJECT_OPERATOR_MANUAL.md` | **only** between `DIRECTOR-MANDATORY-BEGIN/END` markers — see the section list below |
-| `research/research_index.md` | whole file (compact by design — one line per cycle, current program only) |
 | `knowledge_base/hypothesis_bank.md` | **only** between `DIRECTOR-MANDATORY-BEGIN/END` markers (the FAMILY STATUS LEDGER) |
 | `research/STANDING_DIRECTIVES.md` | whole file — the accumulated binding directives from every meta-review |
 
-**The DIRECTOR-MANDATORY region contains exactly these sixteen sections.** The list is
+**The DIRECTOR-MANDATORY region contains exactly these seventeen sections.** The list is
 exhaustive on purpose: an earlier version named only eight, and three of the five it omitted
 (Monte Carlo gate, Independent Reviewer output standard, Falsification conditions) are precisely
 the standards the role prompts in `prompts/` were later found to have got wrong. An incomplete
@@ -115,6 +122,7 @@ or removing a section inside the markers must update this list in the same edit.
 14. **Independent Reviewer output standard**
 15. **STANDING_DIRECTIVES.md is capped**
 16. Champion Classification & Progression Pipeline
+17. **Standing constraints** (promoted from `research/research_index.md`, 2026-08-06)
 
 **"Latest" means highest ID, never most recent mtime.** The latest review brief is the one with the
 highest Task ID parsed from its filename (`T-035_brief.md` → 35); the latest meta-review is the
@@ -136,6 +144,14 @@ belongs in `research/STANDING_DIRECTIVES.md`. Narrative, rationale and history b
 - `knowledge_base/hypothesis_bank.md` individual cards — open a card when it is a live candidate.
 - `knowledge_base/archive/closed_families.md` — full cards for CLOSED families. The ledger row is
   sufficient to *exclude* a family; open the archive only when arguing a family should reopen.
+- `research/research_index.md` — **DEMOTED from mandatory to on-demand, 2026-08-06**, as escalation
+  step 2 of the frozen-cap box above; its standing-constraints block was promoted into this manual
+  (section 17) and this manual is now primary for those constraints. What stays only in the index:
+  the **completed-cycles table** (one row per cycle, with verdict and primary reason), the
+  **cycles-since-meta-review counter**, the champion-status and perps-benchmark pointers, and the
+  open/closed-directions summary. **Open it before selecting any hypothesis adjacent to recent
+  work** — it is the project's only compact record of what has already been rejected and why, and
+  the counter that decides when a meta-review is due.
 - `research/archive/index_narrative_pre_2026-07-28.md` — pre-compaction narrative.
 - `research/archive/index_spot_program.md` — the 38 completed spot-program cycle rows, complete and
   unaltered. Open when checking whether something was already tried; remember its results are void as
@@ -683,7 +699,8 @@ boundaries as percentages of whatever it is handed, so a data top-up slides the 
 with no error. Use `split_by_dates(df, train_end, val_end, test_end)`.
 
 Any future data acquisition records its start date, end date and the boundary in force in the `A-XXX`
-task's commit message and in `research_index.md` standing constraints, in the same commit as the data.
+task's commit message and in this manual's "Standing constraints" section (section 17 — the block
+formerly in `research_index.md`), in the same commit as the data.
 
 ## Data already held — no acquisition required
 
@@ -920,17 +937,18 @@ identical dates make the comparison void and promotion fails.
 
 ## DSR promotion threshold
 
-Quoted verbatim from `research/research_index.md` standing constraints:
+The standard, in its primary location (originally quoted from `research/research_index.md` standing
+constraints; that block was promoted into this manual as section 17 on 2026-08-06, so this is no
+longer a quotation of another file):
 
 > **DSR gate mandatory**: any candidate reports Deflated Sharpe Ratio (`freqtrade_dsr.py`) at honest
 > cumulative `n_trials` and must clear **≥0.95** to be called a real edge. `research_metrics.md` is
 > authoritative; the two counts must always match.
 
 **This manual is primary.** The threshold also appears as `freqtrade_dsr.evaluate_freqtrade()`'s
-`dsr_threshold` default and in `research/research_index.md` standing constraints; **both are
-secondary copies. If any two disagree, this manual governs and the others are the defect** — fix
-them, do not re-derive the standard. A dashboard rewritten every cycle and a function default are
-not where a permanent standard belongs.
+`dsr_threshold` default — a **secondary copy. If the two disagree, this manual governs and the
+function default is the defect** — fix it, do not re-derive the standard. A function default is not
+where a permanent standard belongs.
 
 `n_trials` is per-program and resets at a program boundary (see counters above); the **0.95 bar does
 not**. The perps program starts at `n_trials = 0` and clears the same threshold.
@@ -1093,6 +1111,33 @@ Reviews → Competition Mode → Champion Improvement → Champion Challenging �
 → **Production Champion** → live deployment
 
 ⸻
+
+## Standing constraints
+
+**Promoted here from `research/research_index.md` on 2026-08-06**, when that file was demoted to
+on-demand under escalation step 2 of the frozen-cap box above. **This is now the primary location.**
+Constraints already stated in full elsewhere in this region are carried as pointers rather than
+second copies — per "DSR promotion threshold", a duplicated standard is a standard that can
+silently disagree with itself. **No constraint was dropped in the move.**
+
+- **Dry-run only. No real capital on backtest evidence.** All configs `dry_run: true`, empty keys.
+- **Judge on TEST-split / walk-forward numbers only.** Full-window Sharpe runs **2–4× inflated** on
+  this project's data and is not a decision input.
+- **The asset universe is NOT restricted to BTC/ETH.** They are the default because they are the
+  most liquid and stable, not because the scope excludes the rest.
+- **DSR gate ≥ 0.95** — full standard in "DSR promotion threshold" above. `n_trials` is per-program
+  (spot ended at **100**; perps starts at **0**), and **`research/research_metrics.md` is
+  authoritative for the count** — where it and any other file disagree, `research_metrics.md` governs
+  the number and this manual governs the threshold.
+- **Costs** — `validator.COST_MODEL` only; see "Execution and cost model". Pre-2026-07-28 results are
+  **not comparable** and may not appear in a promotion argument.
+- **Reserved holdout is PROGRAM-SCOPED** — see "Reserved holdout" for the table and rationale. Perps
+  after **2025-09-19**, spot after **2026-05-27**. The older "after 2026-05-27" reading *for perps*
+  — which survives in `research/review_briefs/T-037_PERPS_TRANSITION_brief.md` line 41 — reserves
+  zero perp bars and is **superseded**; do not resurrect it from that brief.
+- **Perps split triple, frozen by A-005 and mandatory for every perps candidate**: `train_end
+  2024-11-22 · val_end 2025-04-21 · test_end 2025-09-19`, date-pinned. Other dates **void** the
+  benchmark comparison — see "Promotion comparison".
 
 <!-- DIRECTOR-MANDATORY-END -->
 

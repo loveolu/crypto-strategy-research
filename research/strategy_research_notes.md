@@ -1069,6 +1069,24 @@ predominantly high-vol *rallies*, which such a measure might separate. The Revie
 `hypothesis_bank.md` entry to the **basket-exposure form only** for exactly this reason; Kaufman's
 original card describes a *trend-following futures* portfolio, not an unhedged long-only basket.
 
+> **CORRECTION, 2026-08-06 (T-040): the named escape has now been TESTED, and it FAILED.** The
+> paragraph above is preserved as written because it was the correct call at the time — the escape
+> was real, falsifiable and cheap. It is no longer untested. T-040 ran the exact decomposition on a
+> matched 168-bar window over 250,425 pooled 1h anchor bars and the result **reverses the
+> prediction**: `dsd` **−0.426586** (breadth 0/9) << `sd` **−0.205060** (2/9) < `usd` **−0.189939**
+> (3/9). Separating downside from upside does not isolate a favourable component — it isolates the
+> leg that inverts *hardest*, and total volatility sits *between* its two components rather than
+> below both, which is what an averaging-of-two-effects picture predicts and is inconsistent with
+> "total vol inverts because upside contaminates it". The hypothesised sign appears in **zero** of
+> nine instruments, zero of four calendar years and zero of three disjoint sub-windows.
+> **Scope of the correction — sign only.** The Reviewer priced `D_bar` against the cycle's own
+> pre-registered shared-offset null (which never ran, because the ladder stops at the first
+> failure): it sits at the **10.2nd percentile**, z **−1.30**, and B = 0/9 has null P = **0.105**.
+> So "semivariance does not rescue the family" is established; "the downside leg inverts hardest"
+> is **not** — the whole `dsd`-to-`usd` spread of 0.237 is under one null sd of 0.336. Do not
+> promote the ordering to a finding, and do not quote −0.4266 as an effect size any more than
+> −0.4429 (directive 10's own caveat applies unchanged).
+
 **A trap worth naming.** The same decomposition that killed this construct guarantees that the
 *inverted* construct (scale UP in high vol) looks excellent in-sample on this window. It is an
 unhedged leveraged long on a 2023–2025 crypto bull sample, and the deleveraging episode that
@@ -1343,3 +1361,91 @@ untracked because `user_data/*` is gitignored. In T-039 every spot-checked figur
 named artifact, and the script was committed with `git add -f`. Also, no Reviewer-owned file was
 written by the Engineer. Recorded because the corrective loop closing is itself the evidence that
 writing these findings down works.
+
+## T-040 / H-SemiVarSizing-1h lessons (2026-08-06, REJECT at pre-gate P2, zero trials)
+
+Cross-cycle patterns only; the per-cycle detail is in `research/results/T-040_report.md` and
+`research/review_briefs/T-040_brief.md`. The family-level consequence is recorded as the 2026-08-06
+correction under "FAMILY-LEVEL FINDING — volatility-conditioned de-risking is INVERTED".
+
+**1. A decomposition can refute a hypothesis by coming out in the wrong ORDER, not just the wrong
+sign — and that is the more informative failure.** The contamination hypothesis was structured, not
+vague: it predicted `usd` carries the negative, `dsd` flips positive, and `sd` inverts only because
+it mixes them. Measuring all three on a matched window turned one binary answer into an ordering
+that falsifies the *mechanism* rather than just the construct. Had only `dsd` been measured, the
+cycle would have reported "the split didn't help" and left every neighbouring functional (Ulcer
+index, downside EWMA, Sortino denominators, semivariance at another window) apparently live. The
+ordering closes them as a class, because they all re-parameterise the leg that measured most
+inverted. **Design pre-gates so the diagnostic arms can contradict the hypothesis' internal
+structure, not only its conclusion** — the mandated non-gating `sd`/`usd` arms cost one column each
+and did most of the scientific work in this cycle.
+
+**2. Breadth statistics are near-uninformative under a shared-offset null, and this project has
+been reading them as if they were independent.** F2's second clause is `B < 5` of 9, which invites
+the reading that 0/9 is a (1/2)^9 ≈ 0.2% event. It is not. The shared circular offset that P2b
+pre-registers — correctly, because it preserves cross-sectional alignment — means the nine
+instruments move together, so the null distribution of `B` is **near-uniform on 0…9**:
+P(B = 0) = **0.105**, P(B = 9) = 0.128, mean B = 4.56, and **P(B < 5) = 0.509**. A 0/9 breadth is a
+1-in-10 event, not a 1-in-500 one. Combined with the sign clause, **F2 fires on 53.5% of null
+draws** — which is appropriate for a *directional* gate whose job is to admit only a real positive
+effect, but means a fired F2 is weak evidence about magnitude and none at all about the size of an
+inversion. **When quoting breadth as corroboration, quote it against its null or not at all.**
+
+**3. Run the placebo as an AUDIT statistic even when the ladder correctly never reaches it.** P2b
+was pre-registered as gate 3 and was legitimately skipped: the ladder stops at the first failure and
+F2 fired at gate 2. But the null it prices is not only relevant to a passing result — it is what
+tells you whether a *failing* result is large enough to found a family closure on. Here it converted
+"`D_bar` = −0.4266, negative in all 14 view cells, 0/9 breadth" from what reads as an overwhelming
+inversion into a **10.2nd-percentile draw (z −1.30, two-tailed p 0.236)**. The REJECT is untouched —
+the pre-registered one-tailed p would have been 0.898 — but every *forward-looking* claim built on
+the magnitude is. **This is now the third consecutive perps cycle in which a Reviewer-computed null
+reframed the headline number** (T-039's family-wise p = 0.221; T-038's bootstrap CI straddling zero;
+T-040's 10.2nd percentile). The pattern is not that Engineers are careless — it is that a large
+conditional-mean difference on a strongly autocorrelated conditioner over overlapping forward
+windows has a null far wider than intuition supplies. **Treat "the effect is obviously huge" as an
+unpriced claim by default at 1h.**
+
+**4. Robustness across views and robustness against a null are different things, and this project
+keeps conflating them.** T-040 is the clean case: `D_bar` is negative in **14 of 14** view/convention
+cells, survives quintile medians and 1%-trimming, and holds in every calendar year and disjoint
+sub-window — and it is still an ordinary draw from its own null. Sub-window and per-year views test
+whether an estimate is *stable*; a circular-shift null tests whether it is *distinguishable from
+noise*. A statistic can be perfectly stable and perfectly ordinary, because the same
+autocorrelation that makes the null wide also makes every sub-window inherit the same wide draw.
+**Report both, and never let a count of concordant views stand in for a p-value.**
+
+**5. Sign robustness has now been established three times over on 1h perps; magnitude has never
+been established once.** T-038 (total vol, EWMA, −0.4429, bootstrap CI straddles zero), T-039
+(`vol_ratio` entry-level, monotone in h, inside the family-wise null at p = 0.221), T-040 (`dsd`,
+−0.4266, 10.2nd percentile of its own null). Three cycles, three estimators, two layers (sizing and
+entry), consistently the same direction and consistently unresolvable in size. **The honest summary
+is that 1h perp volatility conditioning has a reliable sign and an unmeasured effect size**, and
+directive 10's "sign robust, magnitude NOT" should be read as a standing property of this
+measurement problem rather than a caveat attached to one cycle.
+
+**6. A rolling RMS conditioner produces mass ties, and the binning convention must be pinned in the
+assignment.** `dsd` carried **5,544–7,796 exactly-repeated values per instrument** out of ~28,775 —
+a 168-bar RMS of the negative returns repeats whenever the window's negative set repeats. Where a
+quintile edge lands on a tied value, `pd.qcut`'s right-closed `(a, b]` assigns ties to the lower bin
+while `np.searchsorted(side="right")` assigns them to the upper one, moving 0–6 bars per instrument
+and shifting `D[i]` by up to **3.7e-03** (BTC −0.103755 vs −0.100024). It decided nothing here
+because the margins were wide, but a census landing near zero would have its verdict chosen by a
+library call. **Future census assignments should pre-register the tie convention, and Engineers
+should verify the KILL clauses under both** — which this Engineer did, unprompted, and disclosed
+rather than smoothed.
+
+**7. Truncation invariance is the cheapest available proof that directive 8 did not leak, and
+should become standard.** Directive 8 mandates computing indicators over the full series so warmup
+is not truncated, which necessarily means the loader *reads* post-split bars. That leaves the
+Reviewer taking "we sliced afterwards" on trust. Recomputing the entire census on inputs physically
+truncated at `val_end` and asserting **bit-identical** anchor sets and statistics converts the
+assurance into evidence, at the cost of one extra pass over the data. T-040 did this and the
+Reviewer confirmed it independently by never reading past `val_end` at all in a from-scratch
+reimplementation. **Recommend as a standard attestation for any cycle operating under directive 8.**
+
+**8. "Stop at the first failure" must be paired with "record what was not reached as NOT REACHED".**
+T-040's report states P3 as *not evaluated*, explicitly not as *not met*, and reserves the
+"positive finding about the mechanism, negative finding about tradeability" split for the cycle that
+actually earns it. This is the right discipline and it is cheap to get wrong: writing "P3 not met"
+would have put a `Sharpe(o)` comparison into the record that nobody computed, and a later Director
+would read it as measured. Applies to every skipped gate in a laddered design.

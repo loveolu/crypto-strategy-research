@@ -4,7 +4,49 @@
 > (increment counts, append to the DSR-trend table, refresh indicator-usage tally). This file is
 > aggregate/statistical; narrative belongs in `strategy_iteration_log.md`, current status belongs
 > in `research_index.md`. 
-> Last updated: 2026-08-04, **T-039 / H-IntradayEdgeFloor-1h — REJECT at pre-gate (Independent
+> Last updated: 2026-08-06, **T-040 / H-SemiVarSizing-1h — REJECT at pre-gate P2 (Independent
+> Reviewer A)**. Third perps RESEARCH cycle. The cycle asked whether T-038's volatility→exposure
+> inversion was an artifact of a **total**-volatility estimator summing an adverse (downside) and a
+> favourable (upside) dispersion component. **It is not.** On **250,425 pooled TRAIN+VAL 1h anchor
+> bars** (168-bar warmup, 25-bar forward trim, nine perps), the harm census on the primary
+> conditioner `dsd` (168-bar downside semideviation) returned `D_bar` = **−0.426586** (KILL if ≤ 0)
+> at breadth **0 of 9** (KILL if < 5) — **F2 fired on both clauses**, and not one instrument of nine
+> carried the hypothesised sign. P1 passed comfortably (Spearman ρ median **0.480280** / min
+> **0.427458**, floors 0.30 / >0.15). **The mandated diagnostics reverse the hypothesis' own
+> prediction**: ordered most-to-least inverted, `dsd` **−0.426586** (0/9) << `sd` **−0.205060** (2/9)
+> < `usd` **−0.189939** (3/9). The leg predicted to flip positive inverts hardest, and total
+> volatility sits *between* its two components rather than below both — inconsistent with
+> "total vol inverts because upside contaminates it". Negative in **all 14** robustness
+> view/convention cells (4 calendar years × 3 disjoint sub-windows × refit/fixed quintile edges),
+> no sign flips; post-verdict tail views leave it intact (quintile medians −0.473918, 1%-trimmed
+> means −0.426874, breadth 0/9 in both), so the T-038 "few extreme bars" trap does not explain the
+> sign — but median monotonicity is only **+0.30**, so it is not a dose-response gradient either.
+> P2b, P3 and the trial stage were **NOT REACHED** (ladder stops at the first failure) and are
+> recorded as *not reached*, never as *not met*. **Zero trials spent — perps `n_trials` stays 0** of
+> 30; ledger stays at 0 data rows; no DSR, no MC, no candidate. Reviewer reproduced **all 8 raw
+> artifacts byte-identically** by re-running the script unmodified, AND independently reimplemented
+> the census from the spec text under two further binning conventions (`pd.qcut` −0.425994, pure
+> rank-split −0.426376; breadth **0/9** under all three), matching P1 ρ and the 250,425 anchor count
+> exactly. **Reviewer B (composer-2.5) independently returned REJECT with identical figures**,
+including all three decomposition terms and the 250,425 anchor count; no spec deviations found by
+either reviewer. **Principal Reviewer-only finding — the SIGN is established, the MAGNITUDE is not.**
+> Running the cycle's own pre-registered P2b construction as an audit statistic (it never ran):
+> the null is well-formed (mean +0.0102, median +0.0031, share > 0 **0.502**, sd 0.3356) and
+> `D_bar` = −0.4266 sits at only the **10.2nd percentile** of it (z **−1.30**, two-tailed p 0.236);
+> the shared offset preserves cross-sectional alignment, so breadth is near-uniform on 0…9 under
+> the null and **P(B = 0) = 0.105**, with joint P(M ≤ D_bar ∧ B = 0) = **0.076**. **F2 fires on
+> 53.5% of null draws.** The REJECT is unambiguous (the pre-registered one-tailed p would have been
+> **0.898**), but no closure argument may rest on the *size* of this inversion or on the
+> `dsd` << `sd` < `usd` ordering — the whole 0.237 spread between `dsd` and `usd` is under one null
+> sd. This is directive 10's "sign robust, magnitude NOT" measured rather than asserted. Audit
+> findings, none outcome-changing: report §7's "Q5 is the maximum for 8 of 9 instruments (LINK's Q3
+> is higher)" is wrong — it is **6 of 9**, since BTC, ETH *and* LINK all peak at Q3; the error
+> overstates the gradient and cuts against the report's own §12.4 conclusion. F1/F2/F3 were
+> transcribed literally (`or` in all three); costs resolved through `per_side_cost("taker")` and
+> never hardcoded; no Reviewer-owned file was written by the Engineer; script committed with
+> `git add -f` and tracked. See `research/results/T-040_report.md` and
+> `research/review_briefs/T-040_brief.md`.
+> Previous update: 2026-08-04, **T-039 / H-IntradayEdgeFloor-1h — REJECT at pre-gate (Independent
 > Reviewer A)**. Second perps RESEARCH cycle. A 72-cell conditional-mean census (6 causal 1h
 > OHLCV+volume variables × 6 horizons × 2 decile tails) on the nine OKX perps, **251,946 pooled
 > TRAIN+VAL bars**, at the real `COST_MODEL` (9.0 bps/side, **18.0 bps taker round trip**), plus a
@@ -173,12 +215,12 @@ scheme and is not counted.
 
 | Metric | Value |
 |---|---|
-| RESEARCH cycles | **2** — T-038 (H-BasketVolTarget-1h, REJECT at pre-gate P2, 2026-08-01), T-039 (H-IntradayEdgeFloor-1h, REJECT at pre-gate, 2026-08-04) |
+| RESEARCH cycles | **3** — T-038 (H-BasketVolTarget-1h, REJECT at pre-gate P2, 2026-08-01), T-039 (H-IntradayEdgeFloor-1h, REJECT at pre-gate, 2026-08-04), T-040 (H-SemiVarSizing-1h, REJECT at pre-gate P2, 2026-08-06) |
 | OPS/INFRASTRUCTURE cycles | **1** — A-005 (perps program benchmark, 2026-08-01) |
-| Ratio | **2 : 1** — reported only; below the 6-cycle threshold |
+| Ratio | **3 : 1** — reported only; below the 6-cycle threshold |
 | Floor status | **Not yet in force** |
-| Perps `n_trials` | **0** of the 30-trial cap (both T-038 and T-039 stopped at zero-cost pre-gates) |
-| Perps trials spent to date | **0** — `research/trial_sharpe_ledger.csv` holds 0 data rows (51 physical lines = 50 comments + 1 header) |
+| Perps `n_trials` | **0** of the 30-trial cap (T-038, T-039 and T-040 all stopped at zero-cost pre-gates) |
+| Perps trials spent to date | **0** — `research/trial_sharpe_ledger.csv` holds 0 data rows (51 physical lines = 50 comments + 1 header). **Criterion 7 stays unsatisfiable**: the harness needs 10 rows before `trial_var_source` leaves `estimator_proxy`, so the maximum available verdict for the next cycle reaching a trial is still PARK |
 
 **The 2:1 floor applies only after 6 completed perps cycles.** Below that count the ratio is
 statistically meaningless — a single early ops task would read as a catastrophic breach and trigger a
@@ -191,11 +233,13 @@ rather than invisible.
 
 ## Rejection / promotion rate
 
-- **Perps program (2026-08-04, after T-039): no rate is computable yet — 0 trials spent.** Both
-  T-038 and T-039 were rejected at zero-cost pre-gates, which by the manual's definition test no
-  construct against `n_trials`. Perps cycles completed: **2 RESEARCH (both rejected) + 1 OPS**.
-  Cycle-level rejection rate 2 of 2; construct-level rate undefined because no construct has been
-  built. The figures below are the **closed spot program's** final values and do not carry across the
+- **Perps program (2026-08-06, after T-040): no rate is computable yet — 0 trials spent.** T-038,
+  T-039 and T-040 were all rejected at zero-cost pre-gates, which by the manual's definition test no
+  construct against `n_trials`. Perps cycles completed: **3 RESEARCH (all rejected) + 1 OPS**.
+  Cycle-level rejection rate 3 of 3; construct-level rate undefined because no construct has been
+  built. Three consecutive zero-cost stops is the pre-gate discipline working as designed — but it
+  also means the trial ledger is still empty, and that is now a standing structural fact rather than
+  a transient one. The figures below are the **closed spot program's** final values and do not carry across the
   program boundary.
 - **Rejection rate: ~96%** (96 rejected of 100 total tested constructs).
 - **Promotion rate: ~1%** (1 of 100) — and that single promotion remains formally **unproven**
@@ -273,6 +317,7 @@ Tally of recurring building blocks across the project's own construct history (9
 | Cross-sectional momentum rank across a 9-perp panel (`cs_mom_rank`) | 0 | T-039 census, 2026-08-04 — first portfolio-structure variable tested on the perps panel. Weakest variable in the matrix (max \|excess\| 11.57 bps at h=24) and it supplied the family-wise max in only **3 of 1,000** placebo draws. Note its decile buckets are **not true deciles** (0.1120–0.1797 of valid bars) because a 9-instrument rank takes ≤9 discrete values. Zero n_trials cost |
 | Intraday volatility ratio (`std(r,24)/std(r,168)`), 1h perps, as an ENTRY conditioner | 0 | T-039 census, 2026-08-04 — the only coherent structure in the 72-cell matrix: monotone in h (excess −1.66/−3.54/−6.86/−12.56/−19.85/−36.52 bps), breadth 8–9 of 9 at every horizon, all nine instruments negative at h=24, and six of the seven highest \|excess\|/SE ratios (3.29–4.05). **Independently corroborates standing directive 10 and T-038 at the entry level with a placebo control neither had** — low trailing relative vol predicts WORSE forward returns. Still **not harvestable**: fails G4 (36.52 vs P95 47.22). Zero n_trials cost |
 | Channel position (`range_pos`, 24-bar) and volume z-score (168-bar, log1p) at 1h | 0 | T-039 census, 2026-08-04 — 1h instances of the archived ORB / volatility-breakout cards and of the 3.5×-SMA volume filter this project's first construct used. Both are noise at this resolution: max \|excess\| 11.38 and 11.51 bps respectively, against a 36.0 bps bar. `range_pos` correlates 0.77 with `mom_24` (highest off-diagonal in the matrix). Zero n_trials cost |
+| Downside semideviation (`dsd`, 168-bar RMS of negative 1h returns) as an EXPOSURE-SIZING conditioner, + its `usd` / `sd` decomposition | 0 | T-040, 2026-08-06 — **first semivariance-family estimator tested anywhere in this project**, and the direct test of whether T-038's inversion was an estimator artifact. **It is not.** Over 250,425 pooled 1h anchor bars, forward per-unit-risk `D_bar` came out `dsd` **−0.426586** (0/9) << `sd` **−0.205060** (2/9) < `usd` **−0.189939** (3/9): the leg predicted to flip *positive* inverts hardest, and total vol sits between its two components rather than below both. Persistence was never the issue (ρ median 0.4803). Negative in all 14 robustness cells; survives medians and 1%-trimming, so it is not a tail artifact — but median monotonicity is only +0.30, so it is not a gradient either. **Reviewer caveat: sign only.** `D_bar` is at the 10.2nd percentile of its own shared-offset null (z −1.30) and B=0/9 has null P 0.105 — no closure argument may rest on the magnitude or on the `dsd`/`sd`/`usd` ordering. Never backtested, zero n_trials cost |
 | **Family-wise circular-shift placebo control (max-statistic over a cell scan)** | n/a — a validation technique, not a construct | **First use: T-039, 2026-08-04, and it CHANGED THE VERDICT.** 1,000 draws, one shared offset `k` per draw across all nine instruments, variables shifted and returns left in place, threshold re-estimated, `M_draw = max \|excess\| over 72 cells`. Prices the scan's own selection: **P95(M) = 47.22 bps > the 36.0 bps economic bar**, so the best real cell (36.52 bps) is inside the null (**22.1% of draws reach it**). Without it, a construct would have been handed forward and a trial spent. **Every future census of this shape should carry one** |
 
 **Takeaway**: across 97 constructs, exactly one non-signal component — volatility-target
@@ -285,7 +330,13 @@ quantization step discards estimator precision — its record is spotless as a c
 infinitely improvable. Extended 2026-07-10 (H-SizingBand): the refinement question is now
 closed from BOTH directions — removing the quantizer is worthless even fee-free (the step
 functions as a protective no-trade band on estimator noise). The layer is at its efficient
-frontier; do not spend further cycles inside it.
+frontier; do not spend further cycles inside it. **Extended 2026-08-06 (T-038 + T-040): the
+"spotless" record is a SPOT/DAILY record and does not transfer.** On 1h perps the conditioner the
+whole layer rests on has the wrong sign — total vol (T-038) and downside, upside and total
+dispersion on a matched window (T-040) all invert, `dsd` hardest, breadth 0–3 of 9. Directive 13's
+"everything the spot program established on daily bars inverts at 1h on perps" now covers the one
+component this table calls consistently useful. **Sign only** — both cycles' magnitudes sit inside
+their own nulls.
 
 ## Data-axis status
 

@@ -1668,3 +1668,83 @@ median instrument, because quote volumes rose — level-based thresholds silentl
 **Decision:** REJECT. Zero trials spent; **perps `n_trials` stays 0** of the 30-trial cap; trial
 ledger stays at 0 data rows; no DSR computed and none required. A correct, cheap, decisive negative
 result that supplies exactly the evidence the hypothesis-bank reopening note demanded.
+
+---
+
+## T-040 / H-SemiVarSizing-1h — REJECT at zero-cost pre-gate P2 (Independent Reviewer A, 2026-08-06)
+
+**Verdict: REJECT — failed pre-gate P2; F2 fired on BOTH clauses. Zero trials spent; perps
+`n_trials` stays 0 of 30.**
+
+**The question.** T-038 killed volatility-target exposure sizing on the nine-perp 1h basket because
+its harm census inverted. T-040 asked whether that inversion was a property of *volatility* or an
+artifact of a **total**-volatility estimator, which by exact algebra sums an adverse (downside) and
+a favourable (upside) dispersion component: `(1/W)Σr² = dsd² + usd²`. In a long-only book `usd` is
+mechanically co-incident with the rallies that generate the forward returns being measured, so a
+total-vol conditioner mixes two signals of opposite economic sign. The prediction was that splitting
+the estimator would restore the classic de-risking sign on the downside leg.
+
+**The answer: it is a property of the dispersion, not of the estimator — and the decomposition came
+out backwards.** On 250,425 pooled TRAIN+VAL 1h anchor bars (168-bar warmup, 25-bar forward trim):
+
+| Conditioner | `D_bar` = mean(fwd_pur\|Q1) − mean(fwd_pur\|Q5) | breadth |
+|---|---|---|
+| `dsd` — PRIMARY, predicted to flip POSITIVE | **−0.426586** | **0 / 9** |
+| `sd` — total vol, matched window | −0.205060 | 2 / 9 |
+| `usd` — predicted to carry the negative | −0.189939 | 3 / 9 |
+
+The leg predicted to flip positive is the one that inverts **hardest**, and total volatility sits
+*between* its two components rather than below both — inconsistent with "total vol inverts because
+upside contaminates it". F2's clause (a) `D_bar ≤ 0` and clause (b) `B < 5` both fired; not one
+instrument of nine carried the hypothesised sign. P1 passed comfortably (Spearman ρ median 0.480280
+/ min 0.427458 against floors 0.30 / >0.15) — a necessary condition only, and correctly not cited
+as support anywhere in the report. P2b, P3 and the trial stage were **NOT REACHED**, and the report
+records them as *not reached* rather than *not met*, which is the right distinction.
+
+**Robustness.** `D_bar` is negative in all **14** view/convention cells — four calendar years and
+three disjoint equal-bar sub-windows, each under refit and fixed quintile edges — with no sign flip.
+Post-verdict tail-insensitive views leave it intact (quintile medians −0.473918, 1%-trimmed means
+−0.426874, breadth 0/9 in both), so the T-038 Engineer's "the edge lives in a few extreme bars" trap
+does **not** explain the sign. But median monotonicity across the five quintiles is only **+0.30**
+and only BNB is monotone, so the relationship is "the top bucket is different", not the ordered
+dose-response any continuous sizing curve would need.
+
+**Reproduction.** All 8 raw artifacts re-generated **byte-identically** by re-running
+`phase_t040_semivar.py` unmodified (SHA-256 over every JSON and CSV). Independently reimplemented
+the census from the assignment text alone, under two further binning conventions: `pd.qcut`
+−0.425994 and a pure rank-split −0.426376, **breadth 0/9 under all three**; P1 ρ and the 250,425
+anchor count matched exactly. Cost model resolved by calling `per_side_cost("taker")` (0.0009) and
+`round_trip_cost("taker")` (0.0018) directly. Manifest verified clean, 52 files, not bypassed;
+`git status user_data/data/` empty; `check_dsr_entrypoint.py` 0 violations; ledger 0 data rows.
+**Reviewer B (composer-2.5) returned REJECT independently, with identical figures** across P1
+median/min ρ, all three `D_bar` terms, breadth and the anchor count, and found no spec deviations —
+cross-model agreement on the reproduction, though B did not price the result against a null.
+
+**Principal Reviewer-only finding — the SIGN is established, the MAGNITUDE is not.** P2b never ran
+(the ladder correctly stops at the first failure), so the Reviewer ran the cycle's own
+pre-registered P2b construction as an audit statistic. The null is well-formed — mean +0.0102,
+median +0.0031, share of draws > 0 **0.502**, sd 0.3356 — and the observed `D_bar` = −0.4266 sits
+at only the **10.2nd percentile** of it (z **−1.30**, two-tailed p 0.236). The shared offset
+preserves cross-sectional alignment by design, so breadth is near-uniform on 0…9 under the null:
+**P(B = 0) = 0.105**, and joint P(M ≤ D_bar ∧ B = 0) = **0.076**. **F2 fires on 53.5% of null
+draws.** The REJECT is unambiguous — the hypothesis predicted `D_bar > 0` and the pre-registered
+one-tailed p would have been **0.898** — but no closure argument may rest on the *size* of this
+inversion, nor on the `dsd` << `sd` < `usd` ordering, whose entire 0.237 spread is under one null
+sd. This is standing directive 10's "sign robust, magnitude NOT" measured rather than asserted, and
+it is the third consecutive perps cycle where a Reviewer-added null reframes a headline number.
+
+**Audit findings, none outcome-changing.** Report §7 states "Q5 is the maximum for 8 of 9
+instruments (LINK's Q3 is higher)"; it is **6 of 9** — BTC, ETH *and* LINK all peak at Q3. The error
+overstates the gradient and cuts against the report's own §12.4 conclusion, so it is a transcription
+slip rather than a favourable one. F1/F2/F3 were transcribed literally (`or` in all three, with each
+clause reported separately). No Reviewer-owned file was written by the Engineer; the script was
+committed with `git add -f` and is tracked; every reported figure traces to a named raw artifact —
+T-038's five-untraceable-diagnostics finding did not recur. The Engineer disclosed a genuine
+tie-handling discrepancy (`dsd` carries 5,544–7,796 exactly-repeated values per instrument;
+`qcut` and `searchsorted` disagree on 0–6 bars, moving `D[i]` by up to 3.7e-03) instead of smoothing
+it, and asserted the KILL clauses under both conventions.
+
+**Decision:** REJECT. Zero trials spent; **perps `n_trials` stays 0** of the 30-trial cap; trial
+ledger stays at 0 data rows; no DSR computed and none required. Criterion 7 remains unsatisfiable.
+Three consecutive perps cycles have now died at zero-cost pre-gates — the discipline working, and
+also the reason the ledger is still empty.

@@ -55,6 +55,7 @@ cards stay in the archive and this row governs.
 | BTC-ETH pairs / relative value / rotation / dominance / ratio | **CLOSED** | 4 archived | #18 (no cointegration any window; post-2024 ETF-era break formal, ADF p 0.405) |
 | Sleeve sizing refinement (estimator quality AND rebalance granularity) | **CLOSED** | 0 (no book card; champion's own card stays live) | #15 + #19 (efficient frontier from both directions; 25% quantizer is protective) |
 | DVOL daily-bar champion modifications | **CLOSED** | 4 archived | #21 (veto, B3a) + #22 (sizing, P2 — VRP positive-carry) |
+| Trailing-**dispersion**-conditioned exposure REDUCTION, 9-perp long basket, 1h | **TESTED → CLOSED 2026-08-06 (T-040, REJECT)** | 0 (VF card §5 live; its basket-exposure form is closed) | T-038 (EWMA total vol) + T-040 (168-bar `dsd`/`sd`/`usd`): required positive relation absent in every estimator — −0.4266 (0/9) / −0.2051 (2/9) / −0.1899 (3/9), one-tailed p 0.898. Ulcer, downside EWMA, Sortino denominators, other windows are INSIDE this closure. **SIGN only** — `D_bar` at the 10.2nd pct of its own null (z −1.30), breadth 0/9 null P 0.105; the ordering is NOT a finding. Reopen for: h ≠ 24, **raw/cost-adjusted** response, daily bars, short/neutral books, cross-sectional rank sizing. |
 | Regime-classifier overlay (ER, ADX, MESA, HMM) | **CLOSED** | 4 archived | #30 (post-hoc), #31, #32 (three firing-set concentration failures on the same Oct-2025 boundary across two signals and both threshold types; dataset lacks recent classifier-detectable chop). Reopen ONLY per T-030 §3: window extended ≥6 months past 2026-05-27 with fresh held-out split, OR forward-lane documented in-market chop episode |
 
 ### RE-CLOSURE (2026-08-04, T-039) — intraday, at real rates. Read the scope line.
@@ -947,6 +948,31 @@ H-IVSizing, T-022/2026-07-12, on implied vol). It does **not** close the card ge
 construction is a *trend-following futures* portfolio, this basket is unhedged long-only, and no
 downside-vol-discriminating measure has been tested. See `research/results/T-038_report.md` and
 `research/review_briefs/T-038_brief.md`.
+
+**Status update: the downside-vol-discriminating escape is now TESTED — REJECTED (2026-08-06, Task
+T-040 / H-SemiVarSizing-1h, Independent Reviewer A-verified, zero trials spent).** T-038's closing
+sentence named the one untested escape; T-040 ran it. Same basket, same sample, same KILL clauses,
+conditioner swapped from total volatility to **168-bar downside semideviation** `dsd`, with `usd`
+and matched-window `sd` as mandated non-gating diagnostics. **Killed at P2 on both clauses again**:
+`D_bar` **−0.426586** (KILL if ≤ 0), breadth **0 of 9** (KILL if < 5), on 250,425 pooled TRAIN+VAL
+1h anchor bars; P1 passed (ρ median 0.480280). **The decomposition reverses the hypothesis' own
+prediction**: `dsd` −0.426586 (0/9) << `sd` −0.205060 (2/9) < `usd` −0.189939 (3/9) — the leg
+predicted to flip positive inverts hardest, and total volatility sits *between* its components
+rather than below both. Negative in all 14 robustness view/convention cells; survives quintile
+medians and 1%-trimming, so it is not a tail artifact — but median monotonicity is only +0.30, so
+it is not a dose-response gradient either. **What this closes:** trailing-**dispersion**-conditioned
+exposure *reduction* on this basket at 1h is closed for any decomposition of the second moment,
+because there is no remaining split that isolates a favourable component — the unfavourable one
+carries the sign. Re-parameterisations (Ulcer index, downside EWMA, Sortino denominators,
+semivariance at another window) are inside this closure, not escapes from it. **What this does NOT
+close, and the Reviewer's caveat on strength:** the closure rests on the **sign**, not the
+magnitude. `D_bar` sits at the **10.2nd percentile** of the cycle's own pre-registered shared-offset
+null (z −1.30, two-tailed p 0.236) and breadth 0/9 has null P = **0.105**, so the `dsd`/`sd`/`usd`
+ordering is *not* established (its 0.237 spread is under one null sd of 0.336) and may not be cited
+as a finding. Untested and outside the closure: horizons other than 24 bars, responses other than
+per-unit-risk (notably **raw** and cost-adjusted forward return), daily resolution, short or
+market-neutral books, and **cross-sectional** rank-within-basket sizing rather than basket-level
+sizing. See `research/results/T-040_report.md` and `research/review_briefs/T-040_brief.md`.
 
 ### Equal-Risk (Volatility-Parity) Portfolio Weighting
 

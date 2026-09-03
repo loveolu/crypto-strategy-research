@@ -1,26 +1,22 @@
 # research_index.md — compressed project dashboard
 
+> **ON-DEMAND since 2026-08-06** — demoted from the Director's mandatory set under escalation step 2
+> of the frozen-cap box in `PROJECT_OPERATOR_MANUAL.md`. **Open this file before selecting any
+> hypothesis adjacent to recent work**: the cycles table below is the project's only compact record
+> of what has already been rejected and why, and the counter below decides when a meta-review is due.
+>
 > **Format: one line per completed cycle, no detailed analysis.** Pre-2026-07-28 narrative is in
 > `research/archive/index_narrative_pre_2026-07-28.md`.
 
-**Cycles since meta-review #1 (2026-07-18): 18 of 25** — not due.
+**Cycles since meta-review #1 (2026-07-18): 19 of 25** — not due.
 
-## Standing constraints
+## Standing constraints — MOVED
 
-- **Dry-run only. No real capital on backtest evidence.** All configs `dry_run: true`, empty keys.
-- **DSR gate ≥0.95** at honest cumulative `n_trials` (spot program ended at **100**; perps starts at
-  0). Standard is in `PROJECT_OPERATOR_MANUAL.md`, "DSR promotion threshold" — that is primary, this
-  is a pointer. `research_metrics.md` is authoritative for the count.
-- Judge on TEST-set / walk-forward numbers only. Full-window Sharpe runs 2-4x inflated here.
-- Asset universe is not restricted to BTC/ETH — they are the default because most liquid/stable.
-- **Costs**: `validator.COST_MODEL` only; pre-2026-07-28 results are not comparable. **Holdout is
-  PROGRAM-SCOPED**: perps = after **2025-09-19**, spot = after 2026-05-27
-  (`validator.HOLDOUT_BOUNDARIES`, operator decision 2026-08-01). `PROJECT_OPERATOR_MANUAL.md` is
-  primary; "after 2026-05-27" for perps (older line here, and `T-037_PERPS_TRANSITION_brief.md`
-  line 41) reserves zero perp bars and is superseded.
-- **Perps split triple, frozen by A-005 and mandatory for every perps candidate**: `train_end
-  2024-11-22 · val_end 2025-04-21 · test_end 2025-09-19`, date-pinned. Other dates void the
-  benchmark comparison.
+**Promoted into `PROJECT_OPERATOR_MANUAL.md` as section 17 of the `DIRECTOR-MANDATORY` region on
+2026-08-06, in the same edit that demoted this file to on-demand. That manual section is now the
+primary and only location** — no constraint was dropped in the move, and it is deliberately not
+duplicated here, because a standard held in two places is a standard that can silently disagree
+with itself.
 
 ## Champion status
 
@@ -46,6 +42,7 @@ survivorship-biased — both bias the bar upward. Spent no trial. Record:
 | T-037 | Perps program transition (not a cycle) | **PROGRAM BOUNDARY, 2026-07-29** | Venue, cost model and trial ledger changed; spot results void as perps evidence. See `research/review_briefs/T-037_PERPS_TRANSITION_brief.md` |
 | T-038 | H-BasketVolTarget-1h — EWMA vol-target exposure scaling of the 9-perp basket | **REJECT (pre-gate P2), 2026-08-01** | Harm census inverted: basket Q1−Q5 = −0.442905 (KILL if ≤0), breadth 1/9 (KILL if <5). High-vol 1h bars have BETTER forward per-unit-risk returns. P1 passed (ρ median 0.564). Zero trials; **perps n_trials stays 0** |
 | T-039 | H-IntradayEdgeFloor-1h — 72-cell conditional-mean census for any 1h entry edge clearing 2× the taker round trip | **REJECT (pre-gate), 2026-08-04** | Falsification fired: **0 of 72** cells clear G1∧G2∧G3∧G4∧G5 (G1 72 · G2 1 · G3 66 · **G4 0** · G5 66). At h ≤ 8 the best gross conditional edge is **16.13 bps vs an 18.0 bps round trip (0.90×)**; the one G2-clearing cell (`vol_ratio` h=24 BOT, 36.5176 bps, 9/9 breadth) sits inside the 72-cell family-wise null (**P95(M) 47.2200 bps**; 22.1% of draws reach it). Zero trials; **perps n_trials stays 0** |
+| T-040 | H-SemiVarSizing-1h — is T-038's vol→exposure inversion an artifact of a TOTAL-vol estimator mixing downside and upside dispersion? | **REJECT (pre-gate P2), 2026-08-06** | No: F2 fired on **both** clauses — `D_bar` **−0.426586** (KILL ≤0), breadth **0/9** (KILL <5), 250,425 pooled 1h anchor bars. The decomposition reverses the prediction: `dsd` −0.4266 (0/9) << `sd` −0.2051 (2/9) < `usd` −0.1899 (3/9). P1 passed (ρ med 0.4803); negative in all 14 view/convention cells. **Reviewer caveat — sign established, MAGNITUDE not**: `D_bar` at the 10.2nd pct of its own null (z −1.30), B=0/9 null P 0.105. Zero trials; **perps n_trials stays 0** |
 
 > **T-035 raw artifact permanently lost; verdict stands. Do not attempt restoration.** Full note:
 > `research/review_briefs/T-035_brief.md`, "T-035 audit-status note".

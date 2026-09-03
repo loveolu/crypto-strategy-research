@@ -12,7 +12,10 @@ context and effort here, not on re-verifying past work — the Reviewer already 
 
 ## Phase 0 — Gate check
 
-Read the top of `research/research_index.md` first.
+Read the top of `research/research_index.md` first. **This is a targeted read of the
+gate lines — the counter and the two tokens — not a load of the whole file.** The file was
+demoted to on-demand on 2026-08-06 (context budget, escalation step 2); the gate below is
+unaffected, because it depends on the header, not on the cycles table.
 
 - **Meta-review check.** The index carries a line of the form
   `**Cycles since meta-review #N (<date>): X of 25**` near the top (currently line 6).
@@ -38,10 +41,13 @@ Read the top of `research/research_index.md` first.
 1. `PROJECT_OPERATOR_MANUAL.md` — read the region between `DIRECTOR-MANDATORY-BEGIN`
    and `DIRECTOR-MANDATORY-END`. Standards, validation requirements, cost model,
    promotion rules.
+   **Includes the "Standing constraints" section (section 17)** — dry-run only, TEST/WF
+   judging, the asset-universe scope, the DSR gate, costs, the program-scoped holdout and
+   the frozen perps split triple. That block lived in `research/research_index.md` until
+   2026-08-06 and the manual is now its primary and only location.
 2. `research/STANDING_DIRECTIVES.md` — binding on you. Directives are retired only by
    an explicit superseding directive that names them.
-3. `research/research_index.md` — one line per cycle. Your primary compressed memory.
-4. `knowledge_base/hypothesis_bank.md` — read only the region between
+3. `knowledge_base/hypothesis_bank.md` — read only the region between
    `DIRECTOR-MANDATORY-BEGIN` and `DIRECTOR-MANDATORY-END` (the family ledger).
 
 **On-demand (open only if the mandatory set leaves a selection-relevant question
@@ -52,6 +58,11 @@ genuinely ambiguous):**
   the manual). **Open it whenever the next hypothesis is adjacent to the last one** — it carries the
   prior verdict and the Engineer's recommendations, and skipping it there means selecting blind to
   why the last cycle failed. The index row carries the verdict and reason for a quick check.
+- **`research/research_index.md` — your compressed cycle-by-cycle memory. Demoted from
+  mandatory 2026-08-06** (context budget, escalation step 2; its standing-constraints block was
+  promoted into the manual). **Open it before selecting any hypothesis adjacent to recent work** —
+  it is the only compact record of what has already been rejected and why, and selecting without
+  it is how a closed direction gets re-assigned. Its header is read at Phase 0 regardless.
 - `knowledge_base/master_index.md` and topic files — for grounding a mechanism.
 - `research/current_champion.md` — when orthogonality is genuinely at issue. Historical:
   it describes the spot champion, whose figures are void as perps evidence.
