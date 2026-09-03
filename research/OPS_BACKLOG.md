@@ -627,3 +627,29 @@ own code.
   whose diff touches `user_data/data/` is INVALID.
 - Do not treat the zero-volume bars as a defect to patch. They are a real property of the venue's
   history; the correct outcome may well be to document them and change nothing.
+
+---
+
+## A-011 — Execution-cost calibration (maker vs taker) + infrastructure restart — **EXECUTED 2026-09-02**
+
+**Status:** DONE, operator-directed (session of 2026-09-02). Zero trials. Does not advance the
+meta-review counter.
+
+**Measurement:** `research/measurements/2026-09-02_execution_cost.md`. Equal-weight round trip
+measured at **13.67 bps taker ($5k) / 6.15 bps maker** vs the model's 18.0; BTC/ETH taker ≈ 5.0
+bps/side; maker adverse selection ≈ −1.7 bps equal-weight, flat 1→60 min. **`COST_MODEL` NOT
+changed** — that is an operator decision on a manual standard; recommendation recorded in the file.
+
+**Infrastructure restored in the same session, all durable:**
+- Dry-run bot back up (PID 53360, heartbeating). Death of 2026-08-02 21:20 confirmed as Modern
+  Standby (Kernel-Power 507 at 21:20:42, 22 s after the last heartbeat); the 07-21 power fix had
+  reverted (AC display-off 180 s) — re-applied, plus AC sleep → Never. **DC timeout untouched**: an
+  unplugged idle > 3 min still kills it. Keepalive task `FreqtradeDryRun-TrendVolTarget` registered
+  (every 30 min) — it had never been registered, which is why every prior death was permanent.
+- Funding recorder caught up 07-20 → 09-02 (133 rows × 9, 0 gaps); daily 03:00 task
+  `FreqtradeFundingRecorder` registered. **BTC+ETH coverage now 141 contiguous days — the F-7
+  120-day unlock is MET.** A funding hypothesis may be assigned, subject to the F-7 census conditions.
+- Leftover inert tasks `FreqtradeDryRunBootstrap_T032/_T033` (`/sc once`, no next run) not removed.
+
+**Closes:** A-009's question (funding reachability) is answered for the recorder path — 141 days
+held and growing. A-010 unaffected.

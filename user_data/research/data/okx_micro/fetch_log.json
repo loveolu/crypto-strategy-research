@@ -1,0 +1,51 @@
+{
+  "fetched_at": "2026-09-03T00:18:46.084665+00:00",
+  "days_requested": 30,
+  "per_instrument": [
+    {
+      "instId": "BTC-USDT-SWAP",
+      "rows": 43300,
+      "oldest_utc": "2026-08-03T21:54:00+00:00"
+    },
+    {
+      "instId": "ETH-USDT-SWAP",
+      "rows": 43300,
+      "oldest_utc": "2026-08-03T21:59:00+00:00"
+    },
+    {
+      "instId": "SOL-USDT-SWAP",
+      "rows": 43300,
+      "oldest_utc": "2026-08-03T22:04:00+00:00"
+    },
+    {
+      "instId": "BNB-USDT-SWAP",
+      "rows": 43300,
+      "oldest_utc": "2026-08-03T22:09:00+00:00"
+    },
+    {
+      "instId": "XRP-USDT-SWAP",
+      "rows": 43300,
+      "oldest_utc": "2026-08-03T22:14:00+00:00"
+    },
+    {
+      "instId": "ADA-USDT-SWAP",
+      "rows": 43300,
+      "oldest_utc": "2026-08-03T22:19:00+00:00"
+    },
+    {
+      "instId": "AVAX-USDT-SWAP",
+      "rows": 43300,
+      "oldest_utc": "2026-08-03T22:24:00+00:00"
+    },
+    {
+      "instId": "DOT-USDT-SWAP",
+      "rows": 43300,
+      "oldest_utc": "2026-08-03T22:29:00+00:00"
+    },
+    {
+      "instId": "LINK-USDT-SWAP",
+      "rows": 43300,
+      "oldest_utc": "2026-08-03T22:34:00+00:00"
+    }
+  ]
+}
