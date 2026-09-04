@@ -1138,6 +1138,12 @@ silently disagree with itself. **No constraint was dropped in the move.**
 - **Perps split triple, frozen by A-005 and mandatory for every perps candidate**: `train_end
   2024-11-22 · val_end 2025-04-21 · test_end 2025-09-19`, date-pinned. Other dates **void** the
   benchmark comparison — see "Promotion comparison".
+- **Perps data window (A-012, 2026-09-03)**: the nine-perp 1h/1d/mark/funding feathers now run to
+  **2026-09-03 23:00 UTC** (extended from 2026-05-28 via `freqtrade download-data`; manifest
+  rebuilt). **The reserved-holdout boundary is unchanged at 2025-09-19.** The holdout window
+  2025-09-01 → 2026-09-01 has been **evaluated on** for five operator-specified constructs
+  (S1–S5, `research/measurements/2026-09-03_A012_five_strategies.md`) and is SPENT for them; any
+  cycle carrying one forward must price that selection in `n_trials`.
 
 <!-- DIRECTOR-MANDATORY-END -->
 

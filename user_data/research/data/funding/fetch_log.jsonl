@@ -61,3 +61,12 @@
 {"ts_utc": "2026-09-02T23:34:04.911513Z", "url": "https://www.okx.com/api/v5/public/funding-rate-history?instId=LINK-USDT-SWAP&limit=100&after=1785513600000", "http_status": 200, "n_records": 100, "note": "backfill or update"}
 {"ts_utc": "2026-09-02T23:34:05.699748Z", "url": "https://www.okx.com/api/v5/public/funding-rate-history?instId=UNI-USDT-SWAP&limit=100", "http_status": 200, "n_records": 100, "note": "backfill or update"}
 {"ts_utc": "2026-09-02T23:34:06.621553Z", "url": "https://www.okx.com/api/v5/public/funding-rate-history?instId=UNI-USDT-SWAP&limit=100&after=1785513600000", "http_status": 200, "n_records": 100, "note": "backfill or update"}
+{"ts_utc": "2026-09-03T10:00:03.576970Z", "url": "https://www.okx.com/api/v5/public/funding-rate-history?instId=BTC-USDT-SWAP&limit=100", "http_status": 200, "n_records": 100, "note": "backfill or update"}
+{"ts_utc": "2026-09-03T10:00:04.412666Z", "url": "https://www.okx.com/api/v5/public/funding-rate-history?instId=ETH-USDT-SWAP&limit=100", "http_status": 200, "n_records": 100, "note": "backfill or update"}
+{"ts_utc": "2026-09-03T10:00:05.276105Z", "url": "https://www.okx.com/api/v5/public/funding-rate-history?instId=SOL-USDT-SWAP&limit=100", "http_status": 200, "n_records": 100, "note": "backfill or update"}
+{"ts_utc": "2026-09-03T10:00:06.526568Z", "url": "https://www.okx.com/api/v5/public/funding-rate-history?instId=BNB-USDT-SWAP&limit=100", "http_status": 200, "n_records": 100, "note": "backfill or update"}
+{"ts_utc": "2026-09-03T10:00:07.451248Z", "url": "https://www.okx.com/api/v5/public/funding-rate-history?instId=ADA-USDT-SWAP&limit=100", "http_status": 200, "n_records": 100, "note": "backfill or update"}
+{"ts_utc": "2026-09-03T10:00:08.263849Z", "url": "https://www.okx.com/api/v5/public/funding-rate-history?instId=AVAX-USDT-SWAP&limit=100", "http_status": 200, "n_records": 100, "note": "backfill or update"}
+{"ts_utc": "2026-09-03T10:00:09.100271Z", "url": "https://www.okx.com/api/v5/public/funding-rate-history?instId=DOT-USDT-SWAP&limit=100", "http_status": 200, "n_records": 100, "note": "backfill or update"}
+{"ts_utc": "2026-09-03T10:00:09.922247Z", "url": "https://www.okx.com/api/v5/public/funding-rate-history?instId=LINK-USDT-SWAP&limit=100", "http_status": 200, "n_records": 100, "note": "backfill or update"}
+{"ts_utc": "2026-09-03T10:00:10.759246Z", "url": "https://www.okx.com/api/v5/public/funding-rate-history?instId=UNI-USDT-SWAP&limit=100", "http_status": 200, "n_records": 100, "note": "backfill or update"}

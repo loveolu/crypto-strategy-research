@@ -653,3 +653,20 @@ changed** — that is an operator decision on a manual standard; recommendation 
 
 **Closes:** A-009's question (funding reachability) is answered for the recorder path — 141 days
 held and growing. A-010 unaffected.
+
+---
+
+## A-012 — Data extension to 2026-09-03 + five-strategy holdout evaluation — **EXECUTED 2026-09-03**
+
+**Status:** DONE, operator-directed. Zero trials. Does not advance the meta-review counter.
+
+**Data:** `freqtrade download-data` (okx, futures, `--timeframes 1h 1d`, 9 whitelist pairs,
+`--timerange 20260525-20260901`; ccxt-async worked) extended `user_data/data/okx/futures/*-1h-*`,
+`*-1d-*`, and the auto-fetched `*-1h-mark.feather` / `*-1h-funding_rate.feather` to
+**2026-09-03 23:00 UTC**. Zero duplicate timestamps. `MANIFEST.json` rebuilt (52 files, verify OK).
+**Reserved-holdout boundary UNCHANGED at 2025-09-19.** Log: `user_data/logs/A012_download.log`.
+
+**Evaluation:** `research/measurements/2026-09-03_A012_five_strategies.md`. Benchmark −53.29% in a
+crash year; S5 (hedged majors/alts spread) the only positive at +3.67%; S2 (trend-gated cascade)
+−5.9% at 1.6 trades/day; S1 ungated −28%; S3 −15.8%; S4 inconclusive (funding z never hit ±2).
+**Holdout SPENT for S1–S5 as specified**; any carry-forward is a selection step and must be priced.

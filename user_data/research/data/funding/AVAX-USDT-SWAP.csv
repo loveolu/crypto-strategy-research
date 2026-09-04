@@ -424,3 +424,5 @@ funding_time_ms,funding_time_utc,funding_rate,realized_rate,method,fetched_at_ut
 1788307200000,2026-09-02T00:00:00Z,0.0000591655202174,0.0000591655202174,current_period,2026-09-02T23:34:00.576927Z,https://www.okx.com/api/v5/public/funding-rate-history
 1788336000000,2026-09-02T08:00:00Z,0.0001,0.0001,current_period,2026-09-02T23:34:00.576927Z,https://www.okx.com/api/v5/public/funding-rate-history
 1788364800000,2026-09-02T16:00:00Z,0.0000354950201923,0.0000354950201923,current_period,2026-09-02T23:34:00.576927Z,https://www.okx.com/api/v5/public/funding-rate-history
+1788393600000,2026-09-03T00:00:00Z,0.0000740256107033,0.0000740256107033,current_period,2026-09-03T10:00:08.266133Z,https://www.okx.com/api/v5/public/funding-rate-history
+1788422400000,2026-09-03T08:00:00Z,0.0001,0.0001,current_period,2026-09-03T10:00:08.266133Z,https://www.okx.com/api/v5/public/funding-rate-history
