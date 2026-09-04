@@ -1,4 +1,4 @@
-# Research queue — ranked by Potential Edge × Credibility × Information Gain ÷ Complexity (2026-09-04, post EXP-010)
+# Research queue — ranked by Potential Edge × Credibility × Information Gain ÷ Complexity (2026-09-04, post EXP-011)
 
 **Standing rule: no further variants of S2 on the 2023→2026 data.** ~40 constructs have been examined
 on it; the next in-sample "improvement" is noise by construction. Items 1–2 generate NEW evidence.
@@ -10,8 +10,8 @@ on it; the next in-sample "improvement" is noise by construction. Items 1–2 ge
    *Promotion gate: rolling 90d PF > 1 for two consecutive quarters.* Complexity: medium (port).
 2. **Decay monitor** on S2-strict-4h-9: rolling 90d PF, expectancy, win rate vs TRAIN; flag
    **Degraded** if PF < 1 two quarters running. Cheap; runs alongside 1.
-3. **2h and 8h resolutions** as the timeframe bracket around the 4h leader (the goal's
-   timeframe-sensitivity test); pre-register both, one OOS run each. Cheap.
+3. ~~2h and 8h bracket~~ **DONE — EXP-011**: all four resolutions OOS-positive (Sh 0.83/1.02/1.31/0.85);
+   4h is a stable region with the smallest TRAIN→OOS gap.
 4. **Funding as a regime feature** for the gate (6 months of 1h funding held, growing): does extreme
    funding predict the cascade-reversion hit rate? Forward-heavy; wait for 12 months of funding.
 5. **Open-interest drop as the liquidation trigger** (OKX rubik; untested bank card) — replaces the

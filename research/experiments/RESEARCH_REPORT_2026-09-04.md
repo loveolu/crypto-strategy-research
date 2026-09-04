@@ -1,4 +1,4 @@
-# Research report — cycle of 2026-09-04 (CRYPTO-EXP-005 → 010)
+# Research report — cycle of 2026-09-04 (CRYPTO-EXP-005 → 011)
 
 Autonomous research cycle under the goal framework. Full experiment rows: `EXPERIMENT_LOG.md`;
 ranking: `LEADERBOARD.md`; queue: `RESEARCH_QUEUE.md`. Scripts under `user_data/research/`
@@ -77,7 +77,11 @@ Prior cycle: majors/alts rotation (43 flips, 2024 −17%), regime switch S2/V5, 
 5. **More instruments help** — 9 perps beat 5 on Sharpe and OOS; cascade events are partly independent.
 6. **The reversion has a window.** 1h entries improve with 1–2h delay; 4h entries collapse with 4–8h
    delay. The relief rally starts ~1–3h after the cascade peak and is spent within ~8h.
-7. **Something changed after 2025-09.** Every long-only construct is negative over the last year even
+7. **The mechanism works at every resolution from 1h to 8h** (OOS Sh 0.83 / 1.02 / 1.31 / 0.85), and
+   4h generalises best: smallest TRAIN→OOS gap, highest expectancy per trade, least trade concentration.
+   1h is the most in-sample-flattering and the worst OOS — a warning against picking the resolution
+   with the best backtest.
+8. **Something changed after 2025-09.** Every long-only construct is negative over the last year even
    in confirmed uptrends. Whether the dip-buying edge decayed or the regime is temporarily hostile is
    the open question, and only forward data answers it.
 
@@ -85,7 +89,7 @@ Prior cycle: majors/alts rotation (43 flips, 2024 −17%), regime switch S2/V5, 
 1. Forward paper-trade **S2-strict-4h-9** (execute at 4h close); promotion gate = rolling 90d PF > 1
    for two consecutive quarters.
 2. Decay monitor alongside it.
-3. 2h and 8h resolutions as the timeframe bracket, one pre-registered OOS run each.
+3. ~~2h and 8h bracket~~ done (EXP-011): 4h is a stable region.
 4. Funding as a gate feature once 12 months are held.
 5. OI-drop as the liquidation trigger (needs data fetch).
 
