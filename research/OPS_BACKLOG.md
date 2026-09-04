@@ -686,3 +686,15 @@ Full-cycle record for all candidates: **S3 gated vol-target basket +96% at DD �
 benchmark (+85%, DD −70%)**; S1 +106% / DD −33%; S2 +64% / DD −10%. OOS-only: V5 +7%, S2 −6%,
 S3 −7%, S1 −22%, benchmark −32%. **All windows now SEEN for S1/S2/S3/S5 and variants; ~21 constructs
 examined 09-02→09-04 — no held-out data remains for any of them.**
+
+---
+
+## A-014 — Five structural constructs (rotation, regime-switch, portfolio, gate-only, rebalance freq) — **EXECUTED 2026-09-04**
+
+**Status:** DONE, operator-directed, zero trials. `research/measurements/2026-09-04_A014_structural_constructs.md`.
+**3 killed by pre-registered condition** (MAR momentum rotation: 43 flips, −16.8% in 2024; RS
+switch: Sharpe 1.28 < S2 1.33; daily/weekly rebalance < monthly at measured costs). **1 survives
+marginally** (50/50 S3+V5: Sh 0.82 vs 0.79, DD halved, return halved, OOS +0.8%). **Diagnostic:**
+vol-target HELPS at daily on perps (S3 vs gate-only: +10 pts return, −18 pts DD) — evidence for
+T-040's daily reopening path. **S2 (Sh 1.33, DD −10.8%, 1.6/day) remains the best risk-adjusted
+construct found.** A-005 benchmark and S5 reference bar retained as instructed. ~33 constructs seen.
