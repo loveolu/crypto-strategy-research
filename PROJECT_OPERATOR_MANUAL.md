@@ -1144,6 +1144,9 @@ silently disagree with itself. **No constraint was dropped in the move.**
   2025-09-01 → 2026-09-01 has been **evaluated on** for five operator-specified constructs
   (S1–S5, `research/measurements/2026-09-03_A012_five_strategies.md`) and is SPENT for them; any
   cycle carrying one forward must price that selection in `n_trials`.
+- **Operator reference bar (2026-09-04): S5 majors/alts cascade spread, +3.67% on the spent holdout
+  year.** A reference, not the criterion-3 benchmark (A-005 stays). Its full record is ≈ −27% over
+  2023 → 2026 (2024 −25%); see `research/research_index.md`, "Operator reference bar".
 
 <!-- DIRECTOR-MANDATORY-END -->
 

@@ -670,3 +670,19 @@ held and growing. A-010 unaffected.
 crash year; S5 (hedged majors/alts spread) the only positive at +3.67%; S2 (trend-gated cascade)
 −5.9% at 1.6 trades/day; S1 ungated −28%; S3 −15.8%; S4 inconclusive (funding z never hit ±2).
 **Holdout SPENT for S1–S5 as specified**; any carry-forward is a selection step and must be priced.
+
+---
+
+## A-013 — Operator reference bar (S5) + pre-registered improvement variants + full-cycle record — **EXECUTED 2026-09-04**
+
+**Status:** DONE, operator-directed. Zero trials. Record:
+`research/measurements/2026-09-04_A013_reference_bar_and_variants.md`.
+
+S5 designated as operator reference bar per instruction (recorded in `research_index.md` and manual
+§17 — NOT a replacement for A-005). Its full record is **≈ −27%** over 2023→2026 (2024 −25%). Eight
+pre-registered variants on TRAIN+VAL: **V5 beta-neutral** is the only material fix (−34.5% → −5.0%
+T+V; 2023 +6.3%); one-shot TEST +8.48% (Sh 3.91); full cycle ≈ +1%, OOS (TEST+FWD) **+7%** — a hedge.
+Full-cycle record for all candidates: **S3 gated vol-target basket +96% at DD −25% beats the A-005
+benchmark (+85%, DD −70%)**; S1 +106% / DD −33%; S2 +64% / DD −10%. OOS-only: V5 +7%, S2 −6%,
+S3 −7%, S1 −22%, benchmark −32%. **All windows now SEEN for S1/S2/S3/S5 and variants; ~21 constructs
+examined 09-02→09-04 — no held-out data remains for any of them.**

@@ -26,6 +26,17 @@ perp data, candidates are compared against the pre-registered benchmark below. H
 detail: `research/current_champion.md`, `research/strategy_portfolio.md`,
 `research/review_briefs/T-037_PERPS_TRANSITION_brief.md`.
 
+## Operator reference bar (designated 2026-09-04) — S5 majors/alts cascade spread
+
+**Operator instruction (2026-09-04): treat S5's +3.67% as the bar to beat.** Recorded as an
+**operator-designated reference**, NOT as a replacement for the A-005 program benchmark — criterion 3
+still pairs against A-005's frozen TEST series, because S5's +3.67% is on the holdout year
+(2025-09 → 2026-09), not the frozen split, and it was the best of five constructs on that year.
+**Full record, computed 2026-09-04** (`user_data/research/s5_spread.py`): TRAIN **−22.42%**
+(2023-01 → 2024-11), VAL **−15.52%**, TEST +8.49% (Sharpe 2.63), FWD +3.46%; by year 2023 −3.8%,
+**2024 −25.0%**, 2025 +3.5%, 2026 −2.7% — **≈ −27% over the full cycle.** It loses in alt-season and
+earns in cascades; the dispersion gate does not tell the two apart. Improvement work: A-013.
+
 ## Perps program benchmark (A-005, 2026-08-01)
 
 Committed; T-038 unblocked. **`PROJECT_OPERATOR_MANUAL.md` "Promotion comparison" is primary for its

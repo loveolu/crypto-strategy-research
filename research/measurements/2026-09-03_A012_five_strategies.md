@@ -38,7 +38,8 @@ supposed to survive, and the one the benchmark cannot.
 | S1 cascade reversion, maker | −27.26% | −32.51% | −2.07 | 1,343 | 3.7 |
 | S2 trend-gated cascade, taker | −5.91% | −9.23% | −0.84 | 579 | 1.6 |
 | S2 trend-gated cascade, maker | −5.95% | −9.03% | −0.85 | 577 | 1.6 |
-| **S5 majors/alts spread** | **+3.67%** | −7.05% | **+0.40** | 43 | 0.1 |
+| **S5 majors/alts spread** | **+3.67%** | −7.05% | **+0.40** | 43* | 0.1 |
+| *S5's 43 is regime entries over the FULL 2023→2026 series (the loop was not windowed), not the year alone — corrected 2026-09-04. | | | | | |
 | S4 funding overlay on S3 | no effect — basket funding z never reached ±2 in the covered window (2026-05-14 →) | | | | |
 
 ## Reading
