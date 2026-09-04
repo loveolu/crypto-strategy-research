@@ -23,16 +23,18 @@ def gate(i,slope=False):
     return g.astype(float)
 
 @functools.lru_cache(maxsize=None)
-def cond(i,W,PW):
-    d=load(i,"1h"); c=d["close"]; r=c/c.shift(1)-1
+def cond(i,W,PW,tf="1h",mom_bars=24):
+    d=load(i,"1h")
+    if tf!="1h": d=d.resample(tf).agg({"open":"first","high":"max","low":"min","close":"last","volume":"sum"}).dropna()
+    c=d["close"]; r=c/c.shift(1)-1
     dsd=np.sqrt((np.minimum(r,0)**2).rolling(W).mean()); usd=np.sqrt((np.maximum(r,0)**2).rolling(W).mean())
     return pd.DataFrame({"o":d["open"],"h":d["high"],"l":d["low"],"c":c,"r":r,
-        "pct":dsd.rolling(PW).rank(pct=True),"upct":usd.rolling(PW).rank(pct=True),"mom":c/c.shift(24)-1})
+        "pct":dsd.rolling(PW).rank(pct=True),"upct":usd.rolling(PW).rank(pct=True),"mom":c/c.shift(mom_bars)-1})
 
-def trades(i,W=168,PW=720,THR=0.80,EXIT=0.50,HOLD=24,delay=0,gated=True,short=False,cost="taker",cost_mult=1.0,mom_thr=0.0,slope=False):
+def trades(i,W=168,PW=720,THR=0.80,EXIT=0.50,HOLD=24,delay=0,gated=True,short=False,cost="taker",cost_mult=1.0,mom_thr=0.0,slope=False,tf="1h",mom_bars=24,gate_shift=24):
     """Returns DataFrame of trades and a 1h net-return Series for this instrument (1.0 = full sleeve)."""
-    x=cond(i,W,PW); n=len(x)
-    g=gate(i,slope).reindex(x.index,method="ffill").shift(24).fillna(0).values if gated else np.ones(n)
+    x=cond(i,W,PW,tf,mom_bars); n=len(x)
+    g=gate(i,slope).reindex(x.index,method="ffill").shift(gate_shift).fillna(0).values if gated else np.ones(n)
     o,l,h,c,pct,upct,mom=x.o.values,x.l.values,x.h.values,x.c.values,x.pct.values,x.upct.values,x.mom.values
     st=side_taker(i)*cost_mult; hs=half(i)
     ret=np.zeros(n); rows=[]; t=PW
