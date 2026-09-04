@@ -6,8 +6,9 @@
    log and keepalive verified). Compare theoretical vs simulated fill, slippage, latency and forward
    expectancy with the frozen backtest (+149 bps/trade, WR 63%). Current status: **COLLECTING**.
    Review gate: rolling 90d PF > 1 for two consecutive quarters; **Degraded** if PF < 1 twice running.
-2. **Record OI, long-short ratio and taker-volume daily** (A-XXX ops; OKX rubik, ~6 mo retention) so a
-   liquidation-trigger variant is testable in a year. Same pattern as the funding recorder.
+2. **Monitor OI / long-short / taker-volume collection** (launched 2026-09-04; 27/27 OKX Rubik
+   series, 179 finalized daily rows each, scheduled daily at 03:30). Do not inspect feature efficacy
+   until at least 12 months are retained; the current ~6 months cannot support a multi-regime test.
 3. **Funding as gate feature** — revisit at 12 months held (currently 6; the n=10 look was suggestive).
 4. **Second, uncorrelated mechanism.** The non-cascade constructs tested (V5 spread, vol-expansion,
    S3 daily, and BTC-rebound/lagging-alt catch-up) are negative, bull-beta, or out of scope. The book
