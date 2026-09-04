@@ -14,6 +14,7 @@ reversion in daily uptrends) at different settings — correlated, not three ind
 | 5 | S2-strict 1h | Testing | 1h | 21.3% | 2.06 / 3.68 | −12.2% | 1.75 | +62.1 / +2.2 / −0.1 | −11.2% | 0.83 | −4.1% | 0.61 (2×) | 6/11 |
 | — | B3 vol-expansion 4h | Rejected | 4h | 8.3% | 1.13 / 2.07 | −7.2% | 1.16 | +25.4 / −1.4 / −0.3 | −1.3% | — | — | — | 2/11 |
 | — | V5 beta-neutral spread | Rejected as hedge | 1h | −3.2% | −0.35 | −20% | — | −8.9 / +7.2 / −5.9 | −1.1% | — | — | — | — |
+| — | BTC shock/rebound → lagging-alt catch-up | Rejected | 4h | −6.9% OOS | −1.10 / −1.38 | −13.3% | −0.52 | OOS segments all negative | −5.6% | −1.10 | −20.2% | −1.67 | 0/3 |
 | — | S3 gated vol-target basket | Testing (daily, out of scope) | 1d | — | 0.79 | −30% | — | +48 / −19 / −4 | — | — | — | — | — |
 | — | S1, MAR, RS, rebal-freq, S2 short, S5 base, EXP-008 gate | Rejected | | | | | | | | | | | |
 
@@ -33,3 +34,7 @@ transfer — the profile the goal says to distrust.
 **Forward status:** B2 entered isolated Freqtrade dry-run paper trading on 2026-09-04 13:55 PDT,
 executing at the 4h close. Paper Trading → live consideration requires rolling 90d PF > 1 for two
 consecutive quarters on forward data; the initial monitor state is **COLLECTING** (zero trades).
+
+**Independent-mechanism update:** CRYPTO-EXP-016's BTC-rebound/lagging-alt rule passed its TRAIN-only
+existence screen but reversed sign gross OOS (−5.6%; −11.9% after measured costs), with every held-out
+segment negative. It is rejected and does not diversify the cascade family.
