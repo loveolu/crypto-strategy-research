@@ -1,0 +1,27 @@
+{
+  "experiment": "CRYPTO-EXP-CX-001",
+  "pre_registered_cell": "dispersion_p80_x_mom24_reversal_2v2_hold24_delay2",
+  "common_bars": 32418,
+  "data_start": "2022-12-23 06:00:00+00:00",
+  "data_end": "2026-09-03 23:00:00+00:00",
+  "train_end": "2024-11-22 23:00:00+00:00",
+  "train_events": 237,
+  "mean_gross_return": -0.001979933657218415,
+  "mean_net_return": -0.003338862547234681,
+  "mean_round_trip_cost": 0.0013589288900162655,
+  "gross_to_cost": -1.4569810618970036,
+  "positive_instrument_breadth": 3,
+  "placebo_draws": 1000,
+  "placebo_seed": 20260904,
+  "placebo_p95_mean_gross": 0.0014723376029464764,
+  "placebo_empirical_p_one_tailed": 0.985014985014985,
+  "gates": {
+    "n_events_at_least_50": true,
+    "gross_at_least_2x_cost": false,
+    "breadth_at_least_5_of_9": false,
+    "placebo_p_at_most_0_05": false
+  },
+  "pre_gate_passed": false,
+  "trials_spent": 0,
+  "verdict": "REJECT_PRE_GATE"
+}

@@ -19,5 +19,6 @@ on it; the next in-sample "improvement" is noise by construction. Items 1–2 ge
 6. **Walk-forward with re-fit** on the stable region (W 134–202, HOLD 16–32) — does per-window
    re-selection beat fixed params OOS? Medium; low expected gain given the region is flat.
 
-Closed, do not re-queue without new reason: majors/alts rotation; regime-switch S2/V5; daily/weekly
+Closed, do not re-queue without new reason: EXP-CX-001's high-dispersion 24h cross-sectional momentum-reversal
+cell (wrong TRAIN gross sign, placebo p=0.985); majors/alts rotation; regime-switch S2/V5; daily/weekly
 rebalance; S2 short mirror; S2 gate-timing variants (EXP-008); S1 ungated; all T-038/039/040 families.
