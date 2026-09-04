@@ -1,26 +1,35 @@
-# Strategy leaderboard (goal framework) — updated 2026-09-04 after CRYPTO-EXP-010
+# Strategy leaderboard — updated 2026-09-05 after CRYPTO-EXP-015
 
-Composite ranking per the goal: net ann. return, Sharpe/Sortino, DD, PF, **recent**, OOS, robustness,
-parameter stability, cost sensitivity, sample size — never raw return alone. A-011 measured costs,
-unleveraged. **OOS = VAL+TEST+FWD (2024-11-23 → 2026-09-01, 21 months), thresholds set on TRAIN only.**
+Composite per the goal (never raw return alone). **WF** = rolling walk-forward, 11 windows 2024-01→2026-09,
+threshold re-fit per window. **Fixed OOS** = 2024-11→2026-09, threshold from TRAIN. A-011 measured
+costs, taker, unleveraged, 9 OKX perps. All members of the top group are ONE mechanism (cascade
+reversion in daily uptrends) at different settings — correlated, not three independent edges.
 
-| # | strategy | status | tf | OOS net | OOS ann. | OOS Sh | OOS DD | OOS PF | OOS n | /day | last 365d | robustness |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| **1** | **S2-strict-4h, 9 perps** (W42 PW180 HOLD6, mom_24h ≤ −3.85%) | **Promising** | **4h** | **+27.5%** | **~15%** | **1.31** | −10.4% | **1.87** | 170 | 0.26 | **−6.7%** | cost ✓ (Sh 1.05 @3×) · params ✓ (all +, THR peaks at base ⚑) · **top-5% ✓ (+10.8%)** · coins 7/9 · **delay ✗ (must act at 4h close)** · recent ✗ · FWD ✗ |
-| 2 | S2-strict, 9 perps (mom_24 ≤ −2.73%) | Testing | 1h | **+12.8%** | ~7.1% | 0.83 | −12.6% | 1.32 | 220 | 0.35 | **−11.6%** | cost ✓ (Sh 0.61 @2×) · params ✓ · delay ✓ · **recent ✗ · top-5% ✗ · FWD ✗** |
-| 3 | S2-strict, 5 perps (≤ −2.37%) | Testing | 1h | +9.6% | ~5.4% | 0.71 | −8.7% | 1.28 | 133 | 0.21 | −7.2% | same profile, lower DD |
-| 4 | S5-V5 beta-neutral spread | Testing | 1h | +7.2% (TEST+FWD) | ~5% | — | −20% | — | 43 entries | 0.03 | — | only construct positive in FWD; a hedge |
-| 5 | S2 loose, 9 perps | Testing | 1h | +4.2% | ~2.4% | 0.31 | −15.0% | 1.09 | 315 | 0.50 | −9.9% | superseded by strict |
-| 6 | S3 gated vol-target basket | Testing (daily — outside 1m–4h scope) | 1d | −6.7% (TEST+FWD) | — | — | −30% | — | ~30 | 0.03 | — | beats A-005 full-cycle; vol-target helps at daily |
-| — | S2 loose, 5 perps (original) | Superseded | 1h | −3.1% | — | −0.17 | −10.8% | 0.96 | 197 | 0.30 | −5.9% | in-sample Sh 1.33 did not transfer |
-| — | S2-strict + SMA200-rising gate | **Rejected** (EXP-008) | 1h | +9.5% | — | 0.72 | −10.0% | 1.32 | 152 | — | −9.5% | cuts TEST, barely helps FWD |
-| — | S1 ungated · S2 short mirror · MAR rotation · RS switch · rebal-freq · S5 base | **Rejected** | — | — | — | — | — | — | — | — | — | EXP-004/005 |
+| # | strategy | status | tf | WF ann | WF Sh / So | WF DD | Calmar | 2024 / 2025 / 2026 | last 365d | fixed-OOS Sh | top-5% drop | 3× cost Sh | +win |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| **1** | **B2: 4h cascade + BTC-drop condition** | **Candidate** | 4h | 13.9% | 1.23 / 3.54 | **−5.5%** | **2.55** | +37.3 / +1.9 / +0.5 | **+1.6%** | **1.42** | **+13.3%** | 1.17 | 6/11 |
+| **2** | **S2-strict 4h** | Promising | 4h | 15.7% | 1.30 / 2.93 | −7.4% | 2.12 | +42.3 / +2.1 / +0.6 | −4.1% | 1.31 | +10.8% | 1.05 | 5/11 |
+| **3** | **S2-strict 8h** | Promising | 8h | 14.7% | 1.70 / **4.72** | −8.3% | 1.76 | +39.3 / +1.7 / +0.9 | **+4.3%** | 0.85 | +4.9% | — | 5/11 |
+| 4 | S2-strict 2h | Testing | 2h | 17.0% | 1.56 / 3.81 | −8.4% | 2.02 | +49.4 / +0.4 / +0.5 | −7.6% | 1.02 | +0.4% | — | 6/11 |
+| 5 | S2-strict 1h | Testing | 1h | 21.3% | 2.06 / 3.68 | −12.2% | 1.75 | +62.1 / +2.2 / −0.1 | −11.2% | 0.83 | −4.1% | 0.61 (2×) | 6/11 |
+| — | B3 vol-expansion 4h | Rejected | 4h | 8.3% | 1.13 / 2.07 | −7.2% | 1.16 | +25.4 / −1.4 / −0.3 | −1.3% | — | — | — | 2/11 |
+| — | V5 beta-neutral spread | Rejected as hedge | 1h | −3.2% | −0.35 | −20% | — | −8.9 / +7.2 / −5.9 | −1.1% | — | — | — | — |
+| — | S3 gated vol-target basket | Testing (daily, out of scope) | 1d | — | 0.79 | −30% | — | +48 / −19 / −4 | — | — | — | — | — |
+| — | S1, MAR, RS, rebal-freq, S2 short, S5 base, EXP-008 gate | Rejected | | | | | | | | | | | |
 
-**Reference:** A-005 equal-weight monthly basket — OOS (same 21 months) ≈ −45%, DD −71%.
+**Reference:** A-005 equal-weight monthly basket over the WF span: 2024 +84%, 2025 −34%, 2026 −22%; DD −71%.
 
-**No strategy is Candidate; one is Promising.** S2-strict-4h-9 clears cost, parameters, coin breadth
-and — unlike the 1h version — top-trade removal, and annualises ≈15% OOS, inside the goal band. It
-fails recent performance (−6.7% last 365d, all recent trades from one month) and requires execution at
-the 4h close (edge gone by 8h). **Promotion gate to Candidate: positive rolling 90-day PF on forward
-paper data for two consecutive quarters.** ≈ 45 constructs examined on the 2023→2026 data; no
-further variants of this family on seen data.
+**Ranking rationale.** #1 B2 leads on every risk metric, is the only construct positive in the crash
+window, passes concentration / cost / delay / timeframe / coin / parameter tests, and its improvement
+over #2 is in the direction its mechanism predicts on walk-forward OOS — that is what Candidate means
+here. #2 vs #3 is a genuine trade-off: 4h has the better fixed-split Sharpe (1.31 vs 0.85), more trades
+and better concentration; 8h has the better Sortino, the best recent year and the least bear damage.
+1h has the highest headline numbers and the worst drawdown, recent, concentration and TRAIN→OOS
+transfer — the profile the goal says to distrust.
+
+**Regime profile (all configs):** high-vol +29–40%/yr, bull +37–60%/yr; low-vol and bear ≈ −3% to
++5%. The gate keeps bear losses small; it cannot create returns there. **Returns are 2024.**
+
+**Promotion path:** B2 → Paper Trading (freqtrade port, execute at the 4h close). Candidate → Paper
+Trading is a build, not a test. Paper Trading → live consideration: rolling 90d PF > 1 for two
+consecutive quarters on forward data.

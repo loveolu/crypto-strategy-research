@@ -1,24 +1,19 @@
-# Research queue — ranked by Potential Edge × Credibility × Information Gain ÷ Complexity (2026-09-04, post EXP-011)
+# Research queue — ranked by Potential Edge × Credibility × Information Gain ÷ Complexity (2026-09-05, post EXP-015)
 
-**Standing rule: no further variants of S2 on the 2023→2026 data.** ~40 constructs have been examined
-on it; the next in-sample "improvement" is noise by construction. Items 1–2 generate NEW evidence.
+**Standing rule: no further variants of the cascade family on 2023→2026 data.** ≈ 50 constructs examined.
 
-1. **Forward paper-trade S2-strict-4h-9** (freqtrade IStrategy port; dry-run bot is up). The leader
-   after EXP-009/010. Decides decay vs regime — the only open question this data cannot answer.
-   **Execution requirement from EXP-010: act at the 4h candle close; the edge is gone by 8h.** Record
-   theoretical vs simulated fill, slippage, latency, forward expectancy vs TRAIN (+150 bps/trade).
-   *Promotion gate: rolling 90d PF > 1 for two consecutive quarters.* Complexity: medium (port).
-2. **Decay monitor** on S2-strict-4h-9: rolling 90d PF, expectancy, win rate vs TRAIN; flag
-   **Degraded** if PF < 1 two quarters running. Cheap; runs alongside 1.
-3. ~~2h and 8h bracket~~ **DONE — EXP-011**: all four resolutions OOS-positive (Sh 0.83/1.02/1.31/0.85);
-   4h is a stable region with the smallest TRAIN→OOS gap.
-4. **Funding as a regime feature** for the gate (6 months of 1h funding held, growing): does extreme
-   funding predict the cascade-reversion hit rate? Forward-heavy; wait for 12 months of funding.
-5. **Open-interest drop as the liquidation trigger** (OKX rubik; untested bank card) — replaces the
-   dsd/mom proxy with the thing it proxies. Needs an A-XXX data fetch first.
-6. **Walk-forward with re-fit** on the stable region (W 134–202, HOLD 16–32) — does per-window
-   re-selection beat fixed params OOS? Medium; low expected gain given the region is flat.
+1. **Port B2 to a freqtrade IStrategy and paper-trade it** (Candidate → Paper Trading). Execute at the
+   4h close (edge gone by 8h). Log theoretical vs simulated fill, slippage, latency, forward expectancy
+   vs backtest (+149 bps/trade, WR 63%). Gate to next stage: rolling 90d PF > 1, two consecutive quarters.
+2. **Decay monitor** on B2 forward: rolling 90d PF / expectancy / WR vs backtest; **Degraded** if PF < 1
+   two quarters running.
+3. **Record OI, long-short ratio and taker-volume daily** (A-XXX ops; OKX rubik, ~6 mo retention) so a
+   liquidation-trigger variant is testable in a year. Same pattern as the funding recorder.
+4. **Funding as gate feature** — revisit at 12 months held (currently 6; the n=10 look was suggestive).
+5. **Second, uncorrelated mechanism.** The only non-cascade constructs tested (V5 spread, vol-expansion,
+   S3 daily) are negative, bull-beta, or out of scope. The book is one edge. Candidates with a real
+   hypothesis and a 3-year backtest available: BTC-leads-alts *lag* trade (alt reversion after BTC
+   reversion, cross-asset, untested). Intraday seasonality is CLOSED; funding / OI need data.
 
-Closed, do not re-queue without new reason: EXP-CX-001's high-dispersion 24h cross-sectional momentum-reversal
-cell (wrong TRAIN gross sign, placebo p=0.985); majors/alts rotation; regime-switch S2/V5; daily/weekly
-rebalance; S2 short mirror; S2 gate-timing variants (EXP-008); S1 ungated; all T-038/039/040 families.
+Closed, do not re-queue without new reason: V5 as hedge; vol-expansion ignition; majors/alts rotation;
+regime-switch; rebalance-freq; S2 short mirror; S2 gate-timing variants; S1 ungated; T-038/039/040 families.

@@ -31,16 +31,21 @@ def cond(i,W,PW,tf="1h",mom_bars=24):
     return pd.DataFrame({"o":d["open"],"h":d["high"],"l":d["low"],"c":c,"r":r,
         "pct":dsd.rolling(PW).rank(pct=True),"upct":usd.rolling(PW).rank(pct=True),"mom":c/c.shift(mom_bars)-1})
 
-def trades(i,W=168,PW=720,THR=0.80,EXIT=0.50,HOLD=24,delay=0,gated=True,short=False,cost="taker",cost_mult=1.0,mom_thr=0.0,slope=False,tf="1h",mom_bars=24,gate_shift=24):
+def trades(i,W=168,PW=720,THR=0.80,EXIT=0.50,HOLD=24,delay=0,gated=True,short=False,cost="taker",cost_mult=1.0,mom_thr=0.0,slope=False,tf="1h",mom_bars=24,gate_shift=24,btc_cond=False,expansion=False):
     """Returns DataFrame of trades and a 1h net-return Series for this instrument (1.0 = full sleeve)."""
     x=cond(i,W,PW,tf,mom_bars); n=len(x)
+    bm=cond("BTC",W,PW,tf,mom_bars)["mom"].reindex(x.index).values if btc_cond else None
+    if expansion:   # vol-expansion ignition: short/long realised-vol ratio percentile
+        vr=(x["r"].rolling(mom_bars).std()/x["r"].rolling(W).std()); vpct=vr.rolling(PW).rank(pct=True).values
     g=gate(i,slope).reindex(x.index,method="ffill").shift(gate_shift).fillna(0).values if gated else np.ones(n)
     o,l,h,c,pct,upct,mom=x.o.values,x.l.values,x.h.values,x.c.values,x.pct.values,x.upct.values,x.mom.values
     st=side_taker(i)*cost_mult; hs=half(i)
     ret=np.zeros(n); rows=[]; t=PW
     while t<n-HOLD-delay-3:
-        if short: trig=(upct[t]>=THR) and (mom[t]>0) and (g[t]==0)
-        else:     trig=(pct[t]>=THR) and (mom[t]<=-mom_thr) and (g[t]>0)
+        if short:       trig=(upct[t]>=THR) and (mom[t]>0) and (g[t]==0)
+        elif expansion: trig=(vpct[t]>=THR) and (mom[t]>=mom_thr) and (g[t]>0)
+        else:           trig=(pct[t]>=THR) and (mom[t]<=-mom_thr) and (g[t]>0)
+        if trig and btc_cond and not (bm[t]<0): trig=False
         if not trig: t+=1; continue
         e=t+1+delay
         if cost=="maker" and not short:
