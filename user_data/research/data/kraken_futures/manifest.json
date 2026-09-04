@@ -1,0 +1,439 @@
+{
+  "source": "https://futures.kraken.com/api/charts/v1/trade",
+  "start": "2023-01-22T00:00:00+00:00",
+  "end": "2026-09-01T00:00:00+00:00",
+  "series": [
+    {
+      "instrument": "BTC",
+      "symbol": "PF_XBTUSD",
+      "resolution": "4h",
+      "rows": 7909,
+      "first": "2023-01-22T00:00:00+00:00",
+      "last": "2026-09-01T00:00:00+00:00",
+      "file": "user_data\\research\\data\\kraken_futures\\BTC-PF_XBTUSD-4h.feather",
+      "file_sha256": "422afc88b7729f1aa2e3a899f53df2f6ae1198c1601d6ac56a8c348f3ba22fbc",
+      "requests": [
+        {
+          "url": "https://futures.kraken.com/api/charts/v1/trade/PF_XBTUSD/4h?from=1674345600&to=1788220800",
+          "fetched_at_utc": "2026-09-04T21:16:21.426731+00:00",
+          "rows": 2000,
+          "sha256": "1061019a765ff79c44be9863a971d1d871f656cb69c93378671055ade8bdbadd"
+        },
+        {
+          "url": "https://futures.kraken.com/api/charts/v1/trade/PF_XBTUSD/4h?from=1703145600&to=1788220800",
+          "fetched_at_utc": "2026-09-04T21:16:22.636960+00:00",
+          "rows": 2000,
+          "sha256": "3bf2ec9e8dfc5264c2637a68c1d3e607453b0003db6395988ca57bd51ff5e3ca"
+        },
+        {
+          "url": "https://futures.kraken.com/api/charts/v1/trade/PF_XBTUSD/4h?from=1731945600&to=1788220800",
+          "fetched_at_utc": "2026-09-04T21:16:24.423475+00:00",
+          "rows": 2000,
+          "sha256": "2f2791498f4f7dbd362a4dbaf134ce636b0b85ee23dbd9e709b9c4ea4a4408e9"
+        },
+        {
+          "url": "https://futures.kraken.com/api/charts/v1/trade/PF_XBTUSD/4h?from=1760745600&to=1788220800",
+          "fetched_at_utc": "2026-09-04T21:16:26.856138+00:00",
+          "rows": 1909,
+          "sha256": "50dd8bfdbd0e2f4a46d985422353a1afb63d3a2d7928c4ed705cecf13d4b0e08"
+        }
+      ]
+    },
+    {
+      "instrument": "BTC",
+      "symbol": "PF_XBTUSD",
+      "resolution": "1d",
+      "rows": 1319,
+      "first": "2023-01-22T00:00:00+00:00",
+      "last": "2026-09-01T00:00:00+00:00",
+      "file": "user_data\\research\\data\\kraken_futures\\BTC-PF_XBTUSD-1d.feather",
+      "file_sha256": "dc0c9a9a13fc529183c095f8f509d26cf8b4c1ed82999d5eed077374bdf84a7e",
+      "requests": [
+        {
+          "url": "https://futures.kraken.com/api/charts/v1/trade/PF_XBTUSD/1d?from=1674345600&to=1788220800",
+          "fetched_at_utc": "2026-09-04T21:16:28.891469+00:00",
+          "rows": 1319,
+          "sha256": "0360b4c459ea3ba049296a45ec3f0c65b69f3b7fef44766752b32922e9608828"
+        }
+      ]
+    },
+    {
+      "instrument": "ETH",
+      "symbol": "PF_ETHUSD",
+      "resolution": "4h",
+      "rows": 7909,
+      "first": "2023-01-22T00:00:00+00:00",
+      "last": "2026-09-01T00:00:00+00:00",
+      "file": "user_data\\research\\data\\kraken_futures\\ETH-PF_ETHUSD-4h.feather",
+      "file_sha256": "e7a06a4f6657c1eec4fd8e2cca5ea7d2ff41adb9daa776f7c48ccbebe1ffad79",
+      "requests": [
+        {
+          "url": "https://futures.kraken.com/api/charts/v1/trade/PF_ETHUSD/4h?from=1674345600&to=1788220800",
+          "fetched_at_utc": "2026-09-04T21:16:30.700710+00:00",
+          "rows": 2000,
+          "sha256": "37a44257a7ddd46291b96b46b0ec7ac798959931a599e26e0b6bafc6221165b9"
+        },
+        {
+          "url": "https://futures.kraken.com/api/charts/v1/trade/PF_ETHUSD/4h?from=1703145600&to=1788220800",
+          "fetched_at_utc": "2026-09-04T21:16:32.691626+00:00",
+          "rows": 2000,
+          "sha256": "37afaa88cccdc6bb9a73ac72d18e5e299173e55ca45651753c839f85ac3297a3"
+        },
+        {
+          "url": "https://futures.kraken.com/api/charts/v1/trade/PF_ETHUSD/4h?from=1731945600&to=1788220800",
+          "fetched_at_utc": "2026-09-04T21:16:34.714264+00:00",
+          "rows": 2000,
+          "sha256": "4981fd5450516bedb2331327587a0bcb9269b173ec937fe60db5146ca6726882"
+        },
+        {
+          "url": "https://futures.kraken.com/api/charts/v1/trade/PF_ETHUSD/4h?from=1760745600&to=1788220800",
+          "fetched_at_utc": "2026-09-04T21:16:36.629215+00:00",
+          "rows": 1909,
+          "sha256": "1d03209899f31c3009fdaa95b3ff2b945482bdea74f2e738f9ee339c591c8ac8"
+        }
+      ]
+    },
+    {
+      "instrument": "ETH",
+      "symbol": "PF_ETHUSD",
+      "resolution": "1d",
+      "rows": 1319,
+      "first": "2023-01-22T00:00:00+00:00",
+      "last": "2026-09-01T00:00:00+00:00",
+      "file": "user_data\\research\\data\\kraken_futures\\ETH-PF_ETHUSD-1d.feather",
+      "file_sha256": "ca47232947c7669b373e14eac2725f03b66e89eb494040ffbd8515583c2db03a",
+      "requests": [
+        {
+          "url": "https://futures.kraken.com/api/charts/v1/trade/PF_ETHUSD/1d?from=1674345600&to=1788220800",
+          "fetched_at_utc": "2026-09-04T21:16:38.459190+00:00",
+          "rows": 1319,
+          "sha256": "37eb143ea283e045cf388082ed99156ec7b0ac1a8ec6758637f275a73038e67b"
+        }
+      ]
+    },
+    {
+      "instrument": "SOL",
+      "symbol": "PF_SOLUSD",
+      "resolution": "4h",
+      "rows": 7909,
+      "first": "2023-01-22T00:00:00+00:00",
+      "last": "2026-09-01T00:00:00+00:00",
+      "file": "user_data\\research\\data\\kraken_futures\\SOL-PF_SOLUSD-4h.feather",
+      "file_sha256": "69ce5e7f7ff52dd49a198f8ec886eef4476bab5a824b011728faa2d00192c63e",
+      "requests": [
+        {
+          "url": "https://futures.kraken.com/api/charts/v1/trade/PF_SOLUSD/4h?from=1674345600&to=1788220800",
+          "fetched_at_utc": "2026-09-04T21:16:40.394315+00:00",
+          "rows": 2000,
+          "sha256": "772bc670f657caf476bc7f2153d0ac250a01b3a134e6f320014821441342b37e"
+        },
+        {
+          "url": "https://futures.kraken.com/api/charts/v1/trade/PF_SOLUSD/4h?from=1703145600&to=1788220800",
+          "fetched_at_utc": "2026-09-04T21:16:42.406402+00:00",
+          "rows": 2000,
+          "sha256": "c44e11e985e814cb595586238c40f97471eb7942b88cc251b990c917341bee8f"
+        },
+        {
+          "url": "https://futures.kraken.com/api/charts/v1/trade/PF_SOLUSD/4h?from=1731945600&to=1788220800",
+          "fetched_at_utc": "2026-09-04T21:16:44.424355+00:00",
+          "rows": 2000,
+          "sha256": "6e1c17164d23561d6f65d27dd864dfacb1d20c685bab52d1281b0fbbb79f748b"
+        },
+        {
+          "url": "https://futures.kraken.com/api/charts/v1/trade/PF_SOLUSD/4h?from=1760745600&to=1788220800",
+          "fetched_at_utc": "2026-09-04T21:16:46.636387+00:00",
+          "rows": 1909,
+          "sha256": "0b1cb0670c58255da4c02e761f9b42e9cf3cc8aaa34c7a22730cd8b85323cd95"
+        }
+      ]
+    },
+    {
+      "instrument": "SOL",
+      "symbol": "PF_SOLUSD",
+      "resolution": "1d",
+      "rows": 1319,
+      "first": "2023-01-22T00:00:00+00:00",
+      "last": "2026-09-01T00:00:00+00:00",
+      "file": "user_data\\research\\data\\kraken_futures\\SOL-PF_SOLUSD-1d.feather",
+      "file_sha256": "428811371faeeb8f8df45d71f4030d11fda5fb29e705e4655f4a44ad210d45b4",
+      "requests": [
+        {
+          "url": "https://futures.kraken.com/api/charts/v1/trade/PF_SOLUSD/1d?from=1674345600&to=1788220800",
+          "fetched_at_utc": "2026-09-04T21:16:48.458020+00:00",
+          "rows": 1319,
+          "sha256": "245455f4dca7c91f02a234e10a9c5ecbd0c4f78c9cc99a3d272e862d29734b80"
+        }
+      ]
+    },
+    {
+      "instrument": "XRP",
+      "symbol": "PF_XRPUSD",
+      "resolution": "4h",
+      "rows": 7909,
+      "first": "2023-01-22T00:00:00+00:00",
+      "last": "2026-09-01T00:00:00+00:00",
+      "file": "user_data\\research\\data\\kraken_futures\\XRP-PF_XRPUSD-4h.feather",
+      "file_sha256": "f2283e90b12fe9c9fb2234f27d474db8ddc61e29f65068722036a4624b142935",
+      "requests": [
+        {
+          "url": "https://futures.kraken.com/api/charts/v1/trade/PF_XRPUSD/4h?from=1674345600&to=1788220800",
+          "fetched_at_utc": "2026-09-04T21:16:50.496139+00:00",
+          "rows": 2000,
+          "sha256": "a55607cc496ebc1a465ae8ae26921217956f08e821eae05354b249395a1c02e0"
+        },
+        {
+          "url": "https://futures.kraken.com/api/charts/v1/trade/PF_XRPUSD/4h?from=1703145600&to=1788220800",
+          "fetched_at_utc": "2026-09-04T21:16:52.592535+00:00",
+          "rows": 2000,
+          "sha256": "87b675755fd7ac47f41f9d1c54baae711b375c709522af65e936de2ee901601d"
+        },
+        {
+          "url": "https://futures.kraken.com/api/charts/v1/trade/PF_XRPUSD/4h?from=1731945600&to=1788220800",
+          "fetched_at_utc": "2026-09-04T21:16:54.608729+00:00",
+          "rows": 2000,
+          "sha256": "9a089688b9aa153457625b59cdf2582134c17ef54403c0c21c63428b51e39d5a"
+        },
+        {
+          "url": "https://futures.kraken.com/api/charts/v1/trade/PF_XRPUSD/4h?from=1760745600&to=1788220800",
+          "fetched_at_utc": "2026-09-04T21:16:56.715448+00:00",
+          "rows": 1909,
+          "sha256": "b44419d8f20aeacacf0f680ef760503ca213449a67afd0a74f7e002baba384e9"
+        }
+      ]
+    },
+    {
+      "instrument": "XRP",
+      "symbol": "PF_XRPUSD",
+      "resolution": "1d",
+      "rows": 1319,
+      "first": "2023-01-22T00:00:00+00:00",
+      "last": "2026-09-01T00:00:00+00:00",
+      "file": "user_data\\research\\data\\kraken_futures\\XRP-PF_XRPUSD-1d.feather",
+      "file_sha256": "6dd3e320eea3856922295d9ee506cd622ed9126a041ab9281771cedcba9ea545",
+      "requests": [
+        {
+          "url": "https://futures.kraken.com/api/charts/v1/trade/PF_XRPUSD/1d?from=1674345600&to=1788220800",
+          "fetched_at_utc": "2026-09-04T21:16:58.509949+00:00",
+          "rows": 1319,
+          "sha256": "b3f6b8a6b5c00915090773317ef828c84ebf2c1e14eb50ffd85166d34120facd"
+        }
+      ]
+    },
+    {
+      "instrument": "ADA",
+      "symbol": "PF_ADAUSD",
+      "resolution": "4h",
+      "rows": 7909,
+      "first": "2023-01-22T00:00:00+00:00",
+      "last": "2026-09-01T00:00:00+00:00",
+      "file": "user_data\\research\\data\\kraken_futures\\ADA-PF_ADAUSD-4h.feather",
+      "file_sha256": "f1c25a497d4b5fd65a5979f053cfe9106ebbef7c403a2906d2d81f4a381049cc",
+      "requests": [
+        {
+          "url": "https://futures.kraken.com/api/charts/v1/trade/PF_ADAUSD/4h?from=1674345600&to=1788220800",
+          "fetched_at_utc": "2026-09-04T21:17:00.297810+00:00",
+          "rows": 2000,
+          "sha256": "c49595f79a252d85351cca1a728b0569f57e1d834ff1dc0ee6a462b959f8ae95"
+        },
+        {
+          "url": "https://futures.kraken.com/api/charts/v1/trade/PF_ADAUSD/4h?from=1703145600&to=1788220800",
+          "fetched_at_utc": "2026-09-04T21:17:02.240337+00:00",
+          "rows": 2000,
+          "sha256": "7b6f317ba30049c74c6a0b5171821a3756378b84bd31187cee7a899fa781391a"
+        },
+        {
+          "url": "https://futures.kraken.com/api/charts/v1/trade/PF_ADAUSD/4h?from=1731945600&to=1788220800",
+          "fetched_at_utc": "2026-09-04T21:17:04.230708+00:00",
+          "rows": 2000,
+          "sha256": "e23c350798857f6d1f9f9fbac16d1aa2eadbea8df0fedd1162438fc3259a4401"
+        },
+        {
+          "url": "https://futures.kraken.com/api/charts/v1/trade/PF_ADAUSD/4h?from=1760745600&to=1788220800",
+          "fetched_at_utc": "2026-09-04T21:17:06.248577+00:00",
+          "rows": 1909,
+          "sha256": "c71b0483c8139563b09f76253c2eb7e557b2ba74b0b2da8b9f8be8b9c54feb84"
+        }
+      ]
+    },
+    {
+      "instrument": "ADA",
+      "symbol": "PF_ADAUSD",
+      "resolution": "1d",
+      "rows": 1319,
+      "first": "2023-01-22T00:00:00+00:00",
+      "last": "2026-09-01T00:00:00+00:00",
+      "file": "user_data\\research\\data\\kraken_futures\\ADA-PF_ADAUSD-1d.feather",
+      "file_sha256": "f8479de467c54b6f12435da420c9c4aeeb80cd953d159effbacf465fdd068c28",
+      "requests": [
+        {
+          "url": "https://futures.kraken.com/api/charts/v1/trade/PF_ADAUSD/1d?from=1674345600&to=1788220800",
+          "fetched_at_utc": "2026-09-04T21:17:08.201396+00:00",
+          "rows": 1319,
+          "sha256": "f73b2c775f4866be2645aecbe12852330cb533213dec4d0c2391bae8c9315bd8"
+        }
+      ]
+    },
+    {
+      "instrument": "AVAX",
+      "symbol": "PF_AVAXUSD",
+      "resolution": "4h",
+      "rows": 7909,
+      "first": "2023-01-22T00:00:00+00:00",
+      "last": "2026-09-01T00:00:00+00:00",
+      "file": "user_data\\research\\data\\kraken_futures\\AVAX-PF_AVAXUSD-4h.feather",
+      "file_sha256": "33daf095be2a3770850098c19afd22436f448bb147f0016c1ee5dc55a001d84d",
+      "requests": [
+        {
+          "url": "https://futures.kraken.com/api/charts/v1/trade/PF_AVAXUSD/4h?from=1674345600&to=1788220800",
+          "fetched_at_utc": "2026-09-04T21:17:10.064506+00:00",
+          "rows": 2000,
+          "sha256": "05edd25b33e00937541ab74676cc173ef5e7b0ee87b5bb2d91c6374f7cd9bd34"
+        },
+        {
+          "url": "https://futures.kraken.com/api/charts/v1/trade/PF_AVAXUSD/4h?from=1703145600&to=1788220800",
+          "fetched_at_utc": "2026-09-04T21:17:12.180513+00:00",
+          "rows": 2000,
+          "sha256": "779c4c951fc8da287778c6813c4aa55c75df8c359b8c959414735bf24a9beb1d"
+        },
+        {
+          "url": "https://futures.kraken.com/api/charts/v1/trade/PF_AVAXUSD/4h?from=1731945600&to=1788220800",
+          "fetched_at_utc": "2026-09-04T21:17:14.475221+00:00",
+          "rows": 2000,
+          "sha256": "0b13150b1e89372e3e95f9206ac14d39807253f4f7c11d0f76c6c2b91ad6e845"
+        },
+        {
+          "url": "https://futures.kraken.com/api/charts/v1/trade/PF_AVAXUSD/4h?from=1760745600&to=1788220800",
+          "fetched_at_utc": "2026-09-04T21:17:15.769559+00:00",
+          "rows": 1909,
+          "sha256": "a8d6784c9db871594f69c1a5c7618dda697f10d2f6f5e75f4b1e4fe08d550856"
+        }
+      ]
+    },
+    {
+      "instrument": "AVAX",
+      "symbol": "PF_AVAXUSD",
+      "resolution": "1d",
+      "rows": 1319,
+      "first": "2023-01-22T00:00:00+00:00",
+      "last": "2026-09-01T00:00:00+00:00",
+      "file": "user_data\\research\\data\\kraken_futures\\AVAX-PF_AVAXUSD-1d.feather",
+      "file_sha256": "0fe7d3b40efc449e1107e68226cee8cad4770315bb82a599d935f1a380b85442",
+      "requests": [
+        {
+          "url": "https://futures.kraken.com/api/charts/v1/trade/PF_AVAXUSD/1d?from=1674345600&to=1788220800",
+          "fetched_at_utc": "2026-09-04T21:17:16.413463+00:00",
+          "rows": 1319,
+          "sha256": "9916c71e8cd2995a7a02f46705a11d9d2eb5dcec7132172f9154ef5ee5baf197"
+        }
+      ]
+    },
+    {
+      "instrument": "DOT",
+      "symbol": "PF_DOTUSD",
+      "resolution": "4h",
+      "rows": 7909,
+      "first": "2023-01-22T00:00:00+00:00",
+      "last": "2026-09-01T00:00:00+00:00",
+      "file": "user_data\\research\\data\\kraken_futures\\DOT-PF_DOTUSD-4h.feather",
+      "file_sha256": "47e29038d46f8bbc93e695fca01d898b1a3ee01be0d270fdc9167222d5f83194",
+      "requests": [
+        {
+          "url": "https://futures.kraken.com/api/charts/v1/trade/PF_DOTUSD/4h?from=1674345600&to=1788220800",
+          "fetched_at_utc": "2026-09-04T21:17:17.449007+00:00",
+          "rows": 2000,
+          "sha256": "db90fe03302a41ce62ffc8faac640740d4bfb8585894da5581d94b4341842274"
+        },
+        {
+          "url": "https://futures.kraken.com/api/charts/v1/trade/PF_DOTUSD/4h?from=1703145600&to=1788220800",
+          "fetched_at_utc": "2026-09-04T21:17:18.542459+00:00",
+          "rows": 2000,
+          "sha256": "f4bc6096979927647cc4390fcbdab687007de91319753887c4ff5b4c661ab41e"
+        },
+        {
+          "url": "https://futures.kraken.com/api/charts/v1/trade/PF_DOTUSD/4h?from=1731945600&to=1788220800",
+          "fetched_at_utc": "2026-09-04T21:17:19.472219+00:00",
+          "rows": 2000,
+          "sha256": "95a022ec5ba613bcf86952594396d5e450509fee888893a25ec66f0303b1f0e6"
+        },
+        {
+          "url": "https://futures.kraken.com/api/charts/v1/trade/PF_DOTUSD/4h?from=1760745600&to=1788220800",
+          "fetched_at_utc": "2026-09-04T21:17:20.362361+00:00",
+          "rows": 1909,
+          "sha256": "5ddf7f7cc0625ce45450d144d76464a31ddd7e7021075622876b8897a6bc4fd3"
+        }
+      ]
+    },
+    {
+      "instrument": "DOT",
+      "symbol": "PF_DOTUSD",
+      "resolution": "1d",
+      "rows": 1319,
+      "first": "2023-01-22T00:00:00+00:00",
+      "last": "2026-09-01T00:00:00+00:00",
+      "file": "user_data\\research\\data\\kraken_futures\\DOT-PF_DOTUSD-1d.feather",
+      "file_sha256": "22b598c8bb611bd0dd9694b46d9eb7df3a530310eeefab611c4a7327353e7e79",
+      "requests": [
+        {
+          "url": "https://futures.kraken.com/api/charts/v1/trade/PF_DOTUSD/1d?from=1674345600&to=1788220800",
+          "fetched_at_utc": "2026-09-04T21:17:21.173880+00:00",
+          "rows": 1319,
+          "sha256": "1b83e38ea13e63fe53bb906f6bea10f5cc21b80acc6d11c2b59a0ec6a313c540"
+        }
+      ]
+    },
+    {
+      "instrument": "LINK",
+      "symbol": "PF_LINKUSD",
+      "resolution": "4h",
+      "rows": 7909,
+      "first": "2023-01-22T00:00:00+00:00",
+      "last": "2026-09-01T00:00:00+00:00",
+      "file": "user_data\\research\\data\\kraken_futures\\LINK-PF_LINKUSD-4h.feather",
+      "file_sha256": "281fe3132e81c0e2633b330a5ddbe571d3c5de252d64b746758902a825f5b7e6",
+      "requests": [
+        {
+          "url": "https://futures.kraken.com/api/charts/v1/trade/PF_LINKUSD/4h?from=1674345600&to=1788220800",
+          "fetched_at_utc": "2026-09-04T21:17:22.103733+00:00",
+          "rows": 2000,
+          "sha256": "caa5df951f0cecf4902087f53990edfb55c4a86e4e5e3c59dc274de918565061"
+        },
+        {
+          "url": "https://futures.kraken.com/api/charts/v1/trade/PF_LINKUSD/4h?from=1703145600&to=1788220800",
+          "fetched_at_utc": "2026-09-04T21:17:23.003474+00:00",
+          "rows": 2000,
+          "sha256": "ccc4c8c56a8805b93157e4d951d54a1e86f5111030bb9f9ae86f99d300081135"
+        },
+        {
+          "url": "https://futures.kraken.com/api/charts/v1/trade/PF_LINKUSD/4h?from=1731945600&to=1788220800",
+          "fetched_at_utc": "2026-09-04T21:17:23.861769+00:00",
+          "rows": 2000,
+          "sha256": "7b387a815906dd29fb025704baecd21c27e449237a76d69ad3cd9581093b1f3e"
+        },
+        {
+          "url": "https://futures.kraken.com/api/charts/v1/trade/PF_LINKUSD/4h?from=1760745600&to=1788220800",
+          "fetched_at_utc": "2026-09-04T21:17:24.749517+00:00",
+          "rows": 1909,
+          "sha256": "d5855a60fe1d06933ca27cc349f48ae86fe6816af0090a7009fffb0b267dc5d6"
+        }
+      ]
+    },
+    {
+      "instrument": "LINK",
+      "symbol": "PF_LINKUSD",
+      "resolution": "1d",
+      "rows": 1319,
+      "first": "2023-01-22T00:00:00+00:00",
+      "last": "2026-09-01T00:00:00+00:00",
+      "file": "user_data\\research\\data\\kraken_futures\\LINK-PF_LINKUSD-1d.feather",
+      "file_sha256": "a650b5b505b58d58c9e54e4fc74417d21025bf43f32662dc7bd97b5e0110c6d9",
+      "requests": [
+        {
+          "url": "https://futures.kraken.com/api/charts/v1/trade/PF_LINKUSD/1d?from=1674345600&to=1788220800",
+          "fetched_at_utc": "2026-09-04T21:17:25.388474+00:00",
+          "rows": 1319,
+          "sha256": "9ece784edc0bd0e32bd12ea51abd5dec5d6c902f0106d75e38968a80b46589aa"
+        }
+      ]
+    }
+  ]
+}

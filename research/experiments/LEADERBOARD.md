@@ -38,3 +38,9 @@ consecutive quarters on forward data; the initial monitor state is **COLLECTING*
 **Independent-mechanism update:** CRYPTO-EXP-016's BTC-rebound/lagging-alt rule passed its TRAIN-only
 existence screen but reversed sign gross OOS (−5.6%; −11.9% after measured costs), with every held-out
 segment negative. It is rejected and does not diversify the cascade family.
+
+**Exchange-transfer update:** The exact B2 signal transferred without refitting to seven Kraken alt
+perpetuals (259 trades, +82.1% after an 18 bps round trip, Sharpe 1.35, PF 2.09, all seven coins
+positive). It survived 3× costs, two-bar delay and top-5% removal, materially strengthening the
+mechanism claim. Kraken drawdown was −13.2% and last-365d return −9.8%, so it does not beat the
+user/Claude +61.7% / −5.5% benchmark on the joint return-risk hurdle.

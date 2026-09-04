@@ -14,6 +14,10 @@
    S3 daily, and BTC-rebound/lagging-alt catch-up) are negative, bull-beta, or out of scope. The book
    remains one edge. Require a genuinely new hypothesis; intraday seasonality and simple OHLCV
    lead/lag are CLOSED, while funding / OI need forward data.
+5. **Beat the explicit Claude hurdle honestly.** A challenger must exceed the displayed B2 #1
+   (+61.7% total, −5.5% DD) after costs and survive equivalent OOS/recent/concentration/delay tests.
+   Also compare against consistent fixed-rule B2 (+92.0%, −10.4% DD) and true WF B2 separately;
+   do not compound the supplied hybrid 2023 in-sample + 2024–26 WF columns as one validation stream.
 
 Closed, do not re-queue without new reason: V5 as hedge; vol-expansion ignition; majors/alts rotation;
 regime-switch; rebalance-freq; S2 short mirror; S2 gate-timing variants; S1 ungated; T-038/039/040 families;
