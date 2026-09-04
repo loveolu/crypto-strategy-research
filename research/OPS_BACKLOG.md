@@ -668,7 +668,7 @@ held and growing. A-010 unaffected.
 
 **Evaluation:** `research/measurements/2026-09-03_A012_five_strategies.md`. Benchmark −53.29% in a
 crash year; S5 (hedged majors/alts spread) the only positive at +3.67%; S2 (trend-gated cascade)
-−5.9% at 1.6 trades/day; S1 ungated −28%; S3 −15.8%; S4 inconclusive (funding z never hit ±2).
+−5.9% at ~0.43 trades/day (corrected A-015); S1 ungated −28%; S3 −15.8%; S4 inconclusive (funding z never hit ±2).
 **Holdout SPENT for S1–S5 as specified**; any carry-forward is a selection step and must be priced.
 
 ---
@@ -696,5 +696,5 @@ examined 09-02→09-04 — no held-out data remains for any of them.**
 switch: Sharpe 1.28 < S2 1.33; daily/weekly rebalance < monthly at measured costs). **1 survives
 marginally** (50/50 S3+V5: Sh 0.82 vs 0.79, DD halved, return halved, OOS +0.8%). **Diagnostic:**
 vol-target HELPS at daily on perps (S3 vs gate-only: +10 pts return, −18 pts DD) — evidence for
-T-040's daily reopening path. **S2 (Sh 1.33, DD −10.8%, 1.6/day) remains the best risk-adjusted
+T-040's daily reopening path. **S2 (Sh 1.33, DD −10.8%, ~0.43/day (corrected A-015)) remains the best risk-adjusted
 construct found.** A-005 benchmark and S5 reference bar retained as instructed. ~33 constructs seen.

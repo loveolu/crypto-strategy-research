@@ -43,8 +43,8 @@ trailing vol ratio removes it. Mechanical fix, not fished. Everything else is no
 |---|---|---|---|---|---|---|---|---|---|---|
 | **BENCHMARK hold basket** | +251% | −26% | +66% | −59% | +95.5 | +83.9 | −33.9 | −22.1 | **+85%** | **−70%** |
 | **S3 gated vol-target basket** | +135% | −14% | +19% | −22% | +48.1 | +61.8 | −18.5 | +0.5 | **+96%** | **−25%** |
-| S1 ungated cascade (3.7/day) | +106% | +28% | +8% | −28% | +1.3 | +102.6 | +32.4 | −24.1 | +106% | −33% |
-| S2 trend-gated cascade (1.6/day) | +69% | +3% | −0.3% | −5.6% | +7.6 | +58.2 | −5.0 | +1.7 | +64% | **−10%** |
+| S1 ungated cascade (~1.0/day, corrected A-015) | +106% | +28% | +8% | −28% | +1.3 | +102.6 | +32.4 | −24.1 | +106% | −33% |
+| S2 trend-gated cascade (~0.43/day, corrected A-015) | +69% | +3% | −0.3% | −5.6% | +7.6 | +58.2 | −5.0 | +1.7 | +64% | **−10%** |
 | S5-V5 beta-neutral spread | +1.3% | −6.2% | +8.5% | −1.2% | +6.3 | −4.9 | +7.2 | −6.7 | +1% | −15% |
 | S5 base (the designated bar) | −22% | −16% | +8.5% | +3.5% | −3.8 | −25.0 | +3.5 | −2.7 | −27% | −32% |
 
@@ -58,7 +58,7 @@ S3 −7% · S1 −22% · benchmark **−32%**.
   benchmark in every rally (TEST +19% vs +66%) and wins by being flat in every crash.
 - **S1 has the highest raw return (+106%)** — from 2024's +103%, alt-season dip-buying — and the
   worst behaviour in the crash (−28%, DD −33%). Sharpe collapses from +2.5 in-sample to −2.2 forward.
-- **S2 is the most robust**: positive 3 of 4 years, DD under 10% everywhere, 1.6 trades/day. It gave
+- **S2 is the most robust**: positive 3 of 4 years, DD under 10% everywhere, ~0.43 trades/day (corrected A-015). It gave
   up most of 2024 and was flat-to-slightly-negative in 2025–26. Full cycle +64%.
 - **S5 in its best form (V5) is a hedge, not a return engine**: ~flat over the cycle, +7% in the
   OOS 17 months, the only construct positive there.

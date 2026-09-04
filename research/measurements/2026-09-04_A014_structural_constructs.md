@@ -38,6 +38,6 @@ written into the script header before the run. Costs: A-011 measured per-instrum
    diversification return is smaller than the turnover cost even at 13.7 bps RT. The hypothesis
    T-040's assignment parked is closed.
 6. **S2 remains the best risk-adjusted construct the program has produced**: Sharpe 1.33, DD −10.8%,
-   positive 3 of 4 years, 1.6 trades/day. Nothing designed here beat it.
+   positive 3 of 4 years, ~0.43 trades/day (corrected A-015). Nothing designed here beat it.
 
 **Construct count 2026-09-02 → 09-04: ≈ 33.** Every window seen. No held-out data remains.

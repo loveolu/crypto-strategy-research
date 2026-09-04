@@ -34,12 +34,12 @@ supposed to survive, and the one the benchmark cannot.
 |---|---|---|---|---|---|
 | BENCHMARK (hold basket) | **−53.29%** | −70.14% | −0.96 | — | — |
 | S3 gated vol-target basket | −15.80% | −23.99% | −0.78 | ~30 | 0.1 |
-| S1 cascade reversion, taker | −28.22% | −33.39% | −2.15 | 1,348 | 3.7 |
-| S1 cascade reversion, maker | −27.26% | −32.51% | −2.07 | 1,343 | 3.7 |
-| S2 trend-gated cascade, taker | −5.91% | −9.23% | −0.84 | 579 | 1.6 |
-| S2 trend-gated cascade, maker | −5.95% | −9.03% | −0.85 | 577 | 1.6 |
+| S1 cascade reversion, taker | −28.22% | −33.39% | −2.15 | 1,348* | ~1.0 |
+| S1 cascade reversion, maker | −27.26% | −32.51% | −2.07 | 1,343* | ~1.0 |
+| S2 trend-gated cascade, taker | −5.91% | −9.23% | −0.84 | 579* | ~0.43 |
+| S2 trend-gated cascade, maker | −5.95% | −9.03% | −0.85 | 577* | ~0.43 |
 | **S5 majors/alts spread** | **+3.67%** | −7.05% | **+0.40** | 43* | 0.1 |
-| *S5's 43 is regime entries over the FULL 2023→2026 series (the loop was not windowed), not the year alone — corrected 2026-09-04. | | | | | |
+| *ALL trade counts in this table are FULL-SERIES totals (the loop was not windowed) — corrected 2026-09-04 (A-015): S1 ≈ 1.0/day, S2 ≈ 0.43/day over 2023→2026. S5's 43 is regime entries over the FULL 2023→2026 series (the loop was not windowed), not the year alone — corrected 2026-09-04. | | | | | |
 | S4 funding overlay on S3 | no effect — basket funding z never reached ±2 in the covered window (2026-05-14 →) | | | | |
 
 ## Reading
