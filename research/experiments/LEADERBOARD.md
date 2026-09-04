@@ -7,7 +7,7 @@ reversion in daily uptrends) at different settings — correlated, not three ind
 
 | # | strategy | status | tf | WF ann | WF Sh / So | WF DD | Calmar | 2024 / 2025 / 2026 | last 365d | fixed-OOS Sh | top-5% drop | 3× cost Sh | +win |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| **1** | **B2: 4h cascade + BTC-drop condition** | **Candidate** | 4h | 13.9% | 1.23 / 3.54 | **−5.5%** | **2.55** | +37.3 / +1.9 / +0.5 | **+1.6%** | **1.42** | **+13.3%** | 1.17 | 6/11 |
+| **1** | **B2: 4h cascade + BTC-drop condition** | **Paper Trading (COLLECTING)** | 4h | 13.9% | 1.23 / 3.54 | **−5.5%** | **2.55** | +37.3 / +1.9 / +0.5 | **+1.6%** | **1.42** | **+13.3%** | 1.17 | 6/11 |
 | **2** | **S2-strict 4h** | Promising | 4h | 15.7% | 1.30 / 2.93 | −7.4% | 2.12 | +42.3 / +2.1 / +0.6 | −4.1% | 1.31 | +10.8% | 1.05 | 5/11 |
 | **3** | **S2-strict 8h** | Promising | 8h | 14.7% | 1.70 / **4.72** | −8.3% | 1.76 | +39.3 / +1.7 / +0.9 | **+4.3%** | 0.85 | +4.9% | — | 5/11 |
 | 4 | S2-strict 2h | Testing | 2h | 17.0% | 1.56 / 3.81 | −8.4% | 2.02 | +49.4 / +0.4 / +0.5 | −7.6% | 1.02 | +0.4% | — | 6/11 |
@@ -30,6 +30,6 @@ transfer — the profile the goal says to distrust.
 **Regime profile (all configs):** high-vol +29–40%/yr, bull +37–60%/yr; low-vol and bear ≈ −3% to
 +5%. The gate keeps bear losses small; it cannot create returns there. **Returns are 2024.**
 
-**Promotion path:** B2 → Paper Trading (freqtrade port, execute at the 4h close). Candidate → Paper
-Trading is a build, not a test. Paper Trading → live consideration: rolling 90d PF > 1 for two
-consecutive quarters on forward data.
+**Forward status:** B2 entered isolated Freqtrade dry-run paper trading on 2026-09-04 13:55 PDT,
+executing at the 4h close. Paper Trading → live consideration requires rolling 90d PF > 1 for two
+consecutive quarters on forward data; the initial monitor state is **COLLECTING** (zero trades).

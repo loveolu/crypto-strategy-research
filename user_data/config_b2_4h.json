@@ -1,0 +1,9 @@
+{
+  "add_config_files": ["config_perp.json"],
+  "strategy": "B2Cascade4h",
+  "timeframe": "4h",
+  "bot_name": "B2Cascade4hPaper",
+  "db_url": "sqlite:///tradesv3.b2_4h.dryrun.sqlite",
+  "stake_amount": 500,
+  "dry_run": true
+}
