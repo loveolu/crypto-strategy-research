@@ -1,6 +1,6 @@
 {
   "algorithm": "sha256",
-  "built_utc": "2026-09-04T00:38:22Z",
+  "built_utc": "2026-09-05T01:26:36Z",
   "file_count": 52,
   "files": {
     ".gitkeep": {
@@ -204,8 +204,8 @@
       "sha256": "be315aa95198d7e8055115677afddc383e5f8936f2da223db62143a92f0a1c65"
     },
     "okx/futures/leverage_tiers_USDT.json": {
-      "bytes": 10490180,
-      "sha256": "d9699b164892e359cc8fd6fc36bb0d1775442878bf37ecdd36fc20dd8f0b9d73"
+      "bytes": 14284408,
+      "sha256": "51eb46d983e9afc5eb06a8d393bbb9a33844c18fc9d9e09e360ca301436a7800"
     },
     "voo_daily.csv": {
       "bytes": 72226,
@@ -214,6 +214,6 @@
   },
   "note": "",
   "root": "user_data/data",
-  "total_bytes": 30571984,
+  "total_bytes": 34366212,
   "version": 1
 }

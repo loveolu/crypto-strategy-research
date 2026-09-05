@@ -13,3 +13,18 @@ Updated AVAX-USDT-SWAP: 2 new rows
 Updated DOT-USDT-SWAP: 2 new rows
 Updated LINK-USDT-SWAP: 2 new rows
 Updated UNI-USDT-SWAP: 2 new rows
+C:\Users\Comec\Projects\freqtrade\user_data\research\funding_recorder.py:22: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  "ts_utc": datetime.utcnow().isoformat() + "Z",
+C:\Users\Comec\Projects\freqtrade\user_data\research\funding_recorder.py:47: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  fetched_at = datetime.utcnow().isoformat() + "Z"
+C:\Users\Comec\Projects\freqtrade\user_data\research\funding_recorder.py:50: DeprecationWarning: datetime.datetime.utcfromtimestamp() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.fromtimestamp(timestamp, datetime.UTC).
+  ft_utc = datetime.utcfromtimestamp(ft_ms / 1000).isoformat() + "Z"
+Updated BTC-USDT-SWAP: 3 new rows
+Updated ETH-USDT-SWAP: 3 new rows
+Updated SOL-USDT-SWAP: 3 new rows
+Updated BNB-USDT-SWAP: 3 new rows
+Updated ADA-USDT-SWAP: 3 new rows
+Updated AVAX-USDT-SWAP: 3 new rows
+Updated DOT-USDT-SWAP: 3 new rows
+Updated LINK-USDT-SWAP: 3 new rows
+Updated UNI-USDT-SWAP: 3 new rows
