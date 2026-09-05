@@ -1,0 +1,20 @@
+{
+  "experiment_id": "CRYPTO-EXP-019",
+  "status": "REJECTED_NO_DIVERSIFICATION",
+  "period": "2023-01-22T00:00:00+00:00..2026-09-01T00:00:00+00:00",
+  "epistemic_status": "retrospective audit; Kraken full history previously viewed",
+  "exit_bar_correlation": 0.9654995675594961,
+  "daily_return_correlation": 0.9701369074254883,
+  "primary_50_50": {
+    "return_pct": 93.77200969632786,
+    "annualized_pct": 20.120012013612598,
+    "sharpe": 1.4779694662046354,
+    "max_drawdown_pct": -13.150987050675644,
+    "annual_returns_pct": {"2023": 12.682482273758477, "2024": 62.93512391984171, "2025": 4.867596975927357, "2026": 0.6418488709268866}
+  },
+  "weight_sensitivity": {
+    "okx_25_kraken_75": {"return_pct": 87.84816648597607, "sharpe": 1.4187390225837018, "max_drawdown_pct": -13.157850352238942},
+    "okx_75_kraken_25": {"return_pct": 99.83011329464004, "sharpe": 1.529878009209076, "max_drawdown_pct": -13.144124345227082}
+  },
+  "claude_joint_hurdle": {"return_above_61_7": true, "drawdown_no_worse_than_minus_5_5": false, "joint_pass": false}
+}

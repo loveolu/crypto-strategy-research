@@ -1,0 +1,41 @@
+{
+  "experiment_id": "CRYPTO-EXP-021",
+  "status": "REJECTED_TRAIN_GATE",
+  "period_examined": "2023-01-22T00:00:00+00:00..2024-11-22T23:00:00+00:00",
+  "heldout_examined": false,
+  "sizing": "(1/9)*cross-sectional-median-vol/coin-vol clipped [0.25/9,1/9]",
+  "base_train": {
+    "trades": 200,
+    "coins": 9,
+    "return_pct": 46.86234890325205,
+    "max_drawdown_pct": -5.254297719473444,
+    "sharpe": 1.8208067318132313,
+    "average_weight_pct": 11.111111111111114,
+    "max_coin_absolute_pnl_share_pct": 17.867652897997736,
+    "annual_returns_pct": {
+      "2023": 15.043537622357128,
+      "2024": 27.65806053821429
+    }
+  },
+  "sized_train": {
+    "trades": 200,
+    "coins": 9,
+    "return_pct": 38.147973037640014,
+    "max_drawdown_pct": -4.653323956334521,
+    "sharpe": 1.7308606439357566,
+    "average_weight_pct": 9.524719063013109,
+    "max_coin_absolute_pnl_share_pct": 15.867139853731912,
+    "annual_returns_pct": {
+      "2023": 11.55246068618645,
+      "2024": 23.841260145995946
+    }
+  },
+  "train_conditions": {
+    "at_least_150_trades": true,
+    "at_least_7_coins": true,
+    "retain_75pct_return": true,
+    "sharpe_higher": false,
+    "drawdown_at_most_75pct_base": false,
+    "worst_coin_share_lower": true
+  }
+}

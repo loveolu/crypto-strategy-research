@@ -1,0 +1,57 @@
+{
+  "experiment_id": "CRYPTO-EXP-022",
+  "status": "REJECTED_TRAIN_GATE",
+  "period_examined": "2023-01-22T00:00:00+00:00..2024-11-22T23:00:00+00:00",
+  "heldout_examined": false,
+  "base_train": {
+    "events": 129,
+    "legs": 200,
+    "coins": 9,
+    "positive_coins": 9,
+    "return_pct": 46.86234890325205,
+    "max_drawdown_pct": -5.254297719473444,
+    "sharpe": 1.8208067318132313,
+    "profit_factor": 2.616461493074929,
+    "annual_returns_pct": {
+      "2023": 15.043537622357128,
+      "2024": 27.65806053821429
+    }
+  },
+  "event_train": {
+    "events": 16,
+    "legs": 65,
+    "coins": 9,
+    "positive_coins": 9,
+    "return_pct": 62.275655944298556,
+    "max_drawdown_pct": -12.397511393565619,
+    "sharpe": 1.4719854895239066,
+    "profit_factor": 3.8888299879936494,
+    "annual_returns_pct": {
+      "2023": 26.574670096514907,
+      "2024": 28.2054741446778
+    }
+  },
+  "train_best_event_removed": {
+    "events": 15,
+    "legs": 56,
+    "coins": 9,
+    "positive_coins": 9,
+    "return_pct": 44.62669350204005,
+    "max_drawdown_pct": -12.397511393565608,
+    "sharpe": 1.2744137422673196,
+    "profit_factor": 3.2062122940265483,
+    "annual_returns_pct": {
+      "2023": 26.574670096514907,
+      "2024": 14.26195572286324
+    }
+  },
+  "train_conditions": {
+    "at_least_10_events": true,
+    "at_least_40_legs": true,
+    "at_least_6_coins": true,
+    "return_higher": true,
+    "sharpe_higher": false,
+    "drawdown_no_worse": false,
+    "best_event_removed_positive": true
+  }
+}

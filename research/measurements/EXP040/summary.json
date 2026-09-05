@@ -1,0 +1,21 @@
+{
+  "experiment_id": "CRYPTO-EXP-040",
+  "status": "REJECTED_PRE_BACKTEST_COST_AND_DATA_GATES",
+  "audit_type": "literature_economics_and_timestamp_only_no_return_inspection",
+  "source_paper": "https://pmc.ncbi.nlm.nih.gov/articles/PMC10015199/",
+  "published_gross_effect_bps_per_boundary_minute": 0.58,
+  "measured_expected_round_trip_cost_bps": 13.7,
+  "cost_to_published_effect_ratio": 23.620689655172413,
+  "published_effect_minus_cost_bps": -13.12,
+  "complete_local_days": 28,
+  "minimum_complete_days": 365,
+  "local_returns_examined": false,
+  "heldout_examined": false,
+  "trades": 0,
+  "trial_spent": false,
+  "conditions": {
+    "minimum_history_passed": false,
+    "published_effect_exceeds_measured_cost": false,
+    "authenticated_lower_cost_execution_available": false
+  }
+}

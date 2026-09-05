@@ -1,0 +1,28 @@
+{
+  "experiment_id": "CRYPTO-EXP-039",
+  "status": "STOPPED_DATA_GATE",
+  "audit_type": "timestamp_and_schema_only_no_return_inspection",
+  "source_paper": "https://arxiv.org/abs/2607.09426",
+  "contracts": 9,
+  "api_pages_per_contract": 433,
+  "unique_candles_per_contract": 43300,
+  "common_minutes": 43258,
+  "common_earliest_utc": "2026-08-03T22:34:00+00:00",
+  "common_latest_utc": "2026-09-02T23:32:00+00:00",
+  "distinct_utc_days_touched": 31,
+  "complete_common_utc_days": 28,
+  "minimum_complete_days": 365,
+  "candle_field_count": 9,
+  "has_subminute_trade_timestamps": false,
+  "has_aggressor_side": false,
+  "has_individual_trade_size": false,
+  "ready_for_feature_research": false,
+  "heldout_examined": false,
+  "trades": 0,
+  "trial_spent": false,
+  "issues": [
+    "28 complete common days is below the frozen 365-day minimum",
+    "one-minute candles cannot isolate the first 10 seconds after a quarter-hour boundary",
+    "the archive has no aggressor-side trade labels or individual trade sizes"
+  ]
+}

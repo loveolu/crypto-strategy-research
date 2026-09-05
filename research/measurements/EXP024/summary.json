@@ -1,0 +1,418 @@
+{
+  "experiment_id": "CRYPTO-EXP-024",
+  "status": "REJECTED_HELDOUT_ROBUSTNESS",
+  "period_examined": "2023-01-22T00:00:00+00:00..2024-11-22T23:00:00+00:00",
+  "heldout_examined": true,
+  "expected_round_trip_cost_bps": 13.784899713891436,
+  "train": {
+    "trades": 491,
+    "return_pct": 13.908461140975948,
+    "max_drawdown_pct": -8.101135795302472,
+    "sharpe": 0.7968549824673244,
+    "profit_factor": 1.2170973216410856,
+    "gross_expectancy_bps": 39.1929146139016,
+    "net_expectancy_bps": 25.373490100835056,
+    "positive_coins": 7,
+    "coin_results": {
+      "ADA": {
+        "trades": 61,
+        "net_expectancy_bps": 20.76004954540104
+      },
+      "AVAX": {
+        "trades": 55,
+        "net_expectancy_bps": 0.9986489417994828
+      },
+      "BNB": {
+        "trades": 50,
+        "net_expectancy_bps": 30.376231408680976
+      },
+      "BTC": {
+        "trades": 64,
+        "net_expectancy_bps": 45.01582317639563
+      },
+      "DOT": {
+        "trades": 58,
+        "net_expectancy_bps": -72.41202744579354
+      },
+      "ETH": {
+        "trades": 46,
+        "net_expectancy_bps": 91.32350683418153
+      },
+      "LINK": {
+        "trades": 46,
+        "net_expectancy_bps": 25.48432756642716
+      },
+      "SOL": {
+        "trades": 48,
+        "net_expectancy_bps": -11.706440168092955
+      },
+      "XRP": {
+        "trades": 63,
+        "net_expectancy_bps": 97.23677792404281
+      }
+    }
+  },
+  "placebo": {
+    "draws": 999,
+    "seed": 24024,
+    "observed_mean_gross_bps": 39.1929146139016,
+    "placebo_mean_bps": 10.258212911068247,
+    "observed_percentile": 0.992992992992993,
+    "one_sided_p": 0.008
+  },
+  "train_conditions": {
+    "at_least_200_trades": true,
+    "at_least_20_each_coin": true,
+    "gross_exceeds_expected_cost": true,
+    "six_positive_coins": true,
+    "placebo_97_5_percentile": true
+  },
+  "heldout": {
+    "trades": 351,
+    "return_pct": 24.17723237856999,
+    "max_drawdown_pct": -6.536434550374437,
+    "sharpe": 1.2577927613364601,
+    "profit_factor": 1.5407144886408577,
+    "gross_expectancy_bps": 71.36939451349446,
+    "net_expectancy_bps": 57.8099517112615,
+    "positive_coins": 7,
+    "coin_results": {
+      "ADA": {
+        "trades": 31,
+        "net_expectancy_bps": 197.63355806796085
+      },
+      "AVAX": {
+        "trades": 37,
+        "net_expectancy_bps": 51.78609229477453
+      },
+      "BNB": {
+        "trades": 48,
+        "net_expectancy_bps": 32.14987712014531
+      },
+      "BTC": {
+        "trades": 37,
+        "net_expectancy_bps": -20.43192713087334
+      },
+      "DOT": {
+        "trades": 34,
+        "net_expectancy_bps": 43.92985972905387
+      },
+      "ETH": {
+        "trades": 41,
+        "net_expectancy_bps": 60.6469301026749
+      },
+      "LINK": {
+        "trades": 53,
+        "net_expectancy_bps": 64.5459066540246
+      },
+      "SOL": {
+        "trades": 37,
+        "net_expectancy_bps": -0.731759961185034
+      },
+      "XRP": {
+        "trades": 33,
+        "net_expectancy_bps": 123.85931026114301
+      }
+    }
+  },
+  "heldout_two_x_cost": {
+    "trades": 351,
+    "return_pct": 17.815960321180246,
+    "max_drawdown_pct": -6.934846363762004,
+    "sharpe": 0.9757702983509152,
+    "profit_factor": 1.3921219029498142,
+    "gross_expectancy_bps": 71.36939451349446,
+    "net_expectancy_bps": 44.26970497066301,
+    "positive_coins": 7,
+    "coin_results": {
+      "ADA": {
+        "trades": 31,
+        "net_expectancy_bps": 177.28147274549386
+      },
+      "AVAX": {
+        "trades": 37,
+        "net_expectancy_bps": 36.29669010742011
+      },
+      "BNB": {
+        "trades": 48,
+        "net_expectancy_bps": 19.20486818148821
+      },
+      "BTC": {
+        "trades": 37,
+        "net_expectancy_bps": -30.432352537053
+      },
+      "DOT": {
+        "trades": 34,
+        "net_expectancy_bps": 25.77342273427959
+      },
+      "ETH": {
+        "trades": 41,
+        "net_expectancy_bps": 50.50703383683836
+      },
+      "LINK": {
+        "trades": 53,
+        "net_expectancy_bps": 51.39672989192502
+      },
+      "SOL": {
+        "trades": 37,
+        "net_expectancy_bps": -12.7255446872238
+      },
+      "XRP": {
+        "trades": 33,
+        "net_expectancy_bps": 112.23819198959896
+      }
+    }
+  },
+  "heldout_delay_one": {
+    "trades": 336,
+    "return_pct": 18.72802568829879,
+    "max_drawdown_pct": -6.407560550566638,
+    "sharpe": 0.9660823450255092,
+    "profit_factor": 1.443947256430199,
+    "gross_expectancy_bps": 62.10699984758485,
+    "net_expectancy_bps": 48.57058326245946,
+    "positive_coins": 8,
+    "coin_results": {
+      "ADA": {
+        "trades": 29,
+        "net_expectancy_bps": 104.52521080636377
+      },
+      "AVAX": {
+        "trades": 36,
+        "net_expectancy_bps": 73.47859703479709
+      },
+      "BNB": {
+        "trades": 46,
+        "net_expectancy_bps": 34.21934057735144
+      },
+      "BTC": {
+        "trades": 36,
+        "net_expectancy_bps": -37.47395698475178
+      },
+      "DOT": {
+        "trades": 33,
+        "net_expectancy_bps": 49.8834116189174
+      },
+      "ETH": {
+        "trades": 40,
+        "net_expectancy_bps": 56.4760970522409
+      },
+      "LINK": {
+        "trades": 51,
+        "net_expectancy_bps": 89.01841696631645
+      },
+      "SOL": {
+        "trades": 34,
+        "net_expectancy_bps": 29.347494517540863
+      },
+      "XRP": {
+        "trades": 31,
+        "net_expectancy_bps": 31.460568066115794
+      }
+    }
+  },
+  "heldout_top_five_removed": {
+    "trades": 333,
+    "return_pct": -1.9488562052472402,
+    "max_drawdown_pct": -6.937737694200752,
+    "sharpe": -0.11734179362444783,
+    "profit_factor": 0.9639257879059424,
+    "gross_expectancy_bps": 9.270660849050415,
+    "net_expectancy_bps": -4.065316260424302,
+    "positive_coins": 3,
+    "coin_results": {
+      "ADA": {
+        "trades": 25,
+        "net_expectancy_bps": -28.033581671302123
+      },
+      "AVAX": {
+        "trades": 35,
+        "net_expectancy_bps": -0.7152551145448438
+      },
+      "BNB": {
+        "trades": 46,
+        "net_expectancy_bps": -8.417821631992016
+      },
+      "BTC": {
+        "trades": 37,
+        "net_expectancy_bps": -20.43192713087334
+      },
+      "DOT": {
+        "trades": 32,
+        "net_expectancy_bps": -54.67779939756594
+      },
+      "ETH": {
+        "trades": 40,
+        "net_expectancy_bps": 42.639218653360956
+      },
+      "LINK": {
+        "trades": 51,
+        "net_expectancy_bps": 2.7209716635714973
+      },
+      "SOL": {
+        "trades": 36,
+        "net_expectancy_bps": -25.041269329706715
+      },
+      "XRP": {
+        "trades": 31,
+        "net_expectancy_bps": 42.650362277394954
+      }
+    }
+  },
+  "heldout_segments": {
+    "VAL": {
+      "trades": 133,
+      "return_pct": 25.944549884882818,
+      "max_drawdown_pct": -2.750557568431622,
+      "sharpe": 3.173311945419214,
+      "profit_factor": 2.7854942891186885,
+      "gross_expectancy_bps": 173.10165685952953,
+      "net_expectancy_bps": 159.78408877930096,
+      "positive_coins": 8,
+      "coin_results": {
+        "ADA": {
+          "trades": 9,
+          "net_expectancy_bps": 595.9896786743462
+        },
+        "AVAX": {
+          "trades": 13,
+          "net_expectancy_bps": -5.95616570804476
+        },
+        "BNB": {
+          "trades": 17,
+          "net_expectancy_bps": 142.08785645342303
+        },
+        "BTC": {
+          "trades": 15,
+          "net_expectancy_bps": 54.32785265272777
+        },
+        "DOT": {
+          "trades": 10,
+          "net_expectancy_bps": 267.2537083181161
+        },
+        "ETH": {
+          "trades": 20,
+          "net_expectancy_bps": 85.7413051418306
+        },
+        "LINK": {
+          "trades": 22,
+          "net_expectancy_bps": 163.78821177313094
+        },
+        "SOL": {
+          "trades": 16,
+          "net_expectancy_bps": 0.3957502693396897
+        },
+        "XRP": {
+          "trades": 11,
+          "net_expectancy_bps": 430.6690595406632
+        }
+      }
+    },
+    "TEST": {
+      "trades": 197,
+      "return_pct": -2.167279427654145,
+      "max_drawdown_pct": -6.536434550374414,
+      "sharpe": -0.3508465538412274,
+      "profit_factor": 0.9240261334618435,
+      "gross_expectancy_bps": 5.0027657265720284,
+      "net_expectancy_bps": -8.681854329339252,
+      "positive_coins": 4,
+      "coin_results": {
+        "ADA": {
+          "trades": 20,
+          "net_expectancy_bps": -30.811423289241134
+        },
+        "AVAX": {
+          "trades": 23,
+          "net_expectancy_bps": 72.02294973336411
+        },
+        "BNB": {
+          "trades": 28,
+          "net_expectancy_bps": -17.855500410894066
+        },
+        "BTC": {
+          "trades": 21,
+          "net_expectancy_bps": -71.90233365640191
+        },
+        "DOT": {
+          "trades": 21,
+          "net_expectancy_bps": -46.45859740504
+        },
+        "ETH": {
+          "trades": 20,
+          "net_expectancy_bps": 35.85985343409853
+        },
+        "LINK": {
+          "trades": 28,
+          "net_expectancy_bps": 16.728550954159854
+        },
+        "SOL": {
+          "trades": 17,
+          "net_expectancy_bps": 17.13807694091123
+        },
+        "XRP": {
+          "trades": 19,
+          "net_expectancy_bps": -65.37025897689517
+        }
+      }
+    },
+    "FWD": {
+      "trades": 21,
+      "return_pct": 0.7809544074845798,
+      "max_drawdown_pct": -3.2492809404673917,
+      "sharpe": 0.28471663940585207,
+      "profit_factor": 1.2410628754555442,
+      "gross_expectancy_bps": 49.647250656402,
+      "net_expectancy_bps": 35.73021647074245,
+      "positive_coins": 4,
+      "coin_results": {
+        "ADA": {
+          "trades": 2,
+          "net_expectancy_bps": 689.4808289112464
+        },
+        "AVAX": {
+          "trades": 1,
+          "net_expectancy_bps": 336.98772524386465
+        },
+        "BNB": {
+          "trades": 3,
+          "net_expectancy_bps": -124.11514881206101
+        },
+        "BTC": {
+          "trades": 1,
+          "net_expectancy_bps": -60.950086848789994
+        },
+        "DOT": {
+          "trades": 3,
+          "net_expectancy_bps": -67.76376896249658
+        },
+        "ETH": {
+          "trades": 1,
+          "net_expectancy_bps": 54.50096269108862
+        },
+        "LINK": {
+          "trades": 3,
+          "net_expectancy_bps": -216.93567768735062
+        },
+        "SOL": {
+          "trades": 4,
+          "net_expectancy_bps": -81.18860771719305
+        },
+        "XRP": {
+          "trades": 3,
+          "net_expectancy_bps": 197.3441680771441
+        }
+      }
+    }
+  },
+  "heldout_conditions": {
+    "net_return_positive": true,
+    "sharpe_positive": true,
+    "profit_factor_above_one": true,
+    "six_positive_coins": true,
+    "two_positive_segments": true,
+    "two_x_cost_positive": true,
+    "one_bar_delay_positive": true,
+    "top_five_removed_positive": false
+  }
+}

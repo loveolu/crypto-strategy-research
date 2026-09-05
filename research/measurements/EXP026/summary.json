@@ -1,0 +1,46 @@
+{
+  "experiment_id": "CRYPTO-EXP-026",
+  "status": "REJECTED_TRAIN_GATE",
+  "period_examined": "2023-01-22T00:00:00+00:00..2024-11-22T23:00:00+00:00",
+  "heldout_examined": false,
+  "expected_round_trip_cost_bps": 14.232768293446714,
+  "train": {
+    "trades": 1074,
+    "return_pct": -12.129633153844077,
+    "max_drawdown_pct": -17.16691370470199,
+    "sharpe": -0.772676952621432,
+    "profit_factor": 0.8819648567294767,
+    "gross_expectancy_bps": 6.252921871430156,
+    "net_expectancy_bps": -7.979040957584033,
+    "positive_coins": 2,
+    "coin_trade_counts": {
+      "ADA": 155,
+      "AVAX": 153,
+      "DOT": 144,
+      "ETH": 164,
+      "LINK": 149,
+      "SOL": 143,
+      "XRP": 166
+    },
+    "side_results": {
+      "long": {
+        "trades": 529,
+        "gross_expectancy_bps": 8.446148270052717
+      },
+      "short": {
+        "trades": 545,
+        "gross_expectancy_bps": 4.1240837707488085
+      }
+    }
+  },
+  "placebo": null,
+  "train_conditions": {
+    "at_least_500_trades": true,
+    "at_least_50_each_coin": true,
+    "gross_exceeds_expected_cost": false,
+    "long_gross_positive": true,
+    "short_gross_positive": true,
+    "five_positive_coins": false,
+    "placebo_97_5_percentile": false
+  }
+}

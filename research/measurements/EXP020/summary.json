@@ -1,0 +1,30 @@
+{
+  "experiment_id": "CRYPTO-EXP-020",
+  "status": "REJECTED_PORTFOLIO_GATE",
+  "period": "2023-01-22T00:00:00+00:00..2026-09-01T00:00:00+00:00",
+  "epistemic_status": "retrospective portfolio audit; component histories previously viewed",
+  "daily_return_correlation": 0.05274313225499899,
+  "primary_50_50": {
+    "return_pct": 93.85819209173201,
+    "annualized_pct": 20.134814950805247,
+    "sharpe": 1.4701437479787336,
+    "max_drawdown_pct": -11.505195833095417,
+    "annual_returns_pct": {"2023": 22.12764106071601, "2024": 45.77040828613579, "2025": 8.306178549951216, "2026": 0.5420154640267905}
+  },
+  "components": {
+    "b2": {"return_pct": 92.02833616583422, "sharpe": 1.5628775913444906, "max_drawdown_pct_daily": -9.994394746271018},
+    "trend_vol_target": {"return_pct": 95.68804801763109, "sharpe": 0.9500427660180524, "max_drawdown_pct": -16.92845611589534}
+  },
+  "initial_weight_sensitivity": {
+    "b2_25_tvt_75": {"return_pct": 94.77312005468121, "sharpe": 1.1549951475435323, "max_drawdown_pct": -14.160117090873603},
+    "b2_75_tvt_25": {"return_pct": 92.94326412878424, "sharpe": 1.7528738514463786, "max_drawdown_pct": -10.233086315431873}
+  },
+  "gates": {
+    "lower_drawdown_than_both": false,
+    "higher_sharpe_than_both": false,
+    "positive_each_calendar_segment": true,
+    "return_above_61_7": true,
+    "drawdown_no_worse_than_minus_5_5": false,
+    "claude_joint_hurdle": false
+  }
+}

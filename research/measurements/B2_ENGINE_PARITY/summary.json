@@ -1,0 +1,48 @@
+{
+  "audit": "B2Cascade4h real Freqtrade engine parity",
+  "run_utc": "2026-09-04T23:57:25Z",
+  "freqtrade_version": "2026.5-dev-b90e3e83e",
+  "timerange": "2023-01-22T00:00:00Z..2026-09-02T00:00:00Z",
+  "engine_artifact": "user_data/research/.b2_engine_parity_results-2026-09-04_16-57-25.zip",
+  "engine_artifact_sha256": "c87ba93117a0987cfcec3f80291bb571f59fab3fb4f9ff93ab2b77e6e32eaa03",
+  "data": "temporary 4h OHLCV mechanically resampled from canonical 1h feathers; canonical 1d/mark/funding copied read-only",
+  "offline_market_metadata": true,
+  "protections_enabled": true,
+  "configured_fee_per_side": 0.0009,
+  "engine_trade_count": 368,
+  "research_trade_count_same_timerange": 368,
+  "exact_entry_exit_timestamp_match": true,
+  "per_coin_exact": {
+    "BTC": 32,
+    "ETH": 37,
+    "SOL": 60,
+    "BNB": 27,
+    "XRP": 49,
+    "ADA": 40,
+    "AVAX": 38,
+    "DOT": 31,
+    "LINK": 54
+  },
+  "engine_metrics_fixed_500_usdt_stake": {
+    "net_return_pct": 59.084761847,
+    "cagr_pct": 13.7092060972,
+    "sharpe_closed_trades": 1.453549475,
+    "sortino_closed_trades": 2.067958979,
+    "max_drawdown_pct": -5.946046442,
+    "profit_factor": 2.219781565,
+    "win_rate_pct": 62.5
+  },
+  "engine_trades_replayed_with_research_fractional_portfolio": {
+    "net_return_pct": 88.3510767914,
+    "max_drawdown_pct": -10.4855176241,
+    "2023_pct": 14.291928257,
+    "2024_pct": 55.4583081034,
+    "2025_pct": 5.3280064881,
+    "2026_pct": 0.6455890785
+  },
+  "research_harness_measured_coin_cost_reference": {
+    "net_return_pct": 92.0283361658,
+    "daily_max_drawdown_pct": -9.9943947463
+  },
+  "interpretation": "Timestamp parity is exact. The raw engine performance uses fixed 500 USDT stakes. Replaying its profit ratios at 1/9 fractional exposure makes the capital model comparable; its lower return versus the harness is consistent with constant 9 bps per-side costs being more conservative than measured coin-specific costs. Neither fixed-rule result replaces the walk-forward leaderboard."
+}

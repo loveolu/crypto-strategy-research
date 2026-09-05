@@ -1,0 +1,55 @@
+{
+  "experiment_id": "CRYPTO-EXP-018",
+  "status": "REJECTED_TRAIN_GATE",
+  "period_examined": "2023-01-22T00:00:00+00:00..2024-11-22T23:00:00+00:00",
+  "heldout_examined": false,
+  "universe": [
+    "ETH",
+    "SOL",
+    "XRP",
+    "ADA",
+    "AVAX",
+    "DOT",
+    "LINK"
+  ],
+  "base_train": {
+    "trades": 161,
+    "return_pct": 53.01071689760217,
+    "max_drawdown_pct": -5.791158039847222,
+    "sharpe": 1.8335464941202138,
+    "net_expectancy_bps": 191.46132040892456,
+    "coin_trade_counts": {
+      "ETH": 25,
+      "SOL": 31,
+      "XRP": 24,
+      "ADA": 15,
+      "AVAX": 19,
+      "DOT": 19,
+      "LINK": 28
+    }
+  },
+  "consensus_train": {
+    "trades": 107,
+    "return_pct": 36.91704865332564,
+    "max_drawdown_pct": -5.638687063810233,
+    "sharpe": 1.4495275380583945,
+    "net_expectancy_bps": 214.21032385929348,
+    "coin_trade_counts": {
+      "ETH": 15,
+      "SOL": 24,
+      "XRP": 13,
+      "ADA": 12,
+      "AVAX": 11,
+      "DOT": 13,
+      "LINK": 19
+    }
+  },
+  "train_conditions": {
+    "at_least_80_trades": true,
+    "at_least_5_each_coin": true,
+    "expectancy_improvement_25bps": false,
+    "sharpe_higher": false,
+    "drawdown_at_most_85pct_base": false,
+    "retain_90pct_return": false
+  }
+}

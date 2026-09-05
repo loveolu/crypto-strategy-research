@@ -28,6 +28,10 @@ For honest comparisons, every challenger must be shown against all three views:
    13.9% annualized, Sharpe 1.23, −5.5% drawdown);
 3. a consistent fixed-rule B2 run over 2023-01-22→2026-09-01: 2023 +15.04%,
    2024 +56.48%, 2025 +5.90%, 2026 +0.73%, +92.03% total, −10.42% drawdown.
+4. real-engine port audit: exact 368/368 entry/exit timestamps. With fixed $500
+   stakes it returns +59.08% at −5.95% drawdown; replaying those same trades at the
+   research 1/9 fractional exposure gives +88.35% at −10.49%. The engine uses a
+   conservative constant 9 bps/side, while item 3 uses measured coin-specific costs.
 
 A challenger does not win through leverage, a different universe, gross returns,
 mixed validation streams, or a weaker drawdown/robustness profile. It must report the

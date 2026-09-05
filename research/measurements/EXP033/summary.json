@@ -1,0 +1,120 @@
+{
+  "experiment_id": "CRYPTO-EXP-033",
+  "status": "REJECTED_TRAIN_GATE",
+  "period_examined": "2023-01-22T00:00:00+00:00..2024-11-22T23:00:00+00:00",
+  "heldout_examined": false,
+  "expected_round_trip_cost_bps": 13.710028713202005,
+  "train": {
+    "trades": 1587,
+    "return_pct": -14.915500321057385,
+    "gross_return_pct": 8.374274358763234,
+    "annualized_return_pct": -8.417468065603572,
+    "monthly_returns_pct": {
+      "2023-01": -9.173707322115387,
+      "2023-02": -2.4208989308573847,
+      "2023-03": 1.8255371811651822,
+      "2023-04": -1.0122492511206338,
+      "2023-05": -10.63427360782513,
+      "2023-06": 1.6440460435676485,
+      "2023-07": 3.7661218853589418,
+      "2023-08": -2.3099849685900176,
+      "2023-09": -1.064946315921833,
+      "2023-10": 6.128018454359974,
+      "2023-11": 6.2439229375101934,
+      "2023-12": 7.026819281887953,
+      "2024-01": -1.7080400366408677,
+      "2024-02": 4.462297536910942,
+      "2024-03": -3.5029553801042113,
+      "2024-04": -8.93949663149417,
+      "2024-05": 0.11329914486561954,
+      "2024-06": -11.964308737535767,
+      "2024-07": 0.8731948359278041,
+      "2024-08": -1.4479794097863707,
+      "2024-09": -3.8145362578338005,
+      "2024-10": 4.091158800787809,
+      "2024-11": 9.464033005713013
+    },
+    "max_drawdown_pct": -28.938032822697245,
+    "sharpe": -0.4892451946626461,
+    "sortino": -0.20668016029270997,
+    "calmar": -0.2908790696719861,
+    "profit_factor": 0.9387184720179599,
+    "win_rate_pct": 49.08632640201638,
+    "gross_expectancy_bps": 5.809472208727534,
+    "net_expectancy_bps": -7.898036505033656,
+    "average_winner_bps": 246.47018121474983,
+    "average_loser_bps": -253.13670185616155,
+    "median_trade_bps": -8.900271725170716,
+    "trades_per_day": 2.3652735515121406,
+    "signal_frequency_per_day": 2.3652735515121406,
+    "average_holding_hours": 19.533711405166983,
+    "friction_paid_pct": 24.17090703193224,
+    "total_friction_pct_of_capital": 24.17090703193224,
+    "fee_to_gross_profit_pct": 10.710223278854949,
+    "average_modeled_friction_bps": 13.707508713761195,
+    "average_slippage_bps": null,
+    "slippage_measurement_status": "not_separately_identifiable_from_fee_and_spread_model",
+    "funding_cost_pct": null,
+    "funding_cost_status": "not_included_no_synchronized_historical_funding_ledger",
+    "borrowing_cost_pct": null,
+    "borrowing_cost_status": "not_applicable_perpetual_futures",
+    "partial_fill_status": "not_modeled_bar_data_insufficient",
+    "turnover_x": 352.6666666666667,
+    "long_exposure_pct": 21.39007914329283,
+    "short_exposure_pct": 0.0,
+    "longest_losing_streak": 22,
+    "recovery_hours": 9620.0,
+    "worst_day_pct": -5.361039621367136,
+    "worst_week_pct": -6.256424022432117,
+    "worst_month_pct": -11.964308737535767,
+    "profitable_trading_days_pct": 47.817460317460316,
+    "maximum_intraday_drawdown_pct": -5.361039621367136,
+    "positive_coins": 3,
+    "coin_results": {
+      "ADA": {
+        "trades": 176,
+        "net_expectancy_bps": -19.54778660123112
+      },
+      "AVAX": {
+        "trades": 164,
+        "net_expectancy_bps": 31.916144881570418
+      },
+      "BNB": {
+        "trades": 171,
+        "net_expectancy_bps": -7.930910632318046
+      },
+      "BTC": {
+        "trades": 180,
+        "net_expectancy_bps": -10.928701209928782
+      },
+      "DOT": {
+        "trades": 194,
+        "net_expectancy_bps": -40.87809936200374
+      },
+      "ETH": {
+        "trades": 175,
+        "net_expectancy_bps": -34.43602345458043
+      },
+      "LINK": {
+        "trades": 176,
+        "net_expectancy_bps": -14.387518684522053
+      },
+      "SOL": {
+        "trades": 180,
+        "net_expectancy_bps": 19.523053374049773
+      },
+      "XRP": {
+        "trades": 171,
+        "net_expectancy_bps": 11.520700266616977
+      }
+    }
+  },
+  "placebo": null,
+  "train_conditions": {
+    "at_least_100_trades": true,
+    "at_least_10_each_coin": true,
+    "gross_exceeds_expected_cost": false,
+    "six_positive_coins": false,
+    "placebo_p_at_most_0_025": false
+  }
+}

@@ -10,8 +10,8 @@ per-instrument, unleveraged. Data: OKX USDT perps, 1h, 2023-01-22 → 2026-09-01
 | | **S2-strict-4h, 9 perps** | S2-strict, 9 perps (1h) | S5-V5 spread |
 |---|---|---|---|
 | status | **Promising** | Testing | Testing (hedge) |
-| concept | buy the largest 24h drops (≤ −3.85%) during high downside dispersion on **4h bars**, only in a daily uptrend; hold 24h | same at 1h, ≤ −2.73% | long majors / short alts, beta-neutral, in cascade regimes |
-| tf / hold | **4h / 24h** | 1h / 24h | 1h / multi-day |
+| concept | buy the largest 24h drops (≤ −3.85%) during high downside dispersion on **4h bars**, only in a daily uptrend; `HOLD6` | same at 1h, ≤ −2.73% | long majors / short alts, beta-neutral, in cascade regimes |
+| tf / hold | **4h / 28h maximum open-to-open** | 1h / frozen 24-bar mapping | 1h / multi-day |
 | OOS period | 2024-11 → 2026-09 (21 mo) | same | 2025-04 → 2026-09 |
 | OOS net / ann. | **+27.5% / ≈15%** | +12.8% / ~7% | +7.2% / ~5% |
 | OOS Sharpe / PF | **1.31 / 1.87** | 0.83 / 1.32 | — |
@@ -56,7 +56,8 @@ passing the gate. *What happened:* FWD barely improves, TEST collapses (+4.0 →
 in 2025–26 regardless of gate quality. Decay vs regime cannot be resolved on this data.
 
 **EXP-009 — 4h resolution.** *Why:* the goal's timeframe survey; h ≥ 12 is the cost-viable region.
-*What happened:* mechanical mapping (7d/30d/24h/24h in 4h bars), TRAIN-set threshold −3.85%. OOS
+*What happened:* mechanical mapping (7d/30d/24h and `HOLD6` in 4h bars), TRAIN-set threshold −3.85%.
+The ledger's next-open convention makes `HOLD6` a 28h maximum open-to-open time stop. OOS
 +27.5%, Sh 1.31, PF 1.87, DD −10.4%; **drop top-5% → +10.8%** (1h: negative); 2× cost Sh 1.18.
 *Learned:* smoother bars cut false triggers; the 4h construct does not depend on rare trades.
 

@@ -1,0 +1,27 @@
+{
+  "experiment_id": "CRYPTO-EXP-031",
+  "type": "data_sufficiency_audit",
+  "status": "STOPPED_INSUFFICIENT_HISTORY",
+  "source": "C:\\Users\\Comec\\Projects\\freqtrade\\user_data\\research\\data\\okx_micro\\book_samples.jsonl",
+  "rows": 360,
+  "instruments": 9,
+  "rows_per_instrument_min": 40,
+  "unique_instrument_sequence_ids": 360,
+  "first_book_timestamp_utc": "2026-09-02T23:28:42.907000+00:00",
+  "last_book_timestamp_utc": "2026-09-02T23:33:03.202000+00:00",
+  "span_seconds": 260.295,
+  "complete_day_span": 0,
+  "distinct_utc_minutes": 6,
+  "distinct_utc_days": 1,
+  "gates": {
+    "expected_instruments": true,
+    "unique_instrument_sequence_ids": true,
+    "minimum_complete_day_span": false,
+    "minimum_rows_per_instrument": false,
+    "minimum_distinct_utc_days": false
+  },
+  "signal_defined": false,
+  "forward_returns_examined": false,
+  "trades_simulated": 0,
+  "trials_spent": 0
+}

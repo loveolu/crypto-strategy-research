@@ -28,6 +28,9 @@
   "fiat_display_currency": "USD",
   "dry_run": true,
   "dry_run_wallet": 5000,
+  // Freqtrade reads the backtest fee override only at top level. This 9 bps
+  // per side bundles 5 bps taker fee + 3 bps slippage + 1 bp half-spread.
+  "fee": 0.0009,
   "cancel_open_orders_on_exit": false,
 
   "trading_mode": "futures",
@@ -104,12 +107,10 @@
     //     switches to "maker_optimistic", this number MUST be recomputed from
     //     validator.per_side_cost(). It is not independent of that function.
     //
-    // Without this key freqtrade falls back to its own default/exchange-fetched
+    // Without the top-level key declared above, freqtrade falls back to its own default/exchange-fetched
     // value, which is what produced the 0.0015 fee_open/fee_close seen in every
     // archived backtest artifact (audit 2026-07-28 section 2F). No backtest may
     // run without this key set.
-    "fee": 0.0009,
-
     // The 9 USDT perpetual instruments with complete cached data in
     // user_data/data/okx/futures/ (1d futures OHLCV, 1h futures OHLCV, 1h mark
     // price, 1h funding rate for each). Verified 2026-07-28.

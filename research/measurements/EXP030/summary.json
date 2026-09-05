@@ -1,0 +1,111 @@
+{
+  "experiment_id": "CRYPTO-EXP-030",
+  "status": "REJECTED_TRAIN_GATE",
+  "scope_ceiling": "EXPERIMENTAL_29_DAY_DATA",
+  "complete_common_days": 29,
+  "periods": {
+    "train": "2026-08-04T00:00:00+00:00..2026-08-18T23:59:00+00:00",
+    "validation_sealed": "2026-08-19T00:00:00+00:00..2026-08-25T23:59:00+00:00",
+    "test_sealed": "2026-08-26T00:00:00+00:00..2026-09-01T23:59:00+00:00"
+  },
+  "validation_examined": false,
+  "test_examined": false,
+  "basket_events": 121,
+  "expected_round_trip_cost_bps": 14.13110144991111,
+  "train": {
+    "trades": 968,
+    "return_pct": -15.002146482517354,
+    "gross_return_pct": 0.8587792796713511,
+    "annualized_return_pct": -98.0901282486864,
+    "monthly_returns_pct": {
+      "2026-08": -15.002146482517354
+    },
+    "max_drawdown_pct": -15.12134329203324,
+    "sharpe": -38.209958001414215,
+    "sortino": -2.7394667569033473,
+    "calmar": -6.4868660379111756,
+    "profit_factor": 0.15293586686466468,
+    "win_rate_pct": 17.355371900826448,
+    "gross_expectancy_bps": 0.715932026650688,
+    "net_expectancy_bps": -13.415169423260423,
+    "average_winner_bps": 13.95581788459575,
+    "average_loser_bps": -19.16307675791022,
+    "median_trade_bps": -15.421465489331052,
+    "trades_per_day": 64.53632112597806,
+    "signal_frequency_per_day": 64.53632112597806,
+    "average_holding_hours": 0.08333333333333333,
+    "friction_paid_pct": 17.098632754392444,
+    "total_friction_pct_of_capital": 17.098632754392444,
+    "fee_to_gross_profit_pct": 216.62188918488047,
+    "average_slippage_bps": 14.13110144991111,
+    "turnover_x": 242.0,
+    "long_exposure_pct": 1.4815500717625811,
+    "longest_losing_streak": 58,
+    "recovery_hours": 336.76666666666665,
+    "worst_day_pct": -2.934931730510526,
+    "worst_week_pct": -8.669976478087493,
+    "worst_month_pct": -15.002146482517354,
+    "profitable_trading_days_pct": 7.142857142857142,
+    "maximum_intraday_drawdown_pct": -2.9349317305105593,
+    "positive_coins": 0,
+    "coin_results": {
+      "ADA": {
+        "trades": 121,
+        "net_expectancy_bps": -17.80256289883502
+      },
+      "AVAX": {
+        "trades": 121,
+        "net_expectancy_bps": -14.873781344041497
+      },
+      "BNB": {
+        "trades": 121,
+        "net_expectancy_bps": -13.75389224018335
+      },
+      "DOT": {
+        "trades": 121,
+        "net_expectancy_bps": -18.175350558450226
+      },
+      "ETH": {
+        "trades": 121,
+        "net_expectancy_bps": -9.846943123162841
+      },
+      "LINK": {
+        "trades": 121,
+        "net_expectancy_bps": -12.520166734374843
+      },
+      "SOL": {
+        "trades": 121,
+        "net_expectancy_bps": -10.386511351381412
+      },
+      "XRP": {
+        "trades": 121,
+        "net_expectancy_bps": -9.962147135654204
+      }
+    },
+    "short_exposure_pct": 1.319505532663549,
+    "long": {
+      "trades": 512,
+      "gross_expectancy_bps": 1.2593546000165112,
+      "net_expectancy_bps": -12.871746849894599,
+      "win_rate_pct": 18.359375,
+      "profit_factor": 0.17455885484648612
+    },
+    "short": {
+      "trades": 456,
+      "gross_expectancy_bps": 0.10577334778379888,
+      "net_expectancy_bps": -14.025328102127311,
+      "win_rate_pct": 16.228070175438596,
+      "profit_factor": 0.1294363072789727
+    }
+  },
+  "placebo": null,
+  "train_conditions": {
+    "at_least_100_basket_events": true,
+    "at_least_100_legs_each_coin": true,
+    "gross_exceeds_measured_taker_cost": false,
+    "six_positive_coins": false,
+    "up_shock_gross_positive": true,
+    "down_shock_gross_positive": true,
+    "placebo_p_at_most_0_025": false
+  }
+}

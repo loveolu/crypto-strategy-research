@@ -1,0 +1,39 @@
+{
+  "experiment_id": "CRYPTO-EXP-025",
+  "status": "STATISTICAL_GATE_FAILED",
+  "subject": "CRYPTO-EXP-013 B2",
+  "trial_variance_source": "skew/kurtosis-adjusted estimator proxy; perps ledger has zero data rows",
+  "fixed_rule": {
+    "trades": 368,
+    "fixed_trade_dsr": {"50": 0.99784, "100": 0.99534, "200": 0.99099, "1000": 0.96964},
+    "daily_observations": 1319,
+    "daily_sharpe": 1.56287759134449,
+    "fixed_daily_dsr": {"50": 0.94902, "100": 0.91639, "200": 0.87415, "1000": 0.7443},
+    "daily_skew": 8.4856,
+    "daily_kurtosis": 162.7528
+  },
+  "walk_forward": {
+    "daily_observations": 953,
+    "active_days": 72,
+    "daily_sharpe": 1.1795173311243843,
+    "all_day_dsr": {"50": 0.72486, "100": 0.63422, "200": 0.54306, "1000": 0.35143},
+    "active_day_dsr": {"50": 0.68536, "100": 0.59035, "200": 0.49742, "1000": 0.30992},
+    "daily_skew": 12.7428,
+    "daily_kurtosis": 238.5561,
+    "windows": 11,
+    "windows_with_zero_trades": 3
+  },
+  "block_bootstrap": {
+    "draws": 10000,
+    "seed": 25025,
+    "block_days": 30,
+    "probability_positive_sharpe": 0.975,
+    "sharpe_p05_p50_p95": [0.2569774308494726, 1.1656239632895131, 1.8799430064970015]
+  },
+  "gates": {
+    "walk_forward_daily_dsr_n200_at_least_0_95": false,
+    "bootstrap_probability_positive_at_least_0_95": true,
+    "joint_pass": false
+  },
+  "operational_decision": "continue paper trading; not eligible for live promotion on historical evidence"
+}

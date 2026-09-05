@@ -45,12 +45,22 @@ def calculate_b2_indicators(dataframe: DataFrame) -> DataFrame:
 
 
 def calculate_daily_gate_indicators(dataframe: DataFrame) -> DataFrame:
-    """Calculate the daily gate with the harness's adjusted-EMA convention."""
+    """Calculate and timestamp the daily gate exactly like harness gate_shift=6.
+
+    Freqtrade normally exposes a completed 1d candle on the 4h candle opening at
+    20:00 because that base candle closes simultaneously at midnight.  The frozen
+    research harness instead shifts the forward-filled gate by six full 4h rows,
+    making it available on the 00:00 row.  Moving the informative timestamp four
+    hours forward offsets merge_informative_pair's 1d-minus-4h convention and
+    preserves that deliberately conservative alignment.
+    """
     frame = dataframe.copy()
     close = frame["close"]
     frame["sma200"] = close.rolling(200).mean()
     frame["ema20"] = close.ewm(span=20).mean()
     frame["ema50"] = close.ewm(span=50).mean()
+    if "date" in frame:
+        frame["date"] = pd.to_datetime(frame["date"], utc=True) + pd.Timedelta(hours=4)
     return frame
 
 
@@ -71,9 +81,19 @@ class B2Cascade4h(IStrategy):
     DSD_ENTRY = 0.80
     DSD_EXIT = 0.50
     MOMENTUM_ENTRY = -0.0385
-    MAX_HOLD = timedelta(hours=24)
+    # Research HOLD=6 checks six completed post-entry candles, then fills at the
+    # following open: seven 4h open-to-open intervals in the actual ledger.
+    MAX_HOLD = timedelta(hours=28)
     BTC_PAIR = "BTC/USDT:USDT"
     forward_event_log = Path(__file__).resolve().parents[1] / "logs" / "b2_4h_forward_events.jsonl"
+
+    @property
+    def protections(self) -> list[dict]:
+        # The frozen harness advances from exit-open k+1 to signal candle k+2.
+        # Freqtrade creates the lock at the exit open and rounds its end to the
+        # next candle boundary. One candle therefore skips the signal formed
+        # during that exit candle and unlocks for k+2's signal.
+        return [{"method": "CooldownPeriod", "stop_duration_candles": 1}]
 
     @informative("1d")
     def populate_indicators_1d(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
@@ -101,7 +121,7 @@ class B2Cascade4h(IStrategy):
             (dataframe["dsd_pct"] >= self.DSD_ENTRY)
             & (dataframe["mom_24h"] <= self.MOMENTUM_ENTRY)
             & (dataframe["btc_mom_24h"] < 0.0)
-            & (dataframe["close"] > dataframe["sma200_1d"])
+            & (dataframe["close_1d"] > dataframe["sma200_1d"])
             & (dataframe["ema20_1d"] > dataframe["ema50_1d"])
             & (dataframe["volume"] > 0.0),
             ["enter_long", "enter_tag"],
@@ -125,7 +145,7 @@ class B2Cascade4h(IStrategy):
         **kwargs,
     ) -> Optional[str]:
         if current_time - trade.open_date_utc >= self.MAX_HOLD:
-            return "time_stop_24h"
+            return "time_stop_28h"
         return None
 
     def confirm_trade_entry(
@@ -169,6 +189,47 @@ class B2Cascade4h(IStrategy):
                     "dsd_pct": float(row["dsd_pct"]),
                     "mom_24h": float(row["mom_24h"]),
                     "btc_mom_24h": float(row["btc_mom_24h"]),
+                },
+            )
+        return True
+
+    def confirm_trade_exit(
+        self,
+        pair: str,
+        trade: Trade,
+        order_type: str,
+        amount: float,
+        rate: float,
+        time_in_force: str,
+        exit_reason: str,
+        current_time: datetime,
+        **kwargs,
+    ) -> bool:
+        """Persist the exit decision without altering order acceptance."""
+        dataframe, _ = self.dp.get_analyzed_dataframe(pair=pair, timeframe=self.timeframe)
+        if dataframe is not None and not dataframe.empty:
+            row = dataframe.iloc[-1]
+            candle_time = pd.Timestamp(row["date"])
+            if candle_time.tzinfo is None:
+                candle_time = candle_time.tz_localize("UTC")
+            current = pd.Timestamp(current_time)
+            if current.tzinfo is None:
+                current = current.tz_localize("UTC")
+            append_jsonl_once(
+                self.forward_event_log,
+                {
+                    "event_id": f"{pair}|{trade.id}|exit",
+                    "kind": "exit_decision",
+                    "trade_id": int(trade.id),
+                    "pair": pair,
+                    "signal_candle": candle_time.isoformat(),
+                    "decision_time": current.isoformat(),
+                    "signal_close": float(row["close"]),
+                    "proposed_rate": float(rate),
+                    "amount": float(amount),
+                    "order_type": order_type,
+                    "exit_reason": exit_reason,
+                    "dsd_pct": float(row["dsd_pct"]),
                 },
             )
         return True

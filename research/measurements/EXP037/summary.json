@@ -1,0 +1,136 @@
+{
+  "experiment_id": "CRYPTO-EXP-037",
+  "status": "REJECTED_TRAIN_GATE",
+  "period_examined": "2023-01-22T00:00:00+00:00..2024-11-22T23:00:00+00:00",
+  "heldout_examined": false,
+  "expected_round_trip_cost_bps": 13.702152267771774,
+  "train": {
+    "trades": 3319,
+    "return_pct": 12.95083430763504,
+    "gross_return_pct": 87.23312401975545,
+    "annualized_return_pct": 6.854165921547617,
+    "monthly_returns_pct": {
+      "2023-01": 2.274215675823532,
+      "2023-02": 0.6416840718139971,
+      "2023-03": 7.008711449631222,
+      "2023-04": -2.141429015420171,
+      "2023-05": -2.9404321938569122,
+      "2023-06": -9.924298421650624,
+      "2023-07": -2.7045980975827444,
+      "2023-08": 1.232788052951972,
+      "2023-09": -5.692825320315942,
+      "2023-10": -2.3237887244630495,
+      "2023-11": 5.945684614613245,
+      "2023-12": -0.990532911012687,
+      "2024-01": -8.521445822711705,
+      "2024-02": -5.652515589969287,
+      "2024-03": -19.24314912275277,
+      "2024-04": 3.7195236054631264,
+      "2024-05": 1.0162261827801888,
+      "2024-06": 5.356209874410389,
+      "2024-07": 11.293539883464621,
+      "2024-08": 12.974827031435554,
+      "2024-09": 3.1761991409978707,
+      "2024-10": 2.826098496504348,
+      "2024-11": 22.71538736467884
+    },
+    "max_drawdown_pct": -45.483394029787824,
+    "sharpe": 0.3790671481488026,
+    "sortino": 0.3023481504095851,
+    "calmar": 0.15069600824113324,
+    "profit_factor": 1.039827733769207,
+    "win_rate_pct": 45.616149442603195,
+    "gross_expectancy_bps": 18.79697568491101,
+    "net_expectancy_bps": 5.080577964977568,
+    "average_winner_bps": 290.7838609414546,
+    "average_loser_bps": -234.56195412720317,
+    "median_trade_bps": -25.244665832607758,
+    "trades_per_day": 4.94665590262684,
+    "signal_frequency_per_day": 4.94665590262684,
+    "average_holding_hours": 24.0,
+    "friction_paid_pct": 50.58302670273235,
+    "total_friction_pct_of_capital": 50.58302670273235,
+    "fee_to_gross_profit_pct": 9.849484890329478,
+    "average_modeled_friction_bps": 13.716397719933447,
+    "average_slippage_bps": null,
+    "slippage_measurement_status": "not_separately_identifiable_from_fee_and_spread_model",
+    "funding_cost_pct": null,
+    "funding_cost_status": "not_included_no_synchronized_historical_funding_ledger",
+    "borrowing_cost_pct": null,
+    "borrowing_cost_status": "not_applicable_perpetual_futures",
+    "partial_fill_status": "not_modeled_bar_data_insufficient",
+    "turnover_x": 737.5555555555555,
+    "long_exposure_pct": 25.370013869051316,
+    "short_exposure_pct": 29.592829493469125,
+    "longest_losing_streak": 27,
+    "recovery_hours": 14676.0,
+    "worst_day_pct": -7.212913172377233,
+    "worst_week_pct": -9.789438971007492,
+    "worst_month_pct": -19.24314912275277,
+    "profitable_trading_days_pct": 43.52574102964118,
+    "maximum_intraday_drawdown_pct": -7.002685101226369,
+    "positive_coins": 6,
+    "coin_results": {
+      "ADA": {
+        "trades": 374,
+        "net_expectancy_bps": 9.267656293941187
+      },
+      "AVAX": {
+        "trades": 371,
+        "net_expectancy_bps": 21.77662964428536
+      },
+      "BNB": {
+        "trades": 357,
+        "net_expectancy_bps": -7.6316020049326525
+      },
+      "BTC": {
+        "trades": 357,
+        "net_expectancy_bps": 39.30574880548715
+      },
+      "DOT": {
+        "trades": 376,
+        "net_expectancy_bps": -39.49994906679161
+      },
+      "ETH": {
+        "trades": 375,
+        "net_expectancy_bps": 3.4279129690138026
+      },
+      "LINK": {
+        "trades": 365,
+        "net_expectancy_bps": 21.718890722860685
+      },
+      "SOL": {
+        "trades": 376,
+        "net_expectancy_bps": -1.4398232629574568
+      },
+      "XRP": {
+        "trades": 368,
+        "net_expectancy_bps": 0.5163769694566384
+      }
+    }
+  },
+  "train_by_side": {
+    "long": {
+      "trades": 1532,
+      "gross_expectancy_bps": 49.02545374846686,
+      "net_expectancy_bps": 35.29945693505471,
+      "win_rate_pct": 46.99738903394256
+    },
+    "short": {
+      "trades": 1787,
+      "gross_expectancy_bps": -7.117981446240387,
+      "net_expectancy_bps": -20.82614983701358,
+      "win_rate_pct": 44.43200895355344
+    }
+  },
+  "placebo": null,
+  "train_conditions": {
+    "at_least_300_trades": true,
+    "at_least_20_each_coin": true,
+    "gross_exceeds_expected_cost": true,
+    "six_positive_coins": true,
+    "long_gross_positive": true,
+    "short_gross_positive": false,
+    "placebo_p_at_most_0_025": false
+  }
+}

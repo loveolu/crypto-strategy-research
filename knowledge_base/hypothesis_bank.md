@@ -372,6 +372,11 @@ SMA-direction system for large n.
 (Momentum §).
 **Source attribution**: Kaufman Ch.8/Ch.9 (Jack Hutson 1983; Woodshedder blog, reviewed by MarketSci
 Oct. 2011); `02_trend_following.md`, `13_indicator_reference.md`.
+**Already tested by this project (TRIX only)**: CRYPTO-EXP-036 tested standard span-6 triple-EMA
+TRIX with two-bar direction confirmation on nine 4h OKX perpetuals. TRAIN was economically strong
+(2,108 trades, +110.91% net, Sharpe 1.45, 9/9 positive), but failed its 999-shift placebo
+(p=.107 vs ≤.025); shorts were net-negative and held-out remained sealed. The exact TRIX rule is
+rejected; this does not newly adjudicate the separate long-horizon ROC rule grouped in this card.
 
 ---
 
@@ -432,6 +437,11 @@ but does not otherwise resolve the bimodality.
 **Related hypotheses**: N-Day/Channel Breakout Trend Family, Volatility Breakout Based on the
 Open/Previous Close.
 **Source attribution**: Kaufman Ch.5 (Thomas Stridsman, 1998); `02_trend_following.md`, `04_breakouts.md`.
+**Already tested by this project**: CRYPTO-EXP-037 tested a frozen 4h next-bar stop construction
+using 1.5 times the prior 12-log-return standard deviation and a six-bar hold. TRAIN produced 3,319
+trades and +18.80 gross bps/trade, but shorts were gross-negative (−7.12 bps), net annualized return
+was only 6.85%, and drawdown reached −45.48%. The direction gate failed, so placebo and held-out
+remained sealed. Do not select the favorable long side or tune width/window/hold after this result.
 
 ### Bill Williams' 5-Bar Fractal Breakout
 
@@ -446,6 +456,10 @@ profit target equal to the fractal pattern's own high-low range.
 whipsaw risk.
 **Related hypotheses**: Point-and-Figure Breakout Entries, N-Day/Channel Breakout Trend Family.
 **Source attribution**: Kaufman Ch.20 (Bill Williams, 1995/2004); `04_breakouts.md`.
+**Already tested by this project**: CRYPTO-EXP-033 tested the source-favored long/no-stop form on
+4h OKX perpetuals with causal five-bar confirmation, next-open entry, one-pattern-range target,
+and a 24h timeout. TRAIN had 1,587 trades but earned only +5.81 gross bps against 13.71 bps cost,
+lost −14.92% net, and had 3/9 positive coins; held-out stayed sealed. The exact rule is rejected.
 
 ### True Gap / Wide-Ranging-Bar Breakout Entries
 
@@ -499,6 +513,9 @@ threshold-band refinement is designed to filter exactly that regime.
 levels to historical data makes them unreliable live; see `18_common_failure_modes.md` §1.
 **Related hypotheses**: MACD/Momentum Divergence Trading, Divergence Index (Mean-Reversion §).
 **Source attribution**: Kaufman Ch.9 (Gerald Appel); `05_momentum.md`.
+**Already tested by this project**: the 97-construct usage census in `research/research_metrics.md`
+records MACD in Iteration 5's oscillator/hybrid batch; none of that batch's implementations cleared
+Sharpe 1.2. Do not rerun the standard crossover under a new ID without new data or a distinct mechanism.
 
 ### MACD / Momentum Divergence Trading
 
@@ -539,6 +556,15 @@ extra lag "as a natural consequence" (explicit trade-off, not a flaw to be engin
 **Related hypotheses**: MACD Crossover Trend System, TRIX/ROC Trend-Direction Systems.
 **Source attribution**: Kaufman Ch.9 (William Blau 1995; John Ehlers 2002; Bill Williams);
 `05_momentum.md`, `13_indicator_reference.md`.
+**Already tested by this project (limited scope)**: `research/research_metrics.md` records TSI and
+related oscillator/hybrid implementations in Iteration 5's batch, where none cleared Sharpe 1.2.
+This closes reruns of those recorded implementations, not every distinct RVI or Awesome-Oscillator
+pattern named in this grouped card.
+**Awesome Oscillator saucer update**: CRYPTO-EXP-038 tested the exact 5/34 midpoint-SMA saucer
+continuation pattern on nine 4h OKX perpetuals. TRAIN was economically broad (+43.19% net, 1,796
+trades, 8/9 positive, both directions profitable), but its 999-draw shared-shift placebo narrowly
+failed at p=.029 versus ≤.025. Held-out remained sealed. Close the exact saucer construction; do not
+retry seeds, relax the gate, tune averages/hold, or substitute Twin Peaks on these seen outcomes.
 
 ### ADX-Filtered Oscillator (Kestner) & Directional Parabolic
 
@@ -1204,6 +1230,12 @@ logic.
 **Source attribution**: Kaufman Ch.13; `15_crypto_specific.md`, `16_research_hypotheses.md` §4.
 **Already tested by this project**: research/research_index.md #4 (funding-rate squeeze) — BLOCKED (data
 unobtainable); #5 (spot-perp basis proxy) — FAIL (pure noise).
+**Mark-price-premium audit correction**: `research/NEXT_TASK.md` records only a read-only TRAIN census
+of hourly `(futures close − mark close) / mark close`: standard deviation 1.13–3.43 bps and p5–p95
+roughly ±1 to ±3.4 bps. Comparing a predictor's magnitude with trading cost does **not** test whether
+it forecasts a larger subsequent return. No causal forward-return ledger, costs, or chronological
+validation was found. CRYPTO-EXP-041 therefore reopens only that untested predictive question; it
+does not retest spot-perp carry or funding correlation.
 **Data-axis bootstrap EXECUTED 2026-07-20 (T-031 / A-FundingRecorder, frontier card F-7) — data
 CONFIRMED genuine (97-day retention, re-curl verified), cycle REJECTED on an unrelated AC7 defect
 (see F-7 card)** — not this trading hypothesis itself, which stays untestable until F-7's
@@ -1482,6 +1514,28 @@ full stop (notes §5.2). This card exists so the trade-off stays visible: cost o
 subscription vs the measured marginal value of the last three free-axis attempts (COT: rejected;
 DVOL: closed twice at pre-gates). Recommendation stance: defer until the forward-parity lane has
 produced its first decision-grade report; revisit at the next meta-review.
+
+### F-8. Quarter-Hour Signed-Order-Flow Effect (class B — data-contingent)
+**Description**: Kim and Hansen (2026, arXiv:2607.09426v2) find algorithmic activity and
+phase-specific dependence concentrated in the first 10 seconds after quarter-hour openings, with
+opening order imbalance predicting four-to-twelve-hour perpetual-futures returns. This is a signed
+trade-flow mechanism, not generic time-of-day seasonality or candle momentum.
+**Project status**: CRYPTO-EXP-039 stopped at a timestamp/schema-only gate. Nine OKX one-minute
+candle archives provide only 28 complete common days and contain neither sub-minute trade events nor
+aggressor-side labels. Zero returns/trades were inspected. Reopen only with ≥365 complete days and
+authenticated trade-level timestamp, aggressor side, and size fields; do not substitute OHLCV proxies.
+**Source**: https://arxiv.org/abs/2607.09426
+
+### F-9. Bitcoin Turn-of-the-Candle Effect (closed under current execution)
+**Description**: Shanaev, Vasenin, and Stepanov (2023) report approximately +0.58 bps in Bitcoin's
+0/15/30/45 boundary minutes and simulate holding only those minutes. Their profitable implementation
+depends on reaching Bitfinex's zero-fee rolling-volume tier; initial fees are explicitly prohibitive.
+**Project status**: CRYPTO-EXP-040 rejected the transfer before inspecting local returns. The
+published gross mean is 23.6× smaller than this project's measured ≈13.7 bps taker round trip, and
+the local archive has only 28 complete days versus the frozen 365-day minimum. Zero trades/trials.
+Reopen only with authenticated sub-0.58-bps all-in execution and adequate history; never use leverage
+or an assumed fee tier to conceal the negative unleveraged unit economics.
+**Source**: https://pmc.ncbi.nlm.nih.gov/articles/PMC10015199/
 
 ## Cross-Reference Notes
 
