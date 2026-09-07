@@ -1,0 +1,50 @@
+{
+  "task_id": "A-021",
+  "classification": "OPS_REACHABILITY_ONLY",
+  "probe_started_utc": "2026-09-05T20:30:36.137076+00:00",
+  "method": "HEAD",
+  "client": "Python requests, timeout=15 seconds per request",
+  "provenance": "Selected headers transcribed from terminal output; not a verbatim HTTP response or downloaded market-data artifact.",
+  "sandbox_attempt": "2026-09-05T20:27:06.247576+00:00: WinError 10013 before any HTTP response; successful retry used required network escalation.",
+  "market_data_bodies_downloaded": 0,
+  "strategy_configurations_evaluated": 0,
+  "continuous_coverage_verified": false,
+  "archive_schema_verified": false,
+  "records": [
+    {
+      "url": "https://data.binance.vision/data/futures/um/daily/metrics/BTCUSDT/BTCUSDT-metrics-2023-01-01.zip",
+      "status": 200,
+      "content_length": 14337,
+      "content_type": "binary/octet-stream",
+      "last_modified": "Wed, 28 Jun 2023 04:44:56 GMT"
+    },
+    {
+      "url": "https://data.binance.vision/data/futures/um/daily/metrics/BTCUSDT/BTCUSDT-metrics-2024-01-01.zip",
+      "status": 200,
+      "content_length": 11521,
+      "content_type": "binary/octet-stream",
+      "last_modified": "Tue, 02 Jan 2024 06:24:59 GMT"
+    },
+    {
+      "url": "https://data.binance.vision/data/futures/um/daily/metrics/BTCUSDT/BTCUSDT-metrics-2025-01-01.zip",
+      "status": 200,
+      "content_length": 11213,
+      "content_type": "binary/octet-stream",
+      "last_modified": "Fri, 24 Jul 2026 13:02:54 GMT"
+    },
+    {
+      "url": "https://data.binance.vision/data/futures/um/daily/metrics/BTCUSDT/BTCUSDT-metrics-2025-08-01.zip",
+      "status": 200,
+      "content_length": 11353,
+      "content_type": "binary/octet-stream",
+      "last_modified": "Tue, 04 Aug 2026 20:54:40 GMT"
+    },
+    {
+      "url": "https://data.binance.vision/data/futures/um/daily/metrics/BTCUSDT/BTCUSDT-metrics-2026-08-01.zip",
+      "status": 200,
+      "content_length": 11044,
+      "content_type": "binary/octet-stream",
+      "last_modified": "Sun, 02 Aug 2026 06:58:49 GMT"
+    }
+  ]
+}
