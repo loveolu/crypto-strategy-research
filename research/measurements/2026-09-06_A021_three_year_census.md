@@ -93,8 +93,9 @@ left all 4,369 files in the history directory byte-identical under before/after 
 python user_data/research/a021_binance_metrics_census.py --offline
 ```
 
-The original sample evidence is in `f09e8d4ed`; the three-year extension needs its own scoped
-versioning operation. No frozen OKX market data, other-agent recorder, strategy or B2 setting was
+The original sample evidence is in `f09e8d4ed`; the three-year extension is preserved in
+`b03e93705`. All 4,391 files under the combined raw-data directory were independently matched
+against that commit's Git blob identities: zero mismatches. No frozen OKX market data, other-agent recorder, strategy or B2 setting was
 changed. Zero strategy configurations were evaluated and no return or leaderboard claim follows.
 
 ## Next decision

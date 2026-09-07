@@ -1,0 +1,40 @@
+{
+  "task_id": "A-021",
+  "source_commit": "b03e93705",
+  "source_census_sha256": "4ed6030f0f80930e00b173b7f38bcc67067ff58d390a9ce8b54846a520c4c3a6",
+  "lookback_bars": 288,
+  "required_consecutive_observations": 289,
+  "timestamp_semantics": "Naive source labels retained; not approved execution/availability times.",
+  "expected_grid_rows": 315648,
+  "source_rows": 315512,
+  "absent_grid_slots": 136,
+  "present_invalid_oi_rows": 341,
+  "valid_24h_windows": 308639,
+  "invalid_or_warmup_24h_windows": 7009,
+  "per_calendar_year": {
+    "2023": {
+      "grid_rows": 35136,
+      "valid_24h_windows": 33394,
+      "invalid_or_warmup": 1742
+    },
+    "2024": {
+      "grid_rows": 105408,
+      "valid_24h_windows": 102489,
+      "invalid_or_warmup": 2919
+    },
+    "2025": {
+      "grid_rows": 105120,
+      "valid_24h_windows": 103063,
+      "invalid_or_warmup": 2057
+    },
+    "2026": {
+      "grid_rows": 69984,
+      "valid_24h_windows": 69693,
+      "invalid_or_warmup": 291
+    }
+  },
+  "source_values_interpolated_or_filled": false,
+  "execution_timing_verified": false,
+  "strategy_configurations_evaluated": 0,
+  "derived_parquet_sha256": "ac6d494c86417a28678f6e0af4114a026f433cfe7ee1150a603eb5370ee739f5"
+}

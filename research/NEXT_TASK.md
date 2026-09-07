@@ -22,6 +22,15 @@ interpolation. Record every error/gap, field-null count, schema, and longest com
 The five-day samples are versioned in commit `f09e8d4ed`; the expanded census needs its own
 versioned record after verification. Market timing, execution alignment and economic gates remain.
 
+Derived-view extension 2026-09-06: the full raw census is now versioned in `b03e93705`.
+Build an offline-only chronological OI view for the same full interval. Mark absent timestamps
+explicitly; do not fill their measurements. Reject duplicate/off-grid/out-of-window timestamps.
+Use a fixed 24-hour difference (288 five-minute steps), requiring 289 consecutive observations
+with finite positive OI and OI value. Test invalid endpoints, bad interior observations, recovery,
+sorting and future-data invariance. Preserve naive source timestamp labels; do not invent live
+availability timestamps. No price returns, threshold search, trading decisions or strategy trials.
+Save the derived view separately with source hashes and an eligibility report.
+
 ## Preserved prior assignment
 
 # NEXT_TASK — T-040 / H-SemiVarSizing-1h
