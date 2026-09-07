@@ -57,9 +57,11 @@ python user_data/research/a021_binance_metrics_probe.py --offline
 
 ## Unresolved gates and next action
 
-The raw files and new scripts are currently gitignored/untracked, not yet committed. Acquisition
-is therefore NOT complete under the operator manual's versioned-raw-record requirement. Preserve
-these exact files and use a dedicated, scoped versioning operation; do not stage unrelated work.
+Versioning follow-up: commit `f09e8d4ede694187df9ab627c813084ddd4a3ce2` preserves the sample
+archives, checksums, metadata, inspection, probe and tests. All 22 files in the committed raw
+directory (including its byte-preserving `.gitattributes`) were compared directly with Git blobs:
+zero byte mismatches. The sample versioning requirement is discharged. This does not certify the
+subsequent three-year acquisition, which needs its own versioned record.
 
 Five separated days cannot prove a continuous year. The next data operation is a fixed recent
 coverage census and immutable acquisition, not a strategy return calculation. Also unresolved:

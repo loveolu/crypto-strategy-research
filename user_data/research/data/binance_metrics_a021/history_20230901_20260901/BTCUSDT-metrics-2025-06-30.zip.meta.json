@@ -1,0 +1,22 @@
+{
+  "url": "https://data.binance.vision/data/futures/um/daily/metrics/BTCUSDT/BTCUSDT-metrics-2025-06-30.zip",
+  "fetched_at_utc": "2026-09-07T04:32:55.368968+00:00",
+  "status": 200,
+  "headers": {
+    "Content-Type": "binary/octet-stream",
+    "Content-Length": "11114",
+    "Connection": "keep-alive",
+    "Date": "Mon, 07 Sep 2026 04:33:00 GMT",
+    "Last-Modified": "Mon, 03 Aug 2026 12:32:44 GMT",
+    "ETag": "\"552a5e70f856984f24506ad4c2e6814d\"",
+    "x-amz-server-side-encryption": "AES256",
+    "Accept-Ranges": "bytes",
+    "Server": "AmazonS3",
+    "X-Cache": "Miss from cloudfront",
+    "Via": "1.1 5f667b25f028e9a1db412b50fa0372fa.cloudfront.net (CloudFront)",
+    "X-Amz-Cf-Pop": "SEA900-P5",
+    "X-Amz-Cf-Id": "MxOqGZ65glMZ7qQ28ScJ8QqUl2ax6NMt8Q6_ZSVz21JNDr0rI-lJfg=="
+  },
+  "bytes": 11114,
+  "sha256": "3c7918254644ad60cf7ef65ab0ddc5da783f935746e0f7f71b5f68b978c3a2e2"
+}

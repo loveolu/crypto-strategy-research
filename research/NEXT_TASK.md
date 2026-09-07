@@ -1,3 +1,29 @@
+# NEXT_TASK — A-021 / isolated Binance metrics sample acquisition
+
+Assigned 2026-09-05 under the operator's autonomous research mandate. OPS only: zero strategy
+evaluations and no changes to the frozen market-data tree. The previous T-040 assignment is
+preserved below; its recorded disposition is REJECT on 2026-08-06 in `research_index.md`.
+
+Scope: download the five BTCUSDT daily metrics ZIPs already probed in
+`measurements/A021_binance_metrics_reachability.json`, plus their CHECKSUM files, to
+`user_data/research/data/binance_metrics_a021/`. Use requests; save raw bytes before parsing;
+refuse overwrites; record URL, fetch time, HTTP metadata and SHA-256; verify checksums and inspect
+schema, timestamp gaps/duplicates and the last ten raw records. Run offline replay and guard tests.
+Do not import strategy modules, compute outcome returns, change B2 or touch other recorders.
+Continuous historical coverage and point-in-time validity remain unproven by five sample days.
+Raw artifacts must enter a dedicated versioned record before acquisition is called complete.
+No strategy trial or promotion is assigned here.
+
+Extension assigned 2026-09-06: census all 1,096 calendar days in [2023-09-01, 2026-09-01)
+for BTCUSDT metrics only, using a maximum of four concurrent downloads. Preserve each ZIP,
+checksum and metadata before parsing in `binance_metrics_a021/history_20230901_20260901/`;
+reuse existing verified sample files for overlapping dates. No date selection by returns and no
+interpolation. Record every error/gap, field-null count, schema, and longest complete daily run.
+The five-day samples are versioned in commit `f09e8d4ed`; the expanded census needs its own
+versioned record after verification. Market timing, execution alignment and economic gates remain.
+
+## Preserved prior assignment
+
 # NEXT_TASK — T-040 / H-SemiVarSizing-1h
 
 **Task ID**: T-040
