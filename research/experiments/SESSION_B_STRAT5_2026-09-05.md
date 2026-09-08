@@ -86,3 +86,37 @@ the same edge the hand-built rule found and then over-reaches into the regime wh
 
 **Construct count, both sessions, 2026-09-02 → 09-05: ≈ 90.** Every window is seen for every
 construct here; forward paper data is the only unspent evidence.
+
+## Addendum — 2022, a genuinely out-of-sample bear (`a023_2022_oos.py`)
+
+No threshold was fit on 2022 (TRAIN = 2023-01 → 2024-11). BNB starts 2022-12-23 → 8 perps. The daily
+SMA200 gate needs 200 days → gated rules trade from 2022-07-19; gate-free (neutral, TSMOM) rules from
+2022-02-08. Thresholds carried from TRAIN: long ≤ −4.95%, short ≥ +5.76%. 2022-H2 gate state: uptrend
+gate ON 4% of bars, strict-bear gate ON 81%.
+
+| strategy | window | return | Sh | DD | trades | read |
+|---|---|---|---|---|---|---|
+| HOLD basket (8) | Feb–Dec | **−74.7%** | −1.44 | −77% | — | the bear |
+| B2 long (gated) | H2 | −3.2% | — | −3.5% | 4 | flat: gate held it out; 3 of 4 trades were FTX-week dip-buys |
+| short leg, strict bear gate | H2 | **+6.4%** | 1.76 | −2.4% | 43 | earns in a true bear (also +1.7% 2025, +4.1% 2026; −9.3% 2024) |
+| LS-Cascade combined | H2 | +3.0% | 0.78 | −4.9% | — | positive |
+| CascadeSpread k=3 (neutral) | Feb–Dec | +1.8% | 0.21 | −6.5% | 48 | break-even; H2 +2.9% |
+| CascadeSpread k=1 (post-hoc) | Feb–Dec | −0.0% | 0.12 | **−16.1%** | 48 | **worse than k=3 out of sample** — evidence against the post-hoc k=1 pick |
+| **TSMOM-4h SHORT only** | Feb–Dec | **+50.1%** | **1.74** | −9.9% | — | killed on 2024–26 WF (2025 −7.5%); in a TRENDING bear it is the best thing in the table |
+| TSMOM-4h L/S | Feb–Dec | +25.4% | 0.95 | −18.4% | — | |
+| AltBTC-MR (neutral) | Feb–Dec | +1.2% | 0.16 | −13.2% | — | flat |
+| B2 + CascadeSpread 50/50 | H2 | −0.1% | 0.03 | −4.9% | — | capital preserved |
+
+**Answer to "did anything profit or break even in 2022":** everything except holding. Profit: TSMOM
+short (+50%), TSMOM L/S (+25%), the bear-gate short leg (+6.4%), LS-Cascade (+3.0%), CascadeSpread
+(+1.8%), AltBTC-MR (+1.2%). Break-even: B2 (−3.2% on 4 trades), the 50/50 book (−0.1%). Holding lost
+three quarters of its value.
+
+**What 2022 changes.** The 2024–26 walk-forward killed TSMOM because its shorts lost −7.5% in the 2025
+bear. In 2022 the same rule made +50%. **Bears are not one regime**: 2022 trended down (Luna → FTX) and
+rewarded trend shorts; 2025–26 chopped with squeezes and punished them. The squeeze-fade short earned
+in BOTH bear types (+6.4% / +1.7% / +4.1%) and lost only in the bull pullbacks of 2024. The TSMOM kill
+stands on its pre-registered window — un-killing it because a different window looks good would be
+window-picking — but the mechanism is recorded as **regime-dependent, not dead**: it needs a trending
+bear, and 2 of the 3 bear years in the data were not. The k=1 CascadeSpread pick does NOT generalise
+to 2022 (DD −16% vs −6.5%); k=3 stays.
