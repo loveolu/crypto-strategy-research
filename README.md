@@ -1,8 +1,6 @@
 # Crypto strategy research: a validation gate that says no
 
-Four months (May to September 2026) of systematic strategy research on OKX spot and
-USDT-perpetual data, run through a pre-registered validation pipeline. The headline result
-is negative and documented: after roughly 100 statistical trials across 40 numbered research
+The headline result is negative and documented: after roughly 100 statistical trials across 40 numbered research
 tasks and a further 44 experiment cycles, **no strategy has cleared the bar for real edge**.
 The one candidate that came closest is in forward paper trading, with its deflated Sharpe
 ratio recorded as below the live-eligibility threshold.
