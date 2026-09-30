@@ -21,7 +21,7 @@ candidate is built:
 3. **Deflated Sharpe Ratio** (`freqtrade_dsr.py`, Bailey and Lopez de Prado 2014) with a
    cumulative trial counter. The counter is never reset inside a research line, so each new
    idea is charged for every idea tried before it. The project champion on daily bars has a
-   raw Sharpe of 1.26 and a deflated Sharpe of 0.64 against a 0.95 bar. That gap is the
+   raw Sharpe of 1.26 and a deflated Sharpe of 0.62 at 98 trials against a 0.95 bar. That gap is the
    selection luck, and it is why the champion is labelled "not edge".
 4. **Measured execution costs**, not assumed ones. Order-book snapshots on OKX gave a
    taker round trip of 13.67 bps at $5k notional (maker 6.15), with per-instrument half-spread
